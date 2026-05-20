@@ -1,0 +1,4 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+rkftquacnjasdphjjnul.supabase.co/rest/v1/news?select=*&order=published_at.desc&limit=20:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
+rkftquacnjasdphjjnul.supabase.co/rest/v1/news?select=*&order=published_at.desc&limit=20:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
+index.mjs:377  GET https://rkftquacnjasdphjjnul.supabase.co/rest/v1/news?select=*&order=published_at.desc&limit=20 404 (Not Found)
