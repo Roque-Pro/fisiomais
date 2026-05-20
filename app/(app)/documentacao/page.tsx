@@ -16,7 +16,7 @@ export default function DocumentacaoPage() {
           <div className="aspect-video w-full bg-slate-900">
             <iframe 
               className="w-full h-full"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ" // Substitua pelo ID do seu vídeo
+              src="https://www.youtube.com/embed/AEXNPRyg7SM" 
               title="Tutorial Fisio+"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
