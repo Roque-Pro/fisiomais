@@ -1,14 +1,24 @@
-export type FieldType = 'text' | 'textarea' | 'number' | 'select' | 'scale' | 'checkbox-group' | 'date';
+export type AssessmentScale = {
+  name: string;
+  min: number;
+  max: number;
+  step?: number;
+  labels?: Record<number, string>;
+};
+
+export type FieldType = 'text' | 'textarea' | 'number' | 'select' | 'scale' | 'dynamic-scale' | 'checkbox-group' | 'date';
 
 export type Field = {
   key: string;
   label: string;
   type: FieldType;
   options?: string[];
+  scales?: AssessmentScale[];
   min?: number;
   max?: number;
   placeholder?: string;
   help?: string;
+  category?: 'Dor' | 'Força' | 'Mobilidade' | 'Equilíbrio' | 'Marcha' | 'Funcionalidade' | 'Postura' | 'Resistência' | 'Neurológico' | 'Esportivo' | 'Flexibilidade' | 'Estabilidade' | 'Outros';
 };
 
 export type Section = { title: string; fields: Field[] };
@@ -17,76 +27,160 @@ export type Specialty = {
   id: string;
   name: string;
   emoji: string;
+  iconName: string;
   description: string;
   sections: Section[];
 };
 
-const painScale: Field = {
-  key: 'pain_scale', label: 'Escala de dor (EVA 0–10)', type: 'scale', min: 0, max: 10
+// --- BANCO DE ESCALAS (Scale Bank) ---
+
+export const scaleBank = {
+  pain: {
+    key: 'pain_scale', 
+    label: 'Escala de Dor', 
+    type: 'dynamic-scale' as FieldType,
+    category: 'Dor' as const,
+    scales: [
+      { name: 'EVA (0–10)', min: 0, max: 10, labels: { 0: 'Sem dor', 2: 'Leve', 5: 'Moderada', 8: 'Intensa', 10: 'Insuportável' } },
+      { name: 'Escala Numérica (0-10)', min: 0, max: 10 },
+      { name: 'Faces (0–5)', min: 0, max: 5, labels: { 0: 'Sem dor', 5: 'Máxima dor' } }
+    ]
+  },
+  strength: {
+    key: 'muscle_strength',
+    label: 'Força Muscular (Oxford/MRC)',
+    type: 'dynamic-scale' as FieldType,
+    category: 'Força' as const,
+    scales: [
+      { name: 'Escala 0–5', min: 0, max: 5, labels: { 0: 'Sem contração', 1: 'Esboço', 2: 'Sem gravidade', 3: 'Contra gravidade', 4: 'Resistência', 5: 'Normal' } }
+    ]
+  },
+  borg: {
+    key: 'borg_scale',
+    label: 'Escala de Borg (Esforço)',
+    type: 'dynamic-scale' as FieldType,
+    category: 'Resistência' as const,
+    scales: [
+      { name: 'Borg Modificada (0–10)', min: 0, max: 10, labels: { 0: 'Repouso', 3: 'Moderado', 5: 'Forte', 10: 'Máximo' } },
+      { name: 'Borg Tradicional (6–20)', min: 6, max: 20 }
+    ]
+  },
+  goniometry: {
+    key: 'goniometry',
+    label: 'Goniometria (ADM)',
+    type: 'textarea' as FieldType,
+    category: 'Mobilidade' as const,
+    placeholder: 'Registre as amplitudes (Ex: Ombro D, Flexão 160°)...'
+  },
+  balance: {
+    key: 'balance_scale',
+    label: 'Equilíbrio',
+    type: 'dynamic-scale' as FieldType,
+    category: 'Equilíbrio' as const,
+    scales: [
+      { name: 'Escala de Berg (0–56)', min: 0, max: 56 },
+      { name: 'TUG (segundos)', min: 0, max: 60 }
+    ]
+  },
+  functionalOrtho: {
+    key: 'ortho_functional',
+    label: 'Escalas Funcionais Ortopédicas',
+    type: 'dynamic-scale' as FieldType,
+    category: 'Funcionalidade' as const,
+    scales: [
+      { name: 'Lysholm (Joelho)', min: 0, max: 100 },
+      { name: 'IKDC (Joelho)', min: 0, max: 100 },
+      { name: 'WOMAC (Quadril/Joelho)', min: 0, max: 96 },
+      { name: 'DASH (Membro Superior)', min: 0, max: 100 },
+      { name: 'SPADI (Ombro)', min: 0, max: 100 },
+      { name: 'Oswestry (Lombar)', min: 0, max: 50 },
+      { name: 'Roland Morris (Lombar)', min: 0, max: 24 },
+      { name: 'Harris Hip Score (Quadril)', min: 0, max: 100 }
+    ]
+  },
+  functionalNeuro: {
+    key: 'neuro_functional',
+    label: 'Escalas de Funcionalidade Neurológica',
+    type: 'dynamic-scale' as FieldType,
+    category: 'Funcionalidade' as const,
+    scales: [
+      { name: 'Índice de Barthel (AVDs)', min: 0, max: 100 },
+      { name: 'MIF (18–126)', min: 18, max: 126 },
+      { name: 'Escala de Katz', min: 0, max: 6 }
+    ]
+  }
 };
+
+// --- Common Sections ---
+
+const commonSections: Section[] = [];
+
+const clinicalHistorySection: Section = {
+  title: 'História Clínica',
+  fields: [
+    { key: 'current_illness', label: 'História da moléstia atual', type: 'textarea' },
+    { key: 'past_history', label: 'Histórico patológico e comorbidades', type: 'textarea' },
+    { key: 'medications', label: 'Medicações em uso', type: 'textarea' },
+    { key: 'surgeries_exams', label: 'Cirurgias prévias e exames', type: 'textarea' }
+  ]
+};
+
+// --- Specialties Definitions ---
 
 export const specialties: Specialty[] = [
   {
     id: 'pilates',
     name: 'Pilates',
     emoji: '🧘‍♀️',
-    description: 'Avaliação pré-Pilates Clínico conforme padrões COFFITO/CREFITO.',
+    iconName: 'Flower2',
+    description: 'Foco em postura, core, flexibilidade e controle motor.',
     sections: [
+      ...commonSections,
+      clinicalHistorySection,
       {
-        title: 'Queixa e Objetivo',
+        title: 'Exame Físico e Postural',
         fields: [
-          { key: 'chief_complaint', label: 'Queixa principal', type: 'textarea' },
-          { key: 'functional_objective', label: 'Objetivo funcional', type: 'textarea' }
+          { key: 'static_posture', label: 'Avaliação Postural Estática', type: 'textarea', category: 'Postura' },
+          { key: 'biophotogrammetry', label: 'Biofotogrametria (Ângulos/Fotos)', type: 'textarea', category: 'Postura' },
+          scaleBank.goniometry,
+          { key: 'wells_test', label: 'Banco de Wells (cm)', type: 'number', category: 'Flexibilidade' },
+          { key: 'sit_reach', label: 'Sit and Reach Test', type: 'text', category: 'Flexibilidade' },
+          scaleBank.pain
         ]
       },
       {
-        title: 'História Clínica',
+        title: 'Core e Estabilidade',
         fields: [
-          { key: 'current_illness', label: 'História da moléstia atual', type: 'textarea' },
-          { key: 'past_history', label: 'Histórico patológico e comorbidades', type: 'textarea' },
-          { key: 'medications', label: 'Medicações em uso', type: 'textarea' },
-          { key: 'surgeries_exams', label: 'Cirurgias prévias e exames', type: 'textarea' }
+          { key: 'plank_test', label: 'Teste de Prancha (tempo)', type: 'number', category: 'Estabilidade', help: 'Tempo em segundos' },
+          { key: 'lumbar_endurance', label: 'Endurance Lombar', type: 'text', category: 'Estabilidade' },
+          { key: 'bridge_test', label: 'Teste de Ponte', type: 'text', category: 'Estabilidade' },
+          { key: 'motor_control', label: 'Controle Motor', type: 'textarea', category: 'Outros' },
+          { key: 'breathing', label: 'Padrão Respiratório', type: 'text', category: 'Resistência' }
         ]
       },
       {
-        title: 'Triagem Clínica',
+        title: 'Funcionalidade',
         fields: [
-          { key: 'clinical_indication', label: 'Indicação clínica', type: 'text' },
-          { key: 'abs_contraindications', label: 'Contraindicações Absolutas', type: 'checkbox-group',
-            options: ['Dor aguda incapacitante', 'Instabilidade clínica', 'Febre', 'Crise vestibular', 'Restrição médica'] },
-          { key: 'rel_contraindications', label: 'Contraindicações Relativas', type: 'checkbox-group',
-            options: ['Osteoporose grave', 'Hipertensão descompensada', 'Labirintopatia', 'Gestação de risco', 'Limitação de mobilidade'] },
-          { key: 'medical_clearance', label: 'Liberação médica?', type: 'select', options: ['Sim', 'Não'] }
+          {
+            key: 'disability_index',
+            label: 'Índice de Incapacidade',
+            type: 'dynamic-scale',
+            category: 'Funcionalidade',
+            scales: [
+              { name: 'Oswestry (Lombalgia)', min: 0, max: 50 },
+              { name: 'Roland Morris', min: 0, max: 24 }
+            ]
+          }
         ]
       },
       {
-        title: 'Exame Físico-Funcional',
+        title: 'Plano e Conduta',
         fields: [
-          { key: 'bp', label: 'Pressão Arterial', type: 'text', placeholder: 'ex: 120/80' },
-          { key: 'hr', label: 'Frequência Cardíaca (bpm)', type: 'number' },
-          { key: 'rr', label: 'Frequência Respiratória (rpm)', type: 'number' },
-          { key: 'spo2', label: 'Saturação de O2 (%)', type: 'number' },
-          { key: 'temp', label: 'Temperatura (°C)', type: 'number' },
-          painScale,
-          { key: 'inspection_posture', label: 'Inspeção e postura', type: 'textarea' },
-          { key: 'rom', label: 'Amplitude de movimento', type: 'textarea' },
-          { key: 'strength', label: 'Força muscular', type: 'textarea' },
-          { key: 'tone_sensibility', label: 'Tônus, trofismo e sensibilidade', type: 'textarea' },
-          { key: 'balance_gait', label: 'Equilíbrio, coordenação e marcha', type: 'textarea' }
-        ]
-      },
-      {
-        title: 'Plano Terapêutico',
-        fields: [
-          { key: 'cbdf_diagnosis', label: 'Diagnóstico (CBDF)', type: 'text' },
-          { key: 'prognosis', label: 'Prognóstico', type: 'text' },
-          { key: 'therap_objectives', label: 'Objetivos terapêuticos', type: 'textarea' },
-          { key: 'conduct', label: 'Conduta', type: 'checkbox-group',
+          { key: 'conduct', label: 'Conduta Selecionada', type: 'checkbox-group',
             options: ['Controle motor', 'Estabilização', 'Flexibilidade', 'Fortalecimento', 'Mobilidade', 'Coordenação', 'Equilíbrio', 'Respiração', 'Consciência corporal'] },
           { key: 'resources', label: 'Recursos', type: 'checkbox-group',
             options: ['Solo', 'Reformer', 'Cadillac', 'Chair', 'Barrel', 'Faixa elástica', 'Bola'] },
           { key: 'frequency', label: 'Frequência (x/semana)', type: 'number' },
-          { key: 'duration', label: 'Duração (minutos)', type: 'number' },
           { key: 'total_sessions', label: 'Previsão total de sessões', type: 'number' }
         ]
       }
@@ -96,205 +190,225 @@ export const specialties: Specialty[] = [
     id: 'hidroterapia',
     name: 'Hidroterapia',
     emoji: '🌊',
-    description: 'Avaliação pré-Hidroterapia / Fisioterapia Aquática.',
+    iconName: 'Waves',
+    description: 'Fisioterapia Aquática para reabilitação e condicionamento.',
     sections: [
+      ...commonSections,
+      clinicalHistorySection,
       {
-        title: 'Queixa e Objetivo',
+        title: 'Equilíbrio e Marcha',
         fields: [
-          { key: 'chief_complaint', label: 'Queixa principal', type: 'textarea' },
-          { key: 'functional_objective', label: 'Objetivo funcional', type: 'textarea' }
+          scaleBank.balance,
+          { key: 'walk_6min', label: 'Teste de Caminhada (6 min)', type: 'number', category: 'Marcha', help: 'Distância em metros' },
+          { key: 'gait_speed', label: 'Velocidade da Marcha', type: 'text', category: 'Marcha' },
+          scaleBank.pain
         ]
       },
       {
-        title: 'História Clínica',
+        title: 'Condicionamento e Funcionalidade',
         fields: [
-          { key: 'current_illness', label: 'História da moléstia atual', type: 'textarea' },
-          { key: 'past_history', label: 'Histórico patológico e comorbidades', type: 'textarea' },
-          { key: 'medications', label: 'Medicações em uso', type: 'textarea' },
-          { key: 'surgeries_exams', label: 'Cirurgias prévias e exames', type: 'textarea' }
-        ]
-      },
-      {
-        title: 'Triagem para Hidro',
-        fields: [
-          { key: 'clinical_indication', label: 'Indicação clínica', type: 'text' },
-          { key: 'abs_contraindications', label: 'Contraindicações Absolutas', type: 'checkbox-group',
-            options: ['Febre', 'Infecção ativa', 'Ferida aberta', 'Incontinência fecal', 'Instabilidade cardiorrespiratória', 'Doença infectocontagiosa'] },
-          { key: 'rel_contraindications', label: 'Contraindicações Relativas', type: 'checkbox-group',
-            options: ['Hipertensão descompensada', 'Labirintopatia', 'Medo de água', 'Epilepsia não controlada', 'Incontinência urinária', 'Alergia'] },
-          { key: 'medical_clearance', label: 'Liberação médica?', type: 'select', options: ['Sim', 'Não'] }
-        ]
-      },
-      {
-        title: 'Exame Físico-Funcional',
-        fields: [
-          { key: 'bp', label: 'Pressão Arterial', type: 'text' },
-          { key: 'hr', label: 'Frequência Cardíaca (bpm)', type: 'number' },
-          { key: 'spo2', label: 'Saturação de O2 (%)', type: 'number' },
-          painScale,
-          { key: 'inspection_posture', label: 'Inspeção e postura', type: 'textarea' },
-          { key: 'rom', label: 'Amplitude de movimento', type: 'textarea' },
-          { key: 'strength', label: 'Força muscular', type: 'textarea' },
-          { key: 'balance_gait', label: 'Equilíbrio, coordenação e marcha', type: 'textarea' }
+          { key: 'hr_max', label: 'FC Máxima (220-idade)', type: 'number', category: 'Resistência', help: 'Cálculo automático recomendado' },
+          { key: 'spo2', label: 'Saturação de O2 (%)', type: 'number', category: 'Resistência' },
+          scaleBank.borg,
+          scaleBank.functionalNeuro
         ]
       },
       {
         title: 'Plano Terapêutico',
         fields: [
-          { key: 'therap_objectives', label: 'Objetivos terapêuticos', type: 'textarea' },
           { key: 'conduct', label: 'Conduta', type: 'checkbox-group',
             options: ['Adaptação ao meio líquido', 'Analgesia', 'Ganho de ADM', 'Fortalecimento', 'Equilíbrio', 'Marcha', 'Condicionamento', 'Relaxamento'] },
           { key: 'methods', label: 'Métodos', type: 'checkbox-group',
             options: ['Halliwick', 'Bad Ragaz', 'Watsu', 'Cinesioterapia aquática', 'Treino funcional aquático'] },
-          { key: 'frequency', label: 'Frequência (x/semana)', type: 'number' },
-          { key: 'duration', label: 'Duração (minutos)', type: 'number' },
-          { key: 'total_sessions', label: 'Previsão total de sessões', type: 'number' }
+          { key: 'frequency', label: 'Frequência (x/semana)', type: 'number' }
         ]
       }
     ]
   },
-
   {
     id: 'rpg',
     name: 'RPG',
     emoji: '🧍',
-    description: 'Reeducação Postural Global.',
+    iconName: 'Accessibility',
+    description: 'Reeducação Postural Global e Cadeias Musculares.',
     sections: [
+      ...commonSections,
       {
-        title: 'Avaliação postural',
+        title: 'Avaliação Postural e Cadeias',
         fields: [
-          { key: 'main_chain', label: 'Cadeia muscular predominante', type: 'select',
-            options: ['Posterior', 'Anterior', 'Mista'] },
-          { key: 'observed_compensations', label: 'Compensações observadas', type: 'textarea' },
-          { key: 'photos_taken', label: 'Foram feitas fotos posturais?', type: 'select', options: ['Sim', 'Não'] }
+          { key: 'main_chains', label: 'Cadeias predominantes', type: 'checkbox-group',
+            options: ['Posterior', 'Anterior', 'Inspiratória', 'Antero-interna de quadril', 'Antero-interna de ombro'] },
+          { key: 'assymmetries', label: 'Assimetrias e Simetria corporal', type: 'textarea', category: 'Postura' },
+          { key: 'scoliosis_eval', label: 'Avaliação de Escoliose', type: 'text', category: 'Postura' },
+          { key: 'biophotogrammetry', label: 'Biofotogrametria', type: 'text', category: 'Postura' },
+          { key: 'retractions', label: 'Retrações', type: 'textarea', category: 'Postura' }
         ]
       },
       {
-        title: 'Posturas indicadas',
+        title: 'Flexibilidade e Mobilidade',
         fields: [
-          { key: 'postures', label: 'Posturas selecionadas', type: 'checkbox-group',
-            options: ['Rã no chão', 'Rã no ar', 'Sentado', 'Bailarina', 'Em pé contra a parede', 'Em pé inclinado'] },
-          { key: 'difficulty', label: 'Dificuldade do paciente (0–10)', type: 'scale', min: 0, max: 10 },
-          painScale
+          { key: 'finger_floor', label: 'Distância dedo-chão (cm)', type: 'number', category: 'Flexibilidade' },
+          { key: 'wells_test', label: 'Banco de Wells (cm)', type: 'number', category: 'Flexibilidade' },
+          scaleBank.goniometry,
+          scaleBank.pain
         ]
       },
       {
-        title: 'Plano',
+        title: 'Funcionalidade e Respiratório',
         fields: [
-          { key: 'frequency', label: 'Frequência semanal', type: 'select', options: ['1x', '2x', '3x'] },
-          { key: 'sessions_estimate', label: 'Sessões estimadas', type: 'number', min: 1, max: 60 },
-          { key: 'plan_notes', label: 'Observações', type: 'textarea' }
+          {
+            key: 'disability_index',
+            label: 'Índice de Incapacidade',
+            type: 'dynamic-scale',
+            category: 'Funcionalidade',
+            scales: [
+              { name: 'Roland Morris', min: 0, max: 24 },
+              { name: 'Oswestry', min: 0, max: 50 }
+            ]
+          },
+          { key: 'thoracic_perimeter', label: 'Perimetria Torácica', type: 'text', category: 'Resistência' },
+          { key: 'resp_capacity', label: 'Capacidade Respiratória', type: 'text', category: 'Resistência' }
         ]
       }
     ]
   },
-
   {
     id: 'ortopedia',
-    name: 'Ortopédica / Traumato',
+    name: 'Fisioterapia Traumato-Ortopédica',
     emoji: '🦴',
-    description: 'Avaliação ortopédica e traumato-ortopédica.',
+    iconName: 'Bone',
+    description: 'Traumato-Ortopedia com foco em ADM, força e testes.',
     sections: [
+      ...commonSections,
       {
-        title: 'Anamnese',
+        title: 'Exame Físico e Dor',
         fields: [
-          { key: 'diagnosis', label: 'Diagnóstico médico', type: 'text' },
-          { key: 'mechanism', label: 'Mecanismo de lesão', type: 'textarea' },
-          { key: 'onset', label: 'Início dos sintomas', type: 'date' }
+          scaleBank.pain,
+          { key: 'mcgill', label: 'Questionário McGill', type: 'textarea', category: 'Dor' },
+          scaleBank.goniometry,
+          scaleBank.strength,
+          { key: 'edema_perimeter', label: 'Edema (Perimetria)', type: 'textarea', category: 'Outros' },
+          { key: 'special_tests', label: 'Testes Especiais Positivos', type: 'textarea' }
         ]
       },
       {
-        title: 'Exame físico',
+        title: 'Funcionalidade, Equilíbrio e Marcha',
         fields: [
-          painScale,
-          { key: 'edema', label: 'Edema', type: 'select', options: ['Ausente', 'Leve', 'Moderado', 'Intenso'] },
-          { key: 'rom_active', label: 'ADM ativa (0–10)', type: 'scale', min: 0, max: 10 },
-          { key: 'rom_passive', label: 'ADM passiva (0–10)', type: 'scale', min: 0, max: 10 },
-          { key: 'muscle_strength', label: 'Força muscular (0–5)', type: 'scale', min: 0, max: 5 },
-          { key: 'special_tests', label: 'Testes especiais positivos', type: 'textarea' }
+          scaleBank.functionalOrtho,
+          scaleBank.balance,
+          { key: 'walk_6min', label: 'Caminhada 6 min (m)', type: 'number', category: 'Marcha' }
         ]
       },
       {
         title: 'Conduta',
         fields: [
           { key: 'techniques', label: 'Técnicas indicadas', type: 'checkbox-group',
-            options: ['TENS', 'US', 'Crioterapia', 'Termoterapia', 'Mobilização articular', 'Terapia manual', 'Cinesioterapia'] },
+            options: ['TENS', 'US', 'Crioterapia', 'Termoterapia', 'Mobilização articular', 'Terapia manual', 'Cinesioterapia', 'Fortalecimento'] },
           { key: 'plan_notes', label: 'Plano de tratamento', type: 'textarea' }
         ]
       }
     ]
   },
-
   {
     id: 'neurofuncional',
-    name: 'Neurofuncional',
+    name: 'Fisioterapia Neurofuncional',
     emoji: '🧠',
-    description: 'Avaliação neurológica funcional.',
+    iconName: 'Brain',
+    description: 'Reabilitação neurológica (AVC, Parkinson, Pediatria).',
     sections: [
+      ...commonSections,
+      clinicalHistorySection,
       {
-        title: 'Anamnese',
+        title: 'Exame Neurológico',
         fields: [
-          { key: 'diagnosis', label: 'Diagnóstico médico', type: 'text' },
-          { key: 'evolution_time', label: 'Tempo de evolução', type: 'text' },
-          { key: 'medications', label: 'Medicações em uso', type: 'textarea' }
+          {
+            key: 'ashworth',
+            label: 'Tônus (Ashworth Modificada)',
+            type: 'dynamic-scale',
+            category: 'Neurológico',
+            scales: [{ name: 'Ashworth (0–4)', min: 0, max: 4, labels: { 0: 'Normal', 4: 'Rígido' } }]
+          },
+          { key: 'coord_finger_nose', label: 'Coordenação: Finger-to-nose', type: 'text', category: 'Neurológico' },
+          { key: 'coord_heel_shin', label: 'Coordenação: Heel-to-shin', type: 'text', category: 'Neurológico' },
+          { key: 'motor_control_fugl', label: 'Controle Motor (Fugl-Meyer)', type: 'text', category: 'Neurológico' },
+          { key: 'cognition_meem', label: 'Cognição (MEEM)', type: 'number', min: 0, max: 30, category: 'Neurológico' },
+          { key: 'reflexes', label: 'Reflexos', type: 'select', options: ['Normoativos', 'Hiporreflexia', 'Hiperreflexia', 'Arreflexia'] }
         ]
       },
       {
-        title: 'Exame neurológico',
+        title: 'Equilíbrio e Marcha',
         fields: [
-          { key: 'tonus', label: 'Tônus muscular', type: 'select',
-            options: ['Normal', 'Hipertonia leve', 'Hipertonia moderada', 'Espasticidade', 'Hipotonia'] },
-          { key: 'reflexes', label: 'Reflexos', type: 'select',
-            options: ['Normoativos', 'Hiporreflexia', 'Hiperreflexia', 'Arreflexia'] },
-          { key: 'coordination', label: 'Coordenação (0–10)', type: 'scale', min: 0, max: 10 },
-          { key: 'balance_sit', label: 'Equilíbrio sentado (0–10)', type: 'scale', min: 0, max: 10 },
-          { key: 'balance_stand', label: 'Equilíbrio em pé (0–10)', type: 'scale', min: 0, max: 10 },
-          { key: 'gait', label: 'Marcha', type: 'select',
-            options: ['Independente', 'Com auxílio', 'Cadeirante', 'Acamado'] }
+          scaleBank.balance,
+          { key: 'dgi_index', label: 'Dynamic Gait Index', type: 'text', category: 'Marcha' },
+          { key: 'freezing_gait', label: 'Freezing of Gait (Parkinson)', type: 'text', category: 'Marcha' }
         ]
       },
       {
-        title: 'Escala funcional',
+        title: 'Escalas de Funcionalidade e Específicas',
         fields: [
-          { key: 'mif', label: 'Pontuação MIF (18–126)', type: 'number', min: 18, max: 126 },
-          { key: 'adl', label: 'Atividades de vida diária', type: 'textarea' },
-          { key: 'plan_notes', label: 'Plano de tratamento', type: 'textarea' }
+          scaleBank.functionalNeuro,
+          {
+            key: 'pathology_specific',
+            label: 'Selecione a Escala por Patologia',
+            type: 'dynamic-scale',
+            category: 'Neurológico',
+            scales: [
+              { name: 'UPDRS (Parkinson)', min: 0, max: 199 },
+              { name: 'Hoehn & Yahr (Parkinson)', min: 1, max: 5 },
+              { name: 'GMFM (Pediatria)', min: 0, max: 100 },
+              { name: 'Denver II (Pediatria)', min: 0, max: 100 },
+              { name: 'GMFCS (Paralisia Cerebral)', min: 1, max: 5 }
+            ]
+          }
         ]
       }
     ]
   },
-
   {
     id: 'esportiva',
-    name: 'Esportiva',
+    name: 'Fisioterapia Esportiva',
     emoji: '🏃‍♀️',
-    description: 'Avaliação para atletas e praticantes de esportes.',
+    iconName: 'Trophy',
+    description: 'Performance, retorno ao esporte e risco de lesão.',
     sections: [
+      ...commonSections,
       {
-        title: 'Perfil esportivo',
+        title: 'Perfil e Performance',
         fields: [
           { key: 'sport', label: 'Esporte praticado', type: 'text' },
-          { key: 'level', label: 'Nível', type: 'select', options: ['Recreativo', 'Amador', 'Semi-profissional', 'Profissional'] },
-          { key: 'weekly_hours', label: 'Horas semanais de treino', type: 'number', min: 0, max: 60 },
-          { key: 'goals', label: 'Objetivos', type: 'textarea' }
+          scaleBank.pain,
+          { key: 'dynamometry', label: 'Dinamometria', type: 'text', category: 'Força' },
+          scaleBank.strength,
+          scaleBank.goniometry,
+          { key: 'wells_flex', label: 'Flexibilidade (Wells)', type: 'number', category: 'Flexibilidade' }
         ]
       },
       {
-        title: 'Avaliação física',
+        title: 'Potência, Agilidade e Resistência',
         fields: [
-          painScale,
-          { key: 'strength', label: 'Força (0–10)', type: 'scale', min: 0, max: 10 },
-          { key: 'endurance', label: 'Resistência (0–10)', type: 'scale', min: 0, max: 10 },
-          { key: 'flexibility', label: 'Flexibilidade (0–10)', type: 'scale', min: 0, max: 10 },
-          { key: 'proprioception', label: 'Propriocepção (0–10)', type: 'scale', min: 0, max: 10 }
+          { key: 'vertical_jump', label: 'Salto Vertical', type: 'text', category: 'Esportivo' },
+          { key: 'hop_tests', label: 'Hop Tests', type: 'text', category: 'Esportivo' },
+          { key: 'yo_yo_cooper', label: 'Yo-Yo Test / Cooper', type: 'text', category: 'Esportivo' },
+          { key: 'agility_tests', label: 'Agilidade (Illinois / Shuttle Run)', type: 'text', category: 'Esportivo' },
+          scaleBank.borg,
+          { key: 'y_balance', label: 'Y Balance Test', type: 'text', category: 'Equilíbrio' },
+          { key: 'vo2_max', label: 'Estimativa VO2 Max', type: 'text', category: 'Resistência', help: '44.73 * dist - 504.9' }
         ]
       },
       {
-        title: 'Plano',
+        title: 'Retorno Esportivo',
         fields: [
-          { key: 'return_phase', label: 'Fase de retorno ao esporte', type: 'select',
-            options: ['Tratamento agudo', 'Reabilitação', 'Retorno gradual', 'Pleno desempenho'] },
-          { key: 'plan_notes', label: 'Plano de treino', type: 'textarea' }
+          {
+            key: 'return_scales',
+            label: 'Escalas de Retorno',
+            type: 'dynamic-scale',
+            category: 'Funcionalidade',
+            scales: [
+              { name: 'IKDC (Joelho)', min: 0, max: 100 },
+              { name: 'LEFS (Membro Inferior)', min: 0, max: 80 }
+            ]
+          },
+          { key: 'injury_risk', label: 'Risco de Lesão / Observações', type: 'textarea' }
         ]
       }
     ]

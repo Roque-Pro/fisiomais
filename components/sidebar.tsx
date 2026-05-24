@@ -3,17 +3,15 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Activity, LayoutDashboard, LogOut, Palette, Share2, User, Users, BookText, ChevronLeft, Newspaper, Menu, ShoppingBag } from 'lucide-react';
+import { Activity, LayoutDashboard, LogOut, Palette, User, Users, BookText, ChevronLeft, Newspaper, Menu } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 const items = [
   { href: '/dashboard', label: 'Início', Icon: LayoutDashboard },
   { href: '/pacientes', label: 'Pacientes', Icon: Users },
-  { href: '/fisio-shop', label: 'Fisio Shop', Icon: ShoppingBag },
   { href: '/fisio-news', label: 'Fisio News', Icon: Newspaper },
   { href: '/perfil', label: 'Meu perfil', Icon: User },
   { href: '/personalizar', label: 'Personalizar', Icon: Palette },
-  { href: '/compartilhar', label: 'Indicar', Icon: Share2 },
   { href: '/documentacao', label: 'Documentação', Icon: BookText }
 ];
 
@@ -56,17 +54,13 @@ export function Sidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () =>
       <div className="flex items-center justify-between px-4 py-6">
         {(!collapsed || isOpen) && (
           <div className="flex items-center gap-2">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-white shadow-soft">
-              <Activity className="h-4 w-4" />
-            </div>
+            <img src="/logo.jpg" alt="Logo" className="h-9 w-9 rounded-xl object-cover shadow-soft" />
             <span className="font-bold text-brand-900">Fisio+</span>
           </div>
         )}
         {(collapsed && !isOpen) && (
           <div className="mx-auto">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-white shadow-soft">
-              <Activity className="h-4 w-4" />
-            </div>
+            <img src="/logo.jpg" alt="Logo" className="h-9 w-9 rounded-xl object-cover shadow-soft" />
           </div>
         )}
         
@@ -170,13 +164,16 @@ export function MobileTopbar({ onOpenMenu }: { onOpenMenu?: () => void }) {
         <button onClick={onOpenMenu} className="text-brand-600 p-1 bg-brand-50 rounded-lg active:scale-95 transition-transform">
           <Menu className="h-6 w-6" />
         </button>
-        <div className="flex flex-col">
-          <span className="text-xs font-bold leading-none text-brand-900">Fisio+</span>
-          <span className="mt-0.5 text-[10px] font-medium text-slate-500">
-            {name ? `Olá, ${name.split(' ')[0]}` : (
-              <Link href="/perfil" className="text-brand-600">Cadastrar nome</Link>
-            )}
-          </span>
+        <div className="flex items-center gap-2">
+          <img src="/logo.jpg" alt="Logo" className="h-8 w-8 rounded-lg object-cover" />
+          <div className="flex flex-col">
+            <span className="text-xs font-bold leading-none text-brand-900">Fisio+</span>
+            <span className="mt-0.5 text-[10px] font-medium text-slate-500">
+              {name ? `Olá, ${name.split(' ')[0]}` : (
+                <Link href="/perfil" className="text-brand-600">Cadastrar nome</Link>
+              )}
+            </span>
+          </div>
         </div>
       </div>
       <button onClick={logout} className="text-rose-600 p-2">

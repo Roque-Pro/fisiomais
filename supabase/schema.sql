@@ -48,6 +48,8 @@ create table if not exists public.patients (
   address text,
   occupation text,
   chief_complaint text,
+  functional_objective text,
+  objective_assessment text,
   medical_history text,
   medications text,
   notes text,
@@ -96,6 +98,9 @@ alter table public.evolutions  enable row level security;
 -- profiles
 create policy "Profile owner read"   on public.profiles for select using (auth.uid() = id);
 create policy "Profile owner update" on public.profiles for update using (auth.uid() = id);
+create policy "Admin update all"   on public.profiles for update using (
+  exists(select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')
+);
 create policy "Profile insert self"  on public.profiles for insert with check (auth.uid() = id);
 create policy "Admin read all"       on public.profiles for select using (
   exists(select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin')

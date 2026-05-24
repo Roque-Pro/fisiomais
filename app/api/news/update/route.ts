@@ -1,46 +1,91 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   const supabase = createClient();
   
-  // 1. Verificar se é admin
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
   if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'Acesso restrito a administradores' }, { status: 403 });
+    return NextResponse.json({ error: 'Acesso restrito' }, { status: 403 });
   }
 
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   
   try {
     let newsItems: any[] = [];
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
-    // TENTATIVA 1: Buscar via RSS Público (Mais confiável que IA pura para busca web)
-    // Usamos o Google News RSS convertido para JSON via serviço gratuito
-    console.log('Buscando notícias via RSS...');
-    const rssRes = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://news.google.com/rss/search?q=fisioterapia+when:3d&hl=pt-BR&gl=BR&ceid=BR:pt-419')}`);
-    const rssData = await rssRes.json();
+    // 1. RSS Search - Query Ultra-Focada em Fisioterapia mas Ampla em Temas
+    const physioNiches = [
+      'fisioterapia ortopédica', 'fisioterapia esportiva', 'fisioterapia neurofuncional', 
+      'fisioterapia pélvica', 'fisioterapia respiratória', 'fisioterapia dermatofuncional',
+      'COFFITO', 'CREFITO', 'concurso fisioterapia', 'fisioterapia terapia manual',
+      'fisioterapia gerontologia', 'fisioterapia osteopatia', 'fisioterapia quiropraxia'
+    ];
+    
+    // Sorteia 3 nichos para garantir variedade a cada clique
+    const selectedNiches = [...physioNiches].sort(() => 0.5 - Math.random()).slice(0, 3);
+    const searchQuery = `("${selectedNiches.join('" OR "')}") when:7d`;
+    
+    console.log(`Buscando RSS com foco em: ${selectedNiches.join(', ')}`);
+    
+    try {
+      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(searchQuery)}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
+      const rssRes = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+      const rssData = await rssRes.json();
 
-    if (rssData.status === 'ok' && rssData.items?.length > 0) {
-      newsItems = rssData.items.map(item => ({
-        title: item.title,
-        summary: item.content?.replace(/<[^>]*>?/gm, '').substring(0, 160) + '...',
-        url: item.link,
-        source: item.author || 'Google News',
-        published_at: new Date(item.pubDate).toISOString()
-      }));
+      if (rssData.status === 'ok' && rssData.items?.length > 0) {
+        const filteredRss = rssData.items
+          .map((item: any) => ({
+            title: item.title,
+            summary: item.content?.replace(/<[^>]*>?/gm, '').substring(0, 220) + '...',
+            url: item.link,
+            source: item.author || 'Notícias Fisio',
+            published_at: new Date(item.pubDate).toISOString()
+          }))
+          .filter((item: any) => {
+            const titleLower = item.title.toLowerCase();
+            const summaryLower = item.summary.toLowerCase();
+            // Filtro de segurança: precisa ter "fisioterapia", "fisioterapeuta", "fisio", "coffito" ou "crefito"
+            return (new Date(item.published_at) >= twoDaysAgo) && 
+                   (titleLower.includes('fisio') || titleLower.includes('crefito') || titleLower.includes('coffito') || 
+                    summaryLower.includes('fisio') || summaryLower.includes('crefito'));
+          });
+        
+        newsItems = [...newsItems, ...filteredRss];
+      }
+    } catch (e) {
+      console.error('Erro no RSS:', e);
     }
 
-    // TENTATIVA 2: Se o RSS falhar e tivermos API KEY, tentamos Gemini
-    if (newsItems.length === 0 && apiKey) {
-      console.log('RSS vazio ou falhou, tentando Gemini...');
-      const prompt = `Liste 10 notícias recentes e reais de hoje sobre fisioterapia no Brasil. 
-      Retorne apenas um array JSON válido: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}].
-      Não use blocos de código markdown, retorne apenas o JSON puro.`;
-      
+    // 2. Gemini - Prompt Especialista em Fisioterapia
+    if (apiKey) {
+      console.log('Solicitando curadoria técnica ao Gemini...');
+      const prompt = `Aja como o Editor-Chefe do "Fisio News". Sua missão é fornecer 10 notícias EXCLUSIVAMENTE sobre Fisioterapia ocorridas no Brasil nos últimos 2 dias.
+
+      O QUE BUSCAR (Seja Amplo):
+      - Decisões e resoluções do COFFITO e CREFITOs.
+      - Novos concursos públicos para fisioterapeutas.
+      - Avanços em pesquisas científicas (pubmed, scielo) aplicados à fisioterapia.
+      - Lançamento de tecnologias, softwares ou equipamentos para clínicas de fisio.
+      - Eventos, congressos e cursos de especialização de destaque.
+      - Notícias de fisioterapia esportiva (lesões de atletas famosos, etc).
+
+      REGRAS CRÍTICAS:
+      1. PROIBIDO qualquer notícia que não mencione fisioterapia ou o conselho de classe.
+      2. PROIBIDO notícias genéricas de "saúde" ou "medicina" que não tenham o fisioterapeuta como protagonista.
+      3. Verifique a veracidade. Use fontes como portais de conselhos, sites de notícias e blogs especializados.
+      4. O campo "published_at" deve ser entre ontem e hoje.
+      5. RETORNE APENAS O ARRAY JSON PURO.
+
+      Formato: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}]`;
+
       try {
         const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
           method: 'POST',
@@ -54,28 +99,39 @@ export async function POST() {
           const aiData = await aiRes.json();
           const text = aiData.candidates?.[0]?.content?.parts?.[0]?.text;
           if (text) {
-            // Limpeza robusta de JSON se o Gemini ignorar a instrução de "JSON puro"
             const cleanJson = text.replace(/```json|```/g, '').trim();
             const parsed = JSON.parse(cleanJson);
             if (Array.isArray(parsed)) {
-              newsItems = parsed;
+              const validatedAi = parsed
+                .filter(it => {
+                  const content = (it.title + it.summary).toLowerCase();
+                  return content.includes('fisio') || content.includes('crefito') || content.includes('coffito');
+                })
+                .map(it => ({
+                  ...it,
+                  published_at: it.published_at || new Date().toISOString()
+                }))
+                .filter(it => new Date(it.published_at) >= twoDaysAgo);
+              
+              newsItems = [...newsItems, ...validatedAi];
             }
           }
-        } else {
-          const errorDetail = await aiRes.text();
-          console.error('Erro na API Gemini:', aiRes.status, errorDetail);
         }
       } catch (aiErr) {
-        console.error('Erro ao processar IA:', aiErr);
+        console.error('Erro Gemini:', aiErr);
       }
     }
 
-    if (newsItems.length > 0) {
-      // 3. Salvar no Banco de Dados
+    // Processamento Final
+    const uniqueNews = Array.from(new Map(newsItems.map(item => [item.url, item])).values())
+      .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
+      .slice(0, 15);
+
+    if (uniqueNews.length > 0) {
       const { error: dbError } = await supabase
         .from('news')
         .upsert(
-          newsItems.map(item => ({
+          uniqueNews.map(item => ({
             title: item.title,
             summary: item.summary,
             url: item.url,
@@ -88,11 +144,10 @@ export async function POST() {
       if (dbError) throw dbError;
     }
 
-    return NextResponse.json({ success: true, count: newsItems.length });
+    return NextResponse.json({ success: true, count: uniqueNews.length });
 
   } catch (error) {
-    console.error('Erro na atualização:', error);
-    const message = error instanceof Error ? error.message : 'Falha ao buscar notícias. Verifique a conexão.';
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error('Erro Crítico:', error);
+    return NextResponse.json({ error: 'Falha na atualização. Tente novamente.' }, { status: 500 });
   }
 }

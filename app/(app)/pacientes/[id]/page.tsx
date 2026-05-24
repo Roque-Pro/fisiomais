@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
-import { ArrowLeft, ClipboardList, FileText, Phone, Plus, Stethoscope } from 'lucide-react';
+import { ArrowLeft, ClipboardList, FileText, Phone, Plus, Stethoscope, Flower2, Waves, Accessibility, Bone, Brain, Trophy } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { specialties } from '@/lib/specialties';
 import { EvolutionForm } from '@/components/evolution-form';
 import { PatientPdfButtons } from '@/components/patient-pdf-buttons';
 import { DeletePatientButton } from '@/components/delete-patient-button';
 import { DeleteAssessmentButton } from '@/components/delete-assessment-button';
+import { PatientGoalsForm } from '@/components/patient-goals-form';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,10 +65,6 @@ export default async function PatientPage({ params }: { params: { id: string } }
 
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           <div>
-            <div className="text-xs uppercase tracking-wide text-slate-500">Queixa principal</div>
-            <p className="mt-1 text-sm">{patient.chief_complaint || '—'}</p>
-          </div>
-          <div>
             <div className="text-xs uppercase tracking-wide text-slate-500">Histórico médico</div>
             <p className="mt-1 text-sm">{patient.medical_history || '—'}</p>
           </div>
@@ -75,12 +72,21 @@ export default async function PatientPage({ params }: { params: { id: string } }
             <div className="text-xs uppercase tracking-wide text-slate-500">Medicações</div>
             <p className="mt-1 text-sm">{patient.medications || '—'}</p>
           </div>
-          <div>
+          <div className="md:col-span-2">
             <div className="text-xs uppercase tracking-wide text-slate-500">Endereço</div>
             <p className="mt-1 text-sm">{patient.address || '—'}</p>
           </div>
         </div>
       </div>
+
+      <PatientGoalsForm 
+        patientId={patient.id} 
+        initialData={{
+          chief_complaint: patient.chief_complaint,
+          functional_objective: patient.functional_objective,
+          objective_assessment: patient.objective_assessment
+        }} 
+      />
 
       <div className="card">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
@@ -89,16 +95,41 @@ export default async function PatientPage({ params }: { params: { id: string } }
           </h2>
         </div>
 
-        <div className="mb-4 grid gap-2 md:grid-cols-3">
-          {specialties.map((s) => (
-            <Link key={s.id} href={`/pacientes/${patient.id}/avaliacoes/${s.id}/nova`}
-              className="group flex items-center justify-between rounded-xl border border-slate-200 px-3 py-2.5 hover:border-brand-400 hover:bg-brand-50">
-              <span className="flex items-center gap-2 text-sm font-medium">
-                <span className="text-lg">{s.emoji}</span> {s.name}
-              </span>
-              <Plus className="h-4 w-4 text-slate-400 group-hover:text-brand-600" />
-            </Link>
-          ))}
+        <div className="mb-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          {specialties.map((s: any, idx) => {
+            const isClinical = idx >= 3;
+            const IconComponent = ({
+              Flower2, Waves, Accessibility, Bone, Brain, Trophy
+            } as any)[s.iconName] || ClipboardList;
+
+            return (
+              <Link key={s.id} href={`/pacientes/${patient.id}/avaliacoes/${s.id}/nova`}
+                className={`group relative flex flex-col items-start gap-3 rounded-2xl border p-5 transition-all duration-300
+                  ${isClinical 
+                    ? 'border-brand-100 bg-brand-50/20 hover:border-brand-500 hover:bg-white hover:shadow-xl hover:-translate-y-1' 
+                    : 'border-slate-100 bg-white hover:border-brand-300 hover:shadow-lg hover:-translate-y-1'}`}>
+                
+                <div className={`flex h-12 w-12 items-center justify-center rounded-xl shadow-sm transition-all duration-500 group-hover:rotate-6
+                  ${isClinical ? 'bg-gradient-to-br from-brand-600 to-brand-800 text-white' : 'bg-slate-50 text-brand-600 border border-slate-100'}`}>
+                  <IconComponent className="h-6 w-6" strokeWidth={isClinical ? 2.5 : 2} />
+                </div>
+
+                <div className="flex flex-1 flex-col">
+                  <span className={`text-[15px] font-bold tracking-tight ${isClinical ? 'text-brand-950' : 'text-slate-800'}`}>
+                    {s.name}
+                  </span>
+                  <p className="mt-1.5 text-xs leading-relaxed text-slate-500 line-clamp-2">
+                    {s.description}
+                  </p>
+                </div>
+
+                <div className={`mt-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors
+                  ${isClinical ? 'text-brand-600' : 'text-slate-400 group-hover:text-brand-600'}`}>
+                  Iniciar Avaliação <Plus className="h-3 w-3" />
+                </div>
+              </Link>
+            );
+          })}
         </div>
 
         {assessments && assessments.length > 0 ? (

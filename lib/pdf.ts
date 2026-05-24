@@ -22,6 +22,8 @@ type Patient = {
   whatsapp?: string | null;
   email?: string | null;
   chief_complaint?: string | null;
+  functional_objective?: string | null;
+  objective_assessment?: string | null;
   medical_history?: string | null;
   medications?: string | null;
 };
@@ -46,10 +48,18 @@ const M = 15;
 function header(doc: jsPDF, title: string, subtitle?: string) {
   doc.setFillColor(16, 185, 129); // Emerald 500
   doc.rect(0, 0, 210, 24, 'F');
+  
+  // Add Logo
+  try {
+    doc.addImage('/logo.jpg', 'JPEG', M, 4, 16, 16);
+  } catch (e) {
+    console.error('Error adding logo to PDF:', e);
+  }
+
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
-  doc.text('Fisio+', M, 15);
+  doc.text('Fisio+', M + 18, 15);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(11);
   doc.text(title, 210 - M, 15, { align: 'right' });
@@ -83,21 +93,30 @@ function section(doc: jsPDF, y: number, label: string): number {
   return y + 7;
 }
 
-function kv(doc: jsPDF, y: number, key: string, value: string): number {
+function kv(doc: jsPDF, y: number, key: string, value: string, category?: string): number {
+  if (value === '—') return y; 
+
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
   doc.text(key.toUpperCase(), M, y);
+
+  if (category) {
+    doc.setFontSize(7);
+    doc.setTextColor(148, 163, 184); // Slate 400
+    doc.text(`[${category.toUpperCase()}]`, 210 - M, y, { align: 'right' });
+  }
+  
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
-  const lines = doc.splitTextToSize(value || '—', 210 - 2 * M);
-  doc.text(lines, M, y + 5);
-  return y + 5 + lines.length * 5 + 2;
+  const lines = doc.splitTextToSize(value, 210 - 2 * M);
+  doc.text(lines, M, y + 4.5);
+  return y + 4.5 + lines.length * 5 + 1.5;
 }
 
 function ensureSpace(doc: jsPDF, y: number, needed = 20): number {
-  if (y + needed > 280) {
+  if (y + needed > 275) {
     doc.addPage();
     return 30;
   }
@@ -112,27 +131,35 @@ export function downloadAssessmentPdf(opts: { profile: Profile; patient: Patient
 
   let y = 32;
   y = section(doc, y, 'Profissional');
-  y = kv(doc, y, 'Nome', profile.full_name ?? '');
+  y = kv(doc, y, 'Nome', profile.full_name ?? '—');
   y = kv(doc, y, 'CREFITO / WhatsApp', `${profile.crefito ?? '—'}  ·  ${profile.whatsapp ?? '—'}`);
 
-  y = ensureSpace(doc, y + 2, 30);
+  y = ensureSpace(doc, y + 5, 30);
   y = section(doc, y, 'Paciente');
   y = kv(doc, y, 'Nome', patient.full_name);
-  y = kv(doc, y, 'Queixa principal', patient.chief_complaint ?? '');
+  y = kv(doc, y, 'Queixa principal', patient.chief_complaint ?? '—');
+  y = kv(doc, y, 'Objetivo funcional', patient.functional_objective ?? '—');
+  y = kv(doc, y, 'Avaliação objetiva', patient.objective_assessment ?? '—');
 
   for (const sec of sp?.sections ?? []) {
-    y = ensureSpace(doc, y + 2, 20);
+    // Check if section has data
+    const hasData = sec.fields.some(f => assessment.data?.[f.key] !== undefined && assessment.data?.[f.key] !== null && assessment.data?.[f.key] !== '');
+    if (!hasData) continue;
+
+    y = ensureSpace(doc, y + 5, 25);
     y = section(doc, y, sec.title);
     for (const f of sec.fields) {
       const raw = assessment.data?.[f.key];
+      if (raw === undefined || raw === null || raw === '') continue;
+      
       const v = formatFieldValue(f, raw);
       y = ensureSpace(doc, y, 14);
-      y = kv(doc, y, f.label, v);
+      y = kv(doc, y, f.label, v, f.category);
     }
   }
 
   if (assessment.notes) {
-    y = ensureSpace(doc, y + 2, 20);
+    y = ensureSpace(doc, y + 5, 25);
     y = section(doc, y, 'Observações da fisioterapeuta');
     y = kv(doc, y, ' ', assessment.notes);
   }
@@ -143,6 +170,14 @@ export function downloadAssessmentPdf(opts: { profile: Profile; patient: Patient
 
 function formatFieldValue(f: Field, raw: unknown): string {
   if (raw === undefined || raw === null || raw === '') return '—';
+  
+  if (f.type === 'dynamic-scale' && typeof raw === 'object' && raw !== null) {
+    const data = raw as { scale: string; value: number };
+    const scale = f.scales?.find(s => s.name === data.scale);
+    const label = scale?.labels?.[data.value];
+    return `${data.scale}: ${data.value}${label ? ` (${label})` : ''}`;
+  }
+
   if (Array.isArray(raw)) return raw.length ? raw.join(', ') : '—';
   return String(raw);
 }
@@ -150,123 +185,123 @@ function formatFieldValue(f: Field, raw: unknown): string {
 export function downloadEvolutionPdf(opts: { profile: Profile; patient: Patient; evolutions: Evolution[]; assessments?: Assessment[] }) {
   const { profile, patient, evolutions, assessments } = opts;
   const doc = new jsPDF();
-  header(doc, 'Relatório de evolução', profile.full_name ?? '');
+  header(doc, 'Relatório de Evolução do Paciente', profile.full_name ?? '');
 
   let y = 32;
-  y = section(doc, y, 'Paciente');
+  y = section(doc, y, 'Identificação do Paciente');
   y = kv(doc, y, 'Nome', patient.full_name);
-  y = kv(doc, y, 'WhatsApp', patient.whatsapp ?? '');
+  y = kv(doc, y, 'WhatsApp', patient.whatsapp ?? '—');
+  y = kv(doc, y, 'Queixa Principal', patient.chief_complaint ?? '—');
 
   // Assessments Section
   if (assessments && assessments.length > 0) {
-    y = ensureSpace(doc, y + 2, 30);
+    y = ensureSpace(doc, y + 5, 30);
     y = section(doc, y, 'Avaliações Realizadas');
     
     for (const a of assessments) {
       const sp = specialtyMap[a.specialty];
-      y = ensureSpace(doc, y, 20);
+      y = ensureSpace(doc, y + 2, 20);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(5, 150, 105);
-      // Removed emoji to avoid strange characters
-      doc.text(`${sp?.name ?? a.specialty} - ${new Date(a.created_at).toLocaleDateString('pt-BR')}`, M, y);
+      doc.text(`${sp?.name ?? a.specialty} — ${new Date(a.created_at).toLocaleDateString('pt-BR')}`, M, y);
       doc.setTextColor(15, 23, 42);
       y += 6;
 
-      // Render assessment sections and fields in order
       if (sp) {
         for (const sectionObj of sp.sections) {
-          // Check if this section has any filled data
           const hasData = sectionObj.fields.some(f => a.data && a.data[f.key] !== undefined && a.data[f.key] !== null && a.data[f.key] !== '');
-          
-          if (hasData) {
+          if (!hasData) continue;
+
+          y = ensureSpace(doc, y, 12);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7);
+          doc.setTextColor(100, 116, 139);
+          doc.text(sectionObj.title.toUpperCase(), M, y);
+          y += 4.5;
+
+          for (const field of sectionObj.fields) {
+            const val = a.data[field.key];
+            if (val === undefined || val === null || val === '') continue;
+            
+            const v = formatFieldValue(field, val);
             y = ensureSpace(doc, y, 12);
+            
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
             doc.setTextColor(100, 116, 139);
-            doc.text(sectionObj.title.toUpperCase(), M, y);
-            y += 4.5;
+            const label = field.label.toUpperCase();
+            doc.text(label, M, y);
 
-            doc.setFontSize(9);
-            for (const field of sectionObj.fields) {
-              const val = a.data[field.key];
-              if (val !== undefined && val !== null && val !== '') {
-                const v = formatFieldValue(field, val);
-                
-                y = ensureSpace(doc, y, 8);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(15, 23, 42);
-                const label = `${field.label}:`;
-                doc.text(label, M, y);
-                
-                doc.setFont('helvetica', 'normal');
-                const contentX = M + 55; // Increased margin to avoid overlapping
-                const maxWidth = 210 - contentX - M;
-                const lines = doc.splitTextToSize(v, maxWidth);
-                
-                doc.text(lines, contentX, y);
-                y += (lines.length * 5) + 1;
-              }
+            if (field.category) {
+              doc.setFontSize(7);
+              doc.setTextColor(148, 163, 184);
+              doc.text(`[${field.category.toUpperCase()}]`, 210 - M, y, { align: 'right' });
             }
-            y += 2;
-          }
-        }
-      } else {
-        // Fallback for unknown specialty
-        const dataEntries = Object.entries(a.data || {});
-        for (const [key, val] of dataEntries) {
-          if (val !== undefined && val !== null && val !== '') {
-            y = ensureSpace(doc, y, 10);
-            doc.setFont('helvetica', 'bold');
-            doc.text(`${key}:`, M, y);
+            
             doc.setFont('helvetica', 'normal');
-            doc.text(String(val), M + 55, y);
-            y += 6;
+            doc.setFontSize(10);
+            doc.setTextColor(15, 23, 42);
+            const lines = doc.splitTextToSize(v, 210 - 2 * M);
+            doc.text(lines, M, y + 4.5);
+            y += (lines.length * 5) + 6.5;
           }
+          y += 2;
         }
       }
-      
+
       if (a.notes) {
         y = ensureSpace(doc, y, 10);
         doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
         doc.setTextColor(5, 150, 105);
-        doc.text('Observações Gerais:', M, y);
+        doc.text('Observações:', M, y);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(15, 23, 42);
-        const lines = doc.splitTextToSize(a.notes, 140);
-        doc.text(lines, M + 55, y);
+        const lines = doc.splitTextToSize(a.notes, 210 - M - (M + 45));
+        doc.text(lines, M + 45, y);
         y += (lines.length * 5) + 2;
       }
 
-      y += 2;
+      y += 4;
       doc.setDrawColor(240, 253, 244);
       doc.line(M, y, 210 - M, y);
       y += 8;
     }
   }
 
-  y = ensureSpace(doc, y + 2, 20);
-  y = section(doc, y, `Histórico de Sessões (${evolutions.length})`);
+  y = ensureSpace(doc, y + 5, 20);
+  y = section(doc, y, `Histórico de Evolução (${evolutions.length} sessões)`);
 
   for (const e of evolutions) {
-    y = ensureSpace(doc, y, 28);
+    y = ensureSpace(doc, y, 30);
+    doc.setFillColor(248, 250, 252);
+    doc.rect(M, y - 1, 210 - 2 * M, 7, 'F');
+    
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
-    doc.text(`Sessão #${e.session_number ?? '—'} · ${new Date(e.session_date).toLocaleDateString('pt-BR')}`, M, y);
-    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(15, 23, 42);
+    doc.text(`Sessão #${e.session_number ?? '—'} · ${new Date(e.session_date).toLocaleDateString('pt-BR')}`, M + 2, y + 4);
+    
     doc.setFontSize(9);
     doc.setTextColor(100, 116, 139);
-    doc.text(`Dor: ${e.pain_level ?? '—'}/10  ·  Mobilidade: ${e.mobility_level ?? '—'}/10`, M, y + 5);
+    doc.text(`Dor: ${e.pain_level ?? '—'}/10  ·  Mobilidade: ${e.mobility_level ?? '—'}/10`, 210 - M - 2, y + 4, { align: 'right' });
+    
+    y += 10;
     doc.setTextColor(15, 23, 42);
+    doc.setFont('helvetica', 'normal');
     if (e.notes) {
-      const lines = doc.splitTextToSize(e.notes, 210 - 2 * M);
-      doc.text(lines, M, y + 11);
-      y += 11 + lines.length * 4.5 + 4;
+      const lines = doc.splitTextToSize(e.notes, 210 - 2 * M - 4);
+      doc.text(lines, M + 2, y);
+      y += lines.length * 5 + 6;
     } else {
-      y += 13;
+      doc.setFont('helvetica', 'italic');
+      doc.text('Sem anotações nesta sessão.', M + 2, y);
+      y += 10;
     }
+    
     doc.setDrawColor(226, 232, 240);
-    doc.line(M, y - 2, 210 - M, y - 2);
+    doc.line(M, y - 4, 210 - M, y - 4);
   }
 
   footer(doc);

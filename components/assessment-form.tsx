@@ -102,7 +102,14 @@ export function AssessmentForm({ patientId, specialtyId, patient, initialData, i
 function FieldRenderer({ f, value, onChange }: { f: Field; value: any; onChange: (v: any) => void }) {
   const wrap = (children: React.ReactNode) => (
     <div className={f.type === 'textarea' || f.type === 'checkbox-group' ? 'md:col-span-2' : ''}>
-      <label className="label">{f.label}</label>
+      <div className="mb-1 flex items-center justify-between">
+        <label className="label mb-0">{f.label}</label>
+        {f.category && (
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+            {f.category}
+          </span>
+        )}
+      </div>
       {children}
       {f.help && <p className="mt-1 text-xs text-slate-500">{f.help}</p>}
     </div>
@@ -137,6 +144,54 @@ function FieldRenderer({ f, value, onChange }: { f: Field; value: any; onChange:
           <input type="range" min={f.min ?? 0} max={f.max ?? 10} value={v}
             onChange={(e) => onChange(Number(e.target.value))}
             className="w-full accent-brand-600" />
+        </div>
+      );
+    }
+    case 'dynamic-scale': {
+      const scales = f.scales || [];
+      const currentScaleName = typeof value === 'object' ? value?.scale : (scales[0]?.name || '');
+      const currentValue = typeof value === 'object' ? value?.value : (scales[0]?.min || 0);
+      const currentScale = scales.find(s => s.name === currentScaleName) || scales[0];
+
+      if (!currentScale) return wrap(<p className="text-xs text-slate-400">Nenhuma escala definida.</p>);
+
+      return wrap(
+        <div className="space-y-3 rounded-lg border border-slate-100 bg-slate-50/50 p-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-slate-500">Escala:</span>
+            <select 
+              className="flex-1 rounded border-slate-200 bg-white py-1 text-xs focus:ring-brand-500"
+              value={currentScaleName}
+              onChange={(e) => {
+                const nextScale = scales.find(s => s.name === e.target.value);
+                onChange({ scale: e.target.value, value: nextScale?.min || 0 });
+              }}
+            >
+              {scales.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <div className="mb-1 flex items-center justify-between text-xs text-slate-500">
+              <span>{currentScale.min}</span>
+              <b className="text-brand-700">{currentValue}</b>
+              <span>{currentScale.max}</span>
+            </div>
+            <input 
+              type="range" 
+              min={currentScale.min} 
+              max={currentScale.max} 
+              step={currentScale.step ?? 1}
+              value={currentValue}
+              onChange={(e) => onChange({ scale: currentScaleName, value: Number(e.target.value) })}
+              className="w-full accent-brand-600" 
+            />
+            {currentScale.labels && currentScale.labels[currentValue] && (
+              <p className="mt-1 text-center text-[10px] font-medium text-brand-600">
+                {currentScale.labels[currentValue]}
+              </p>
+            )}
+          </div>
         </div>
       );
     }

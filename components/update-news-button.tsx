@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { RefreshCw, Newspaper } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { RefreshCw } from 'lucide-react';
 
 export function UpdateNewsButton() {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleUpdate() {
     if (!confirm('Deseja acionar a IA para buscar novas notícias de Fisioterapia? Isso pode levar alguns segundos.')) {
@@ -17,7 +19,8 @@ export function UpdateNewsButton() {
       const data = await res.json();
       
       if (res.ok) {
-        alert('Notícias atualizadas com sucesso!');
+        alert(`Notícias atualizadas com sucesso! (${data.count} itens encontrados)`);
+        router.refresh();
       } else {
         alert('Erro ao atualizar: ' + (data.error || 'Erro desconhecido'));
       }

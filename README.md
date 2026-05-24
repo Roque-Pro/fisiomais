@@ -1,7 +1,7 @@
 # 🩺 Fisio+
 
 Aplicação para fisioterapeutas gerenciarem pacientes, fazerem avaliações por
-especialidade (Pilates, Hidroterapia, RPG, Ortopédica, Neurofuncional, Esportiva),
+especialidade (Pilates, Hidroterapia, RPG, Fisioterapia - Traumato / Ortopedia, Fisioterapia - Neurofuncional, Fisioterapia - Esportiva),
 acompanharem a evolução, gerarem relatórios em PDF e um cartão digital personalizado.
 
 ## ✨ Recursos

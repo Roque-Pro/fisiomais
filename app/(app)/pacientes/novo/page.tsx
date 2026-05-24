@@ -13,7 +13,8 @@ export default function NewPatientPage() {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     full_name: '', birthdate: '', gender: '', whatsapp: '', email: '',
-    address: '', occupation: '', chief_complaint: '', medical_history: '', medications: ''
+    address: '', occupation: '', chief_complaint: '', functional_objective: '', objective_assessment: '', 
+    medical_history: '', medications: ''
   });
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -74,6 +75,14 @@ export default function NewPatientPage() {
           <div className="md:col-span-2">
             <label className="label">Queixa principal</label>
             <textarea className="input min-h-[80px]" value={form.chief_complaint} onChange={set('chief_complaint')} />
+          </div>
+          <div className="md:col-span-2">
+            <label className="label">Objetivo funcional</label>
+            <textarea className="input min-h-[80px]" value={form.functional_objective} onChange={set('functional_objective')} />
+          </div>
+          <div className="md:col-span-2">
+            <label className="label">Avaliação objetiva</label>
+            <textarea className="input min-h-[80px]" value={form.objective_assessment} onChange={set('objective_assessment')} />
           </div>
           <div className="md:col-span-2">
             <label className="label">Histórico médico</label>
