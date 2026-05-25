@@ -34,12 +34,12 @@ export type Specialty = {
 
 // --- BANCO DE ESCALAS (Scale Bank) ---
 
-export const scaleBank = {
+export const scaleBank: Record<string, Field> = {
   pain: {
     key: 'pain_scale', 
     label: 'Escala de Dor', 
-    type: 'dynamic-scale' as FieldType,
-    category: 'Dor' as const,
+    type: 'dynamic-scale',
+    category: 'Dor',
     scales: [
       { name: 'EVA (0–10)', min: 0, max: 10, labels: { 0: 'Sem dor', 2: 'Leve', 5: 'Moderada', 8: 'Intensa', 10: 'Insuportável' } },
       { name: 'Escala Numérica (0-10)', min: 0, max: 10 },
@@ -49,8 +49,8 @@ export const scaleBank = {
   strength: {
     key: 'muscle_strength',
     label: 'Força Muscular (Oxford/MRC)',
-    type: 'dynamic-scale' as FieldType,
-    category: 'Força' as const,
+    type: 'dynamic-scale',
+    category: 'Força',
     scales: [
       { name: 'Escala 0–5', min: 0, max: 5, labels: { 0: 'Sem contração', 1: 'Esboço', 2: 'Sem gravidade', 3: 'Contra gravidade', 4: 'Resistência', 5: 'Normal' } }
     ]
@@ -58,8 +58,8 @@ export const scaleBank = {
   borg: {
     key: 'borg_scale',
     label: 'Escala de Borg (Esforço)',
-    type: 'dynamic-scale' as FieldType,
-    category: 'Resistência' as const,
+    type: 'dynamic-scale',
+    category: 'Resistência',
     scales: [
       { name: 'Borg Modificada (0–10)', min: 0, max: 10, labels: { 0: 'Repouso', 3: 'Moderado', 5: 'Forte', 10: 'Máximo' } },
       { name: 'Borg Tradicional (6–20)', min: 6, max: 20 }
@@ -68,15 +68,15 @@ export const scaleBank = {
   goniometry: {
     key: 'goniometry',
     label: 'Goniometria (ADM)',
-    type: 'textarea' as FieldType,
-    category: 'Mobilidade' as const,
+    type: 'textarea',
+    category: 'Mobilidade',
     placeholder: 'Registre as amplitudes (Ex: Ombro D, Flexão 160°)...'
   },
   balance: {
     key: 'balance_scale',
     label: 'Equilíbrio',
-    type: 'dynamic-scale' as FieldType,
-    category: 'Equilíbrio' as const,
+    type: 'dynamic-scale',
+    category: 'Equilíbrio',
     scales: [
       { name: 'Escala de Berg (0–56)', min: 0, max: 56 },
       { name: 'TUG (segundos)', min: 0, max: 60 }
@@ -85,8 +85,8 @@ export const scaleBank = {
   functionalOrtho: {
     key: 'ortho_functional',
     label: 'Escalas Funcionais Ortopédicas',
-    type: 'dynamic-scale' as FieldType,
-    category: 'Funcionalidade' as const,
+    type: 'dynamic-scale',
+    category: 'Funcionalidade',
     scales: [
       { name: 'Lysholm (Joelho)', min: 0, max: 100 },
       { name: 'IKDC (Joelho)', min: 0, max: 100 },
@@ -101,8 +101,8 @@ export const scaleBank = {
   functionalNeuro: {
     key: 'neuro_functional',
     label: 'Escalas de Funcionalidade Neurológica',
-    type: 'dynamic-scale' as FieldType,
-    category: 'Funcionalidade' as const,
+    type: 'dynamic-scale',
+    category: 'Funcionalidade',
     scales: [
       { name: 'Índice de Barthel (AVDs)', min: 0, max: 100 },
       { name: 'MIF (18–126)', min: 18, max: 126 },
