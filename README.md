@@ -1,4 +1,4 @@
-# 🩺 FisioSystem
+# 🩺 Fisio+
 
 Aplicação para fisioterapeutas gerenciarem pacientes, fazerem avaliações por
 especialidade (Pilates, Hidroterapia, RPG, Fisioterapia - Traumato / Ortopedia, Fisioterapia - Neurofuncional, Fisioterapia - Esportiva),

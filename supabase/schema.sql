@@ -1,5 +1,5 @@
 -- =============================================================================
--- FisioSystem - Esquema do banco de dados (Supabase / Postgres)
+-- Fisio+ - Esquema do banco de dados (Supabase / Postgres)
 -- Execute este arquivo no SQL Editor do Supabase.
 -- =============================================================================
 

@@ -17,7 +17,7 @@ export default function DocumentacaoPage() {
             <iframe 
               className="w-full h-full"
               src="https://www.youtube.com/embed/AEXNPRyg7SM" 
-              title="Tutorial FisioSystem"
+              title="Tutorial Fisio+"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
@@ -34,11 +34,11 @@ export default function DocumentacaoPage() {
       {/* Como Funciona */}
       <section className="space-y-4">
         <div className="flex items-center gap-2 text-lg font-bold text-brand-800">
-          <Info className="h-5 w-5" /> Como funciona o FisioSystem
+          <Info className="h-5 w-5" /> Como funciona o Fisio+
         </div>
         <div className="card space-y-4 text-slate-600 leading-relaxed">
           <p>
-            O FisioSystem foi desenvolvido para simplificar a rotina do fisioterapeuta, focando na agilidade do registro de avaliações e evoluções.
+            O Fisio+ foi desenvolvido para simplificar a rotina do fisioterapeuta, focando na agilidade do registro de avaliações e evoluções.
           </p>
           <ul className="list-disc list-inside space-y-2 ml-2">
             <li><strong>Gestão de Pacientes:</strong> Cadastre e organize sua lista de pacientes de forma centralizada.</li>
@@ -56,7 +56,7 @@ export default function DocumentacaoPage() {
         </div>
         <div className="card space-y-4 text-slate-600 leading-relaxed">
           <p>
-            No FisioSystem, acreditamos que a saúde deve ser inclusiva e respeitosa. Para o atendimento à comunidade LGBT+, recomendamos as seguintes práticas dentro da plataforma:
+            No Fisio+, acreditamos que a saúde deve ser inclusiva e respeitosa. Para o atendimento à comunidade LGBT+, recomendamos as seguintes práticas dentro da plataforma:
           </p>
           <div className="bg-brand-50 p-4 rounded-xl border border-brand-100">
             <h4 className="font-bold text-brand-900 mb-2">Nome Social vs. Nome Civil</h4>
@@ -77,7 +77,7 @@ export default function DocumentacaoPage() {
         </div>
         <div className="card space-y-4 text-slate-600 leading-relaxed text-sm">
           <p>
-            O FisioSystem está em conformidade com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018)</strong>. Como profissional de saúde, você é o <em>Controlador</em> dos dados de seus pacientes, e o FisioSystem atua como o <em>Operador</em>.
+            O Fisio+ está em conformidade com a <strong>Lei Geral de Proteção de Dados (Lei nº 13.709/2018)</strong>. Como profissional de saúde, você é o <em>Controlador</em> dos dados de seus pacientes, e o Fisio+ atua como o <em>Operador</em>.
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50">

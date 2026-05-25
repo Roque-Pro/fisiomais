@@ -59,7 +59,7 @@ function header(doc: jsPDF, title: string, subtitle?: string) {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(16);
-  doc.text('FisioSystem', M + 18, 15);
+  doc.text('Fisio+', M + 18, 15);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(11);
   doc.text(title, 210 - M, 15, { align: 'right' });
@@ -76,7 +76,7 @@ function footer(doc: jsPDF) {
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setTextColor(120);
-    doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')} · FisioSystem`, M, 290);
+    doc.text(`Gerado em ${new Date().toLocaleString('pt-BR')} · Fisio+`, M, 290);
     doc.text(`Página ${i}/${total}`, 210 - M, 290, { align: 'right' });
     doc.setTextColor(15, 23, 42);
   }
@@ -476,7 +476,7 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
 
   doc.setFontSize(5);
   doc.setTextColor(emerald500);
-  doc.text('FisioSystem', 82, 53, { align: 'center' });
+  doc.text('Fisio+', 82, 53, { align: 'center' });
 
   doc.save(`cartao-${(profile.full_name ?? 'fisio').replace(/\s+/g, '-').toLowerCase()}.pdf`);
 }

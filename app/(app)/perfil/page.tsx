@@ -138,7 +138,7 @@ export default function ProfilePage() {
       return;
     }
     const cleanPhone = sharePhone.replace(/\D/g, '');
-    const msg = encodeURIComponent(`Olá! Aqui está meu cartão digital profissional da FisioSystem.`);
+    const msg = encodeURIComponent(`Olá! Aqui está meu cartão digital profissional da Fisio+.`);
     window.open(`https://wa.me/55${cleanPhone}?text=${msg}`, '_blank');
     downloadDigitalCardPdf(profile);
   }

@@ -1,4 +1,52 @@
-Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
-rkftquacnjasdphjjnul.supabase.co/rest/v1/news?select=*&order=published_at.desc&limit=20:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
-rkftquacnjasdphjjnul.supabase.co/rest/v1/news?select=*&order=published_at.desc&limit=20:1  Failed to load resource: the server responded with a status of 404 ()Understand this error
-index.mjs:377  GET https://rkftquacnjasdphjjnul.supabase.co/rest/v1/news?select=*&order=published_at.desc&limit=20 404 (Not Found)
+12:32:00.529 Running build in Washington, D.C., USA (East) – iad1
+12:32:00.530 Build machine configuration: 2 cores, 8 GB
+12:32:00.648 Cloning github.com/Roque-Pro/fisiomais (Branch: main, Commit: 611dd2e)
+12:32:00.937 Cloning completed: 289.000ms
+12:32:01.577 Restored build cache from previous deployment (5W8qVbuTQr7vLG6PR4mmMuknAMKJ)
+12:32:01.780 Running "vercel build"
+12:32:01.799 Vercel CLI 54.4.1
+12:32:01.999 Installing dependencies...
+12:32:04.549 
+12:32:04.550 added 39 packages in 2s
+12:32:04.550 
+12:32:04.550 157 packages are looking for funding
+12:32:04.550   run `npm fund` for details
+12:32:04.587 Detected Next.js version: 14.2.15
+12:32:04.592 Running "npm run build"
+12:32:04.712 
+12:32:04.713 > fisioflow@0.1.0 build
+12:32:04.713 > next build
+12:32:04.713 
+12:32:05.782   ▲ Next.js 14.2.15
+12:32:05.783 
+12:32:05.800    Creating an optimized production build ...
+12:32:16.974 <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (101kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+12:32:16.976 <w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (231kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+12:32:28.612  ✓ Compiled successfully
+12:32:28.613    Linting and checking validity of types ...
+12:32:34.077 Failed to compile.
+12:32:34.078 
+12:32:34.079 ./lib/specialties.ts:138:7
+12:32:34.079 Type error: Type 'Section | { title: string; fields: ({ key: string; label: string; type: FieldType; category: "Dor"; scales: ({ name: string; min: number; max: number; labels: { 0: string; 2: string; 5: string; 8: string; 10: string; }; } | { ...; } | { ...; })[]; } | { ...; } | { ...; } | { ...; } | { ...; })[]; } | { ...; } | { .....' is not assignable to type 'Section'.
+12:32:34.080   Type '{ title: string; fields: ({ key: string; label: string; type: FieldType; category: "Dor"; scales: ({ name: string; min: number; max: number; labels: { 0: string; 2: string; 5: string; 8: string; 10: string; }; } | { ...; } | { ...; })[]; } | { ...; } | { ...; } | { ...; } | { ...; })[]; }' is not assignable to type 'Section'.
+12:32:34.080     Types of property 'fields' are incompatible.
+12:32:34.081       Type '({ key: string; label: string; type: FieldType; category: "Dor"; scales: ({ name: string; min: number; max: number; labels: { 0: string; 2: string; 5: string; 8: string; 10: string; }; } | { name: string; min: number; max: number; labels?: undefined; } | { ...; })[]; } | { ...; } | { ...; } | { ...; } | { ...; })[]' is not assignable to type 'Field[]'.
+12:32:34.081         Type '{ key: string; label: string; type: FieldType; category: "Dor"; scales: ({ name: string; min: number; max: number; labels: { 0: string; 2: string; 5: string; 8: string; 10: string; }; } | { name: string; min: number; max: number; labels?: undefined; } | { ...; })[]; } | { ...; } | { ...; } | { ...; } | { ...; }' is not assignable to type 'Field'.
+12:32:34.082           Type '{ key: string; label: string; type: FieldType; category: "Dor"; scales: ({ name: string; min: number; max: number; labels: { 0: string; 2: string; 5: string; 8: string; 10: string; }; } | { name: string; min: number; max: number; labels?: undefined; } | { ...; })[]; }' is not assignable to type 'Field'.
+12:32:34.082             Types of property 'scales' are incompatible.
+12:32:34.082               Type '({ name: string; min: number; max: number; labels: { 0: string; 2: string; 5: string; 8: string; 10: string; }; } | { name: string; min: number; max: number; labels?: undefined; } | { name: string; min: number; max: number; labels: { ...; }; })[]' is not assignable to type 'AssessmentScale[]'.
+12:32:34.083                 Type '{ name: string; min: number; max: number; labels: { 0: string; 2: string; 5: string; 8: string; 10: string; }; } | { name: string; min: number; max: number; labels?: undefined; } | { name: string; min: number; max: number; labels: { ...; }; }' is not assignable to type 'AssessmentScale'.
+12:32:34.083                   Type '{ name: string; min: number; max: number; labels: { 0: string; 5: string; 2?: undefined; 8?: undefined; 10?: undefined; }; }' is not assignable to type 'AssessmentScale'.
+12:32:34.084                     Types of property 'labels' are incompatible.
+12:32:34.084                       Type '{ 0: string; 5: string; 2?: undefined; 8?: undefined; 10?: undefined; }' is not assignable to type 'Record<number, string>'.
+12:32:34.085                         Property '2' is incompatible with index signature.
+12:32:34.085                           Type 'undefined' is not assignable to type 'string'.
+12:32:34.086 
+12:32:34.086   136 |     description: 'Foco em postura, core, flexibilidade e controle motor.',
+12:32:34.086   137 |     sections: [
+12:32:34.086 > 138 |       ...commonSections,
+12:32:34.086       |       ^
+12:32:34.088   139 |       clinicalHistorySection,
+12:32:34.088   140 |       {
+12:32:34.088   141 |         title: 'Exame Físico e Postural',
+12:32:34.153 Error: Command "npm run build" exited with 1

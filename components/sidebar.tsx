@@ -55,7 +55,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () =>
         {(!collapsed || isOpen) && (
           <div className="flex items-center gap-2">
             <img src="/logo.jpg" alt="Logo" className="h-9 w-9 rounded-xl object-cover shadow-soft" />
-            <span className="font-bold text-brand-900">FisioSystem</span>
+            <span className="font-bold text-brand-900">Fisio+</span>
           </div>
         )}
         {(collapsed && !isOpen) && (
@@ -167,7 +167,7 @@ export function MobileTopbar({ onOpenMenu }: { onOpenMenu?: () => void }) {
         <div className="flex items-center gap-2">
           <img src="/logo.jpg" alt="Logo" className="h-8 w-8 rounded-lg object-cover" />
           <div className="flex flex-col">
-            <span className="text-xs font-bold leading-none text-brand-900">FisioSystem</span>
+            <span className="text-xs font-bold leading-none text-brand-900">Fisio+</span>
             <span className="mt-0.5 text-[10px] font-medium text-slate-500">
               {name ? `Olá, ${name.split(' ')[0]}` : (
                 <Link href="/perfil" className="text-brand-600">Cadastrar nome</Link>

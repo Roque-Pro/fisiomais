@@ -17,9 +17,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'FisioSystem — Portal de Gestão Clínica',
+  title: 'Fisio Saúde — Sistema Fisio+',
   description:
-    'Sistema interno de gestão para fisioterapeutas. Cadastre pacientes, realize avaliações e acompanhe a evolução clínica com excelência.'
+    'Portal interno da Fisio Saúde para gestão clínica e atendimento de excelência aos nossos pacientes.'
 };
 
 export const viewport: Viewport = {

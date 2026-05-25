@@ -1,17 +1,16 @@
 import Link from 'next/link';
-import { Zap } from 'lucide-react';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-50 via-white to-sky-50">
-      <div className="mx-auto flex max-w-7xl items-center px-6 py-6">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white shadow-lg shadow-indigo-200 transition-transform hover:scale-105 active:scale-95">
-            <Zap className="h-6 w-6 fill-white/20" />
+    <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-100 via-white to-rose-50">
+      <div className="mx-auto flex max-w-7xl items-center px-6 py-8">
+        <Link href="/" className="flex items-center gap-4 group">
+          <div className="overflow-hidden rounded-2xl shadow-lg ring-4 ring-white transition-transform group-hover:scale-105 active:scale-95">
+            <img src="/logo.jpg" alt="Fisio Saúde" className="h-12 w-12 object-cover" />
           </div>
           <div>
-            <span className="block text-xl font-bold tracking-tight text-slate-900 leading-none transition-colors hover:text-indigo-600">FisioSystem</span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-500">Portal Interno</span>
+            <span className="block text-2xl font-black tracking-tight text-slate-900 leading-none group-hover:text-sky-600 transition-colors">Fisio Saúde</span>
+            <span className="mt-1 block text-xs font-bold uppercase tracking-[0.2em] text-sky-600">Sistema Fisio+</span>
           </div>
         </Link>
       </div>
