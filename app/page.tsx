@@ -16,9 +16,7 @@ export default function Home() {
       {/* Header / Nav */}
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-8">
         <div className="flex items-center gap-4">
-          <div className="overflow-hidden rounded-2xl shadow-lg ring-4 ring-white transition-transform hover:scale-105">
-            <img src="/logo.jpg" alt="Fisio Saúde" className="h-14 w-14 object-cover" />
-          </div>
+          <img src="/logo.jpg" alt="Logo" className="h-14 w-14 rounded-2xl object-cover shadow-soft" />
           <div>
             <span className="block text-2xl font-black tracking-tight text-slate-900 leading-none">Fisio Saúde</span>
             <span className="mt-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
@@ -118,7 +116,7 @@ export default function Home() {
       <footer className="border-t-4 border-white bg-white/30 py-12 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex items-center gap-3">
-            <img src="/logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl grayscale opacity-50" />
+            <img src="/logo.jpg" alt="Logo" className="h-10 w-10 rounded-xl object-cover" />
             <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">
               Fisio Saúde · Sistema Interno Fisio+
             </p>
