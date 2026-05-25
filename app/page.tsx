@@ -17,7 +17,7 @@ export default function Home() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-8">
         <div className="flex items-center gap-4">
           <div className="overflow-hidden rounded-2xl shadow-lg ring-4 ring-white transition-transform hover:scale-105">
-            <img src="/logo.jpg" alt="Fisio Saúde" className="h-12 w-12 object-cover" />
+            <img src="/logo.jpg" alt="Fisio Saúde" className="h-14 w-14 object-cover" />
           </div>
           <div>
             <span className="block text-2xl font-black tracking-tight text-slate-900 leading-none">Fisio Saúde</span>
@@ -35,10 +35,6 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="mx-auto max-w-7xl px-6 pt-16 pb-24 text-center">
-        <div className="mx-auto mb-8 inline-flex items-center gap-2 rounded-full bg-rose-100 px-5 py-2 text-sm font-bold text-rose-600 ring-4 ring-rose-50">
-          <Smile className="h-4 w-4" /> Bem-vindo ao nosso espaço digital
-        </div>
-        
         <h1 className="text-balance text-5xl font-black leading-[1.1] tracking-tight text-slate-900 md:text-7xl">
           Tecnologia para um <br />
           <span className="bg-gradient-to-r from-sky-500 via-indigo-500 to-rose-500 bg-clip-text text-transparent">
