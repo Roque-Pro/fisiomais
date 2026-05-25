@@ -17,9 +17,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Fisio+ — Gestão para Fisioterapeutas',
+  title: 'FisioSystem — Portal de Gestão Clínica',
   description:
-    'Cadastre pacientes, faça avaliações por especialidade, acompanhe a evolução e gere relatórios em PDF.'
+    'Sistema interno de gestão para fisioterapeutas. Cadastre pacientes, realize avaliações e acompanhe a evolução clínica com excelência.'
 };
 
 export const viewport: Viewport = {
