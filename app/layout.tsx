@@ -40,10 +40,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${inter.variable} ${poppins.variable}`}>
       <head>
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Fisio+" />
+        {/* Adicionais que o Metadata do Next pode não cobrir perfeitamente ou que queremos reforçar */}
+        <meta name="theme-color" content="#0ea5e9" />
+        <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body>
         {children}
@@ -53,7 +52,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: `
               if ('serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js');
+                  navigator.serviceWorker.register('/sw.js').then(
+                    function(registration) {
+                      console.log('SW: Registrado com sucesso:', registration.scope);
+                    },
+                    function(err) {
+                      console.log('SW: Erro no registro:', err);
+                    }
+                  );
                 });
               }
             `,

@@ -8,7 +8,10 @@ export async function middleware(request: NextRequest) {
   if (
     url.pathname.startsWith('/_next') ||
     url.pathname.startsWith('/favicon.ico') ||
-    url.pathname.startsWith('/api/public')
+    url.pathname.startsWith('/api/public') ||
+    url.pathname.includes('.') || // Arquivos estáticos costumam ter ponto (manifest.json, sw.js, .svg, .png)
+    url.pathname.startsWith('/manifest.json') ||
+    url.pathname.startsWith('/sw.js')
   ) {
     return NextResponse.next();
   }

@@ -10,23 +10,34 @@ export function InstallPWA() {
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
 
   useEffect(() => {
+    // Detect if already installed
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+    setIsStandalone(isStandaloneMode);
+
     // Detect if is iOS
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
     setIsIOS(ios);
 
-    // Detect if already installed
-    const standalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
-    setIsStandalone(standalone);
-
     const handler = (e: any) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
+      // Stash the event so it can be triggered later.
       setDeferredPrompt(e);
-      console.log('beforeinstallprompt fired');
+      console.log('✅ PWA: beforeinstallprompt disparado');
     };
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    // Check if app is already installed via event
+    window.addEventListener('appinstalled', () => {
+      setIsStandalone(true);
+      setDeferredPrompt(null);
+      console.log('✅ PWA: Instalado com sucesso');
+    });
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+    };
   }, []);
 
   const handleInstallClick = async () => {
@@ -36,12 +47,19 @@ export function InstallPWA() {
     }
 
     if (!deferredPrompt) {
-      alert('Para instalar no Android: Clique nos 3 pontinhos do Chrome e selecione "Instalar aplicativo". Se a opção não aparecer, o navegador ainda está carregando as configurações do sistema.');
+      // Se ainda não temos o prompt, pode ser que o navegador ainda não validou o PWA
+      // ou o usuário já recusou recentemente.
+      alert('O instalador está sendo preparado. Se este botão não funcionar em instantes, você pode instalar manualmente clicando nos 3 pontos do navegador e selecionando "Instalar Aplicativo".');
       return;
     }
 
+    // Show the install prompt
     deferredPrompt.prompt();
+    
+    // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
+    console.log(`💻 PWA: Usuário ${outcome === 'accepted' ? 'aceitou' : 'recusou'} a instalação`);
+    
     if (outcome === 'accepted') {
       setDeferredPrompt(null);
     }
