@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   title: 'Fisio Saúde — Sistema Fisio+',
   description:
     'Portal interno da Fisio Saúde para gestão clínica e atendimento de excelência aos nossos pacientes.',
+  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
