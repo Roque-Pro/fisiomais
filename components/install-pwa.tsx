@@ -89,7 +89,7 @@ export function InstallPWA() {
               <p className="flex items-center gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center font-bold">3</span>
                 <span>Confirme clicando em <strong>Adicionar</strong> no canto superior.</span>
-              </button>
+              </p>
             </div>
 
             <button
