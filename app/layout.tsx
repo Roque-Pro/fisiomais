@@ -19,7 +19,15 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: 'Fisio Saúde — Sistema Fisio+',
   description:
-    'Portal interno da Fisio Saúde para gestão clínica e atendimento de excelência aos nossos pacientes.'
+    'Portal interno da Fisio Saúde para gestão clínica e atendimento de excelência aos nossos pacientes.',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Fisio+',
+  },
+  icons: {
+    apple: '/icon.svg',
+  },
 };
 
 export const viewport: Viewport = {
@@ -31,6 +39,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR" className={`${inter.variable} ${poppins.variable}`}>
       <body>
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
