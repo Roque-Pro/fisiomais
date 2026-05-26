@@ -7,6 +7,8 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // This is a minimal service worker to satisfy PWA requirements
-  // In a real app, you would implement caching strategies here
+  // A fetch handler is required for PWA installability
+  event.respondWith(fetch(event.request).catch(() => {
+    // Optional: return a fallback or just let it fail
+  }));
 });
