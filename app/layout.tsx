@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import { ThemeApplier } from '@/components/theme-applier';
+import { InstallPWA } from '@/components/install-pwa';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
+        <InstallPWA />
         <script
           dangerouslySetInnerHTML={{
             __html: `
