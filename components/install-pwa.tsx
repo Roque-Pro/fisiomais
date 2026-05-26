@@ -36,18 +36,21 @@ export function InstallPWA() {
     });
   };
 
-  if (!supportsPWA) {
+  // Forçando visibilidade para teste real
+  const isVisible = true; 
+
+  if (!isVisible) {
     return null;
   }
 
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-4 right-4 z-[100] flex items-center gap-2 bg-sky-600 text-white px-4 py-3 rounded-full shadow-lg hover:bg-sky-700 transition-all md:hidden"
+      className="fixed bottom-20 right-4 z-[9999] flex items-center gap-2 bg-red-600 text-white px-6 py-4 rounded-full shadow-2xl hover:bg-red-700 transition-all border-2 border-white"
       aria-label="Instalar Aplicativo"
     >
       <Download className="w-5 h-5" />
-      <span className="font-medium text-sm">Instalar App</span>
+      <span className="font-bold text-lg">TESTE: INSTALAR APP v2</span>
     </button>
   );
 }
