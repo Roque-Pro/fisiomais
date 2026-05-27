@@ -18,20 +18,19 @@ export async function POST() {
   
   try {
     let newsItems: any[] = [];
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
-    // 1. RSS Search - Query Ultra-Focada em Fisioterapia mas Ampla em Temas
+    // 1. RSS Search - Busca mais ampla
     const physioNiches = [
-      'fisioterapia ortopédica', 'fisioterapia esportiva', 'fisioterapia neurofuncional', 
-      'fisioterapia pélvica', 'fisioterapia respiratória', 'fisioterapia dermatofuncional',
-      'COFFITO', 'CREFITO', 'concurso fisioterapia', 'fisioterapia terapia manual',
-      'fisioterapia gerontologia', 'fisioterapia osteopatia', 'fisioterapia quiropraxia'
+      'fisioterapia', 'fisioterapeuta', 'reabilitação física',
+      'COFFITO', 'CREFITO', 'concurso fisioterapia',
+      'osteopatia', 'quiropraxia', 'pilates'
     ];
     
-    // Sorteia 3 nichos para garantir variedade a cada clique
-    const selectedNiches = [...physioNiches].sort(() => 0.5 - Math.random()).slice(0, 3);
-    const searchQuery = `("${selectedNiches.join('" OR "')}") when:7d`;
+    // Sorteia 4 nichos para garantir variedade a cada clique
+    const selectedNiches = [...physioNiches].sort(() => 0.5 - Math.random()).slice(0, 4);
+    const searchQuery = `("${selectedNiches.join('" OR "')}") when:15d`;
     
     console.log(`Buscando RSS com foco em: ${selectedNiches.join(', ')}`);
     
@@ -50,12 +49,11 @@ export async function POST() {
             published_at: new Date(item.pubDate).toISOString()
           }))
           .filter((item: any) => {
-            const titleLower = item.title.toLowerCase();
-            const summaryLower = item.summary.toLowerCase();
+            const content = (item.title + item.summary).toLowerCase();
             // Filtro de segurança: precisa ter "fisioterapia", "fisioterapeuta", "fisio", "coffito" ou "crefito"
-            return (new Date(item.published_at) >= twoDaysAgo) && 
-                   (titleLower.includes('fisio') || titleLower.includes('crefito') || titleLower.includes('coffito') || 
-                    summaryLower.includes('fisio') || summaryLower.includes('crefito'));
+            return (new Date(item.published_at) >= threeDaysAgo) && 
+                   (content.includes('fisio') || content.includes('crefito') || content.includes('coffito') || 
+                    content.includes('reabilitaç') || content.includes('fisioterap'));
           });
         
         newsItems = [...newsItems, ...filteredRss];
@@ -67,21 +65,21 @@ export async function POST() {
     // 2. Gemini - Prompt Especialista em Fisioterapia
     if (apiKey) {
       console.log('Solicitando curadoria técnica ao Gemini...');
-      const prompt = `Aja como o Editor-Chefe do "Fisio News". Sua missão é fornecer 10 notícias EXCLUSIVAMENTE sobre Fisioterapia ocorridas no Brasil nos últimos 2 dias.
+      const prompt = `Aja como o Editor-Chefe do "Fisio News". Sua missão é fornecer 15 notícias EXCLUSIVAMENTE sobre Fisioterapia e o mercado de reabilitação no Brasil.
 
       O QUE BUSCAR (Seja Amplo):
-      - Decisões e resoluções do COFFITO e CREFITOs.
-      - Novos concursos públicos para fisioterapeutas.
-      - Avanços em pesquisas científicas (pubmed, scielo) aplicados à fisioterapia.
-      - Lançamento de tecnologias, softwares ou equipamentos para clínicas de fisio.
-      - Eventos, congressos e cursos de especialização de destaque.
-      - Notícias de fisioterapia esportiva (lesões de atletas famosos, etc).
+      - Decisões, resoluções e comunicados do COFFITO e CREFITOs.
+      - Novos concursos públicos e oportunidades para fisioterapeutas.
+      - Avanços em pesquisas científicas e práticas clínicas.
+      - Tecnologias, softwares e inovações para clínicas.
+      - Eventos, congressos e cursos.
+      - Fisioterapia esportiva e atuação em casos de destaque.
 
       REGRAS CRÍTICAS:
-      1. PROIBIDO qualquer notícia que não mencione fisioterapia ou o conselho de classe.
-      2. PROIBIDO notícias genéricas de "saúde" ou "medicina" que não tenham o fisioterapeuta como protagonista.
-      3. Verifique a veracidade. Use fontes como portais de conselhos, sites de notícias e blogs especializados.
-      4. O campo "published_at" deve ser entre ontem e hoje.
+      1. As notícias devem ser preferencialmente dos últimos 3 dias.
+      2. Foque em relevância para o profissional de fisioterapia.
+      3. Verifique a veracidade.
+      4. O campo "published_at" deve ser uma data válida recente.
       5. RETORNE APENAS O ARRAY JSON PURO.
 
       Formato: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}]`;
@@ -103,15 +101,11 @@ export async function POST() {
             const parsed = JSON.parse(cleanJson);
             if (Array.isArray(parsed)) {
               const validatedAi = parsed
-                .filter(it => {
-                  const content = (it.title + it.summary).toLowerCase();
-                  return content.includes('fisio') || content.includes('crefito') || content.includes('coffito');
-                })
                 .map(it => ({
                   ...it,
                   published_at: it.published_at || new Date().toISOString()
                 }))
-                .filter(it => new Date(it.published_at) >= twoDaysAgo);
+                .filter(it => new Date(it.published_at) >= threeDaysAgo);
               
               newsItems = [...newsItems, ...validatedAi];
             }
@@ -125,7 +119,7 @@ export async function POST() {
     // Processamento Final
     const uniqueNews = Array.from(new Map(newsItems.map(item => [item.url, item])).values())
       .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
-      .slice(0, 15);
+      .slice(0, 20);
 
     if (uniqueNews.length > 0) {
       const { error: dbError } = await supabase
