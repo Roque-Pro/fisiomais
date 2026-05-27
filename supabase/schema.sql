@@ -28,7 +28,7 @@ create table if not exists public.profiles (
     "buttonStyle": "solid"
   }'::jsonb,
   trial_started_at timestamptz not null default now(),
-  plan_status text not null default 'trial', -- trial | active | expired | canceled
+  plan_status text not null default 'active', -- trial | active | expired | canceled
   referral_code text unique default substr(md5(random()::text), 0, 8),
   referred_by uuid references public.profiles(id) on delete set null,
   role text not null default 'user', -- user | admin

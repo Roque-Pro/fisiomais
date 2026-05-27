@@ -46,7 +46,7 @@ export function UserAuthToggle({ profileId, currentStatus }: { profileId: string
       ) : (
         <ShieldAlert className="h-3.5 w-3.5" />
       )}
-      {isAuthorized ? 'Autorizado' : 'Autorizar'}
+      {isAuthorized ? 'Bloquear' : 'Desbloquear'}
     </button>
   );
 }

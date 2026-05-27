@@ -29,9 +29,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="mb-6 grid h-20 w-20 place-items-center rounded-2xl bg-white shadow-soft text-brand-600">
           <Clock className="h-10 w-10 animate-pulse" />
         </div>
-        <h1 className="text-2xl font-bold text-brand-900">Aguardando Autorização</h1>
+        <h1 className="text-2xl font-bold text-brand-900">Acesso Restrito</h1>
         <p className="mt-2 max-w-sm text-slate-600">
-          Seu cadastro foi realizado com sucesso! Um administrador irá revisar seu acesso em breve.
+          Sua conta está aguardando revisão ou foi suspensa temporariamente.
         </p>
         <button 
           onClick={() => supabase.auth.signOut().then(() => window.location.href = '/login')}

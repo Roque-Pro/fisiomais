@@ -78,6 +78,7 @@ export default async function AdminPage() {
             <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-6 py-3">Profissional</th>
+                <th className="px-6 py-3 text-center">Dias</th>
                 <th className="px-6 py-3">Métricas</th>
                 <th className="px-6 py-3">Autorização</th>
                 <th className="px-6 py-3 text-right">Ação</th>
@@ -86,6 +87,8 @@ export default async function AdminPage() {
             <tbody className="divide-y divide-slate-100">
               {statsList.map((p) => {
                 const isAuthorized = p.plan_status === 'active';
+                const daysSinceJoin = Math.floor((new Date().getTime() - new Date(p.created_at).getTime()) / (1000 * 60 * 60 * 24));
+                
                 return (
                   <tr key={p.id} className="hover:bg-brand-50/30 transition-colors">
                     <td className="px-6 py-4">
@@ -96,6 +99,12 @@ export default async function AdminPage() {
                           <div className="text-xs text-slate-500">{p.email}</div>
                           <div className="text-[10px] text-slate-400 mt-1 uppercase tracking-tighter font-bold">CREFITO {p.crefito || '—'}</div>
                         </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="inline-flex flex-col items-center justify-center h-10 w-10 rounded-full bg-slate-50 border border-slate-100">
+                        <span className="text-xs font-bold text-brand-700">{daysSinceJoin}</span>
+                        <span className="text-[8px] text-slate-400 uppercase font-black">dias</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -121,7 +130,7 @@ export default async function AdminPage() {
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-2.5 py-0.5 text-[10px] font-bold text-rose-700 border border-rose-200 uppercase">
-                          Pendente
+                          Bloqueado
                         </span>
                       )}
                     </td>
