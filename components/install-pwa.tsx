@@ -8,11 +8,16 @@ export function InstallPWA() {
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     // Detect if already installed
     const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true;
     setIsStandalone(isStandaloneMode);
+
+    // Check localStorage for dismissal
+    const dismissed = localStorage.getItem('pwa-prompt-dismissed');
+    if (dismissed === 'true') setIsDismissed(true);
 
     // Detect if is iOS
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -65,17 +70,29 @@ export function InstallPWA() {
     }
   };
 
-  if (isStandalone) return null;
+  if (isStandalone || isDismissed) return null;
 
   return (
     <>
-      <button
-        onClick={handleInstallClick}
-        className="fixed bottom-6 right-6 z-[9999] flex items-center gap-2 bg-sky-600 text-white px-5 py-3 rounded-full shadow-2xl hover:bg-sky-700 transition-all border-2 border-white animate-bounce"
-      >
-        <Download className="w-5 h-5" />
-        <span className="font-bold">Baixar App Fisio+</span>
-      </button>
+      <div className="fixed bottom-6 right-6 z-[9999] flex items-center md:hidden">
+        <button
+          onClick={handleInstallClick}
+          className="flex items-center gap-2 bg-sky-600 text-white px-5 py-3 rounded-full shadow-2xl hover:bg-sky-700 transition-all border-2 border-white"
+        >
+          <Download className="w-5 h-5" />
+          <span className="font-bold text-sm">Baixar App Fisio+</span>
+        </button>
+        <button
+          onClick={() => {
+            setIsDismissed(true);
+            localStorage.setItem('pwa-prompt-dismissed', 'true');
+          }}
+          className="ml-[-12px] bg-rose-500 text-white p-1 rounded-full border-2 border-white shadow-lg hover:bg-rose-600 transition-colors"
+          title="Fechar"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
 
       {showIOSInstructions && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
