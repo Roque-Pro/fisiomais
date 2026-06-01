@@ -44,7 +44,7 @@ export const scaleBank: Record<string, Field> = {
       { name: 'EVA (0–10)', min: 0, max: 10, labels: { 0: 'Sem dor', 2: 'Leve', 5: 'Moderada', 8: 'Intensa', 10: 'Insuportável' } },
       { name: 'Escala Numérica (0-10)', min: 0, max: 10 },
       { name: 'Faces (0–5)', min: 0, max: 5, labels: { 0: 'Sem dor', 5: 'Máxima dor' } }
-    ]
+    ] as AssessmentScale[]
   },
   strength: {
     key: 'muscle_strength',
@@ -53,7 +53,7 @@ export const scaleBank: Record<string, Field> = {
     category: 'Força',
     scales: [
       { name: 'Escala 0–5', min: 0, max: 5, labels: { 0: 'Sem contração', 1: 'Esboço', 2: 'Sem gravidade', 3: 'Contra gravidade', 4: 'Resistência', 5: 'Normal' } }
-    ]
+    ] as AssessmentScale[]
   },
   borg: {
     key: 'borg_scale',
@@ -63,7 +63,7 @@ export const scaleBank: Record<string, Field> = {
     scales: [
       { name: 'Borg Modificada (0–10)', min: 0, max: 10, labels: { 0: 'Repouso', 3: 'Moderado', 5: 'Forte', 10: 'Máximo' } },
       { name: 'Borg Tradicional (6–20)', min: 6, max: 20 }
-    ]
+    ] as AssessmentScale[]
   },
   goniometry: {
     key: 'goniometry',
@@ -80,7 +80,7 @@ export const scaleBank: Record<string, Field> = {
     scales: [
       { name: 'Escala de Berg (0–56)', min: 0, max: 56 },
       { name: 'TUG (segundos)', min: 0, max: 60 }
-    ]
+    ] as AssessmentScale[]
   },
   functionalOrtho: {
     key: 'ortho_functional',
@@ -96,7 +96,7 @@ export const scaleBank: Record<string, Field> = {
       { name: 'Oswestry (Lombar)', min: 0, max: 50 },
       { name: 'Roland Morris (Lombar)', min: 0, max: 24 },
       { name: 'Harris Hip Score (Quadril)', min: 0, max: 100 }
-    ]
+    ] as AssessmentScale[]
   },
   functionalNeuro: {
     key: 'neuro_functional',
@@ -107,7 +107,7 @@ export const scaleBank: Record<string, Field> = {
       { name: 'Índice de Barthel (AVDs)', min: 0, max: 100 },
       { name: 'MIF (18–126)', min: 18, max: 126 },
       { name: 'Escala de Katz', min: 0, max: 6 }
-    ]
+    ] as AssessmentScale[]
   }
 };
 
