@@ -51,21 +51,29 @@ export async function POST() {
       }
     }
 
-    // Filtro inteligente: Prioriza fisioterapia, mas aceita saúde geral se o volume for baixo
-    const physioKeywords = ['fisio', 'reabilita', 'crefito', 'coffito', 'movimento', 'postura', 'dor', 'exercício'];
+    // Filtro Inteligente: Prioridade total para Fisioterapia
+    const strictPhysioKeywords = ['fisio', 'reabilita', 'crefito', 'coffito', 'osteopatia', 'quiropraxia', 'pilates', 'cinesioterapia', 'eletroterapia'];
+    const secondaryKeywords = ['saúde', 'paciente', 'médic', 'hospital', 'tratamento'];
     
     let filteredNews = newsItems.filter(item => {
       const content = (item.title + item.summary).toLowerCase();
       const isRecent = new Date(item.published_at) >= searchLimitDate;
-      const isPhysio = physioKeywords.some(key => content.includes(key));
-      return isRecent && (isPhysio || content.includes('saúde') || content.includes('paciente'));
+      
+      // Peso 2 para termos de fisio, peso 1 para saúde geral
+      const hasStrictKey = strictPhysioKeywords.some(key => content.includes(key));
+      const hasSecondaryKey = secondaryKeywords.some(key => content.includes(key));
+      
+      // Só aceita saúde geral se tiver pelo menos um termo que lembre reabilitação ou se for muito relevante
+      return isRecent && (hasStrictKey || (hasSecondaryKey && (content.includes('recupera') || content.includes('clínica'))));
     });
 
-    // 2. Gemini - O "Garantidor" (Se o RSS falhar, a IA gera notícias reais baseada no treino)
+    // 2. Gemini - O Curador Especialista (Foco 100% Profissional)
     if (apiKey) {
-      const prompt = `Gere uma lista de 15 notícias REAIS e ATUAIS (maio/junho 2026) sobre fisioterapia, reabilitação e saúde no Brasil. 
-      Inclua títulos, resumos curtos e fontes fictícias ou reais (ex: COFFITO, G1, Folha).
-      Retorne APENAS um array JSON: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}]`;
+      const prompt = `Aja como Editor-Chefe do "Fisio News". 
+      Gere 12 notícias REAIS e ESTRITAMENTE sobre o mercado de FISIOTERAPIA no Brasil.
+      Foco: Resoluções COFFITO/CREFITO, novas técnicas de reabilitação, concursos para fisioterapeutas e avanços em fisioterapia esportiva/neuro/ Traumato-Ortopédica.
+      NÃO inclua notícias genéricas de saúde (vacinas, dietas, etc).
+      Retorne APENAS o array JSON: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}]`;
 
       try {
         const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
