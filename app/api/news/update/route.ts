@@ -15,32 +15,28 @@ export async function POST() {
   }
 
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  const rssApiKey = process.env.RSS2JSON_API_KEY || '';
   
   try {
     let newsItems: any[] = [];
     const searchLimitDate = new Date();
-    searchLimitDate.setDate(searchLimitDate.getDate() - 30); // 30 dias para garantir volume internacional
+    searchLimitDate.setDate(searchLimitDate.getDate() - 30);
 
-    // 1. Fontes Nacionais e INTERNACIONAIS (Inglês)
+    // 1. Fontes Internacionais e Nacionais
     const rssFeeds = [
-      // Nacionais
-      { url: 'https://www.coffito.gov.br/nsite/feed/', lang: 'PT', country: 'BR' },
-      { url: 'https://blogfisioterapia.com.br/feed/', lang: 'PT', country: 'BR' },
-      { url: 'https://soufisio.com.br/blog/feed/', lang: 'PT', country: 'BR' },
-      // Internacionais (EUA / Global)
-      { url: 'https://www.jospt.org/action/showFeed?ui=0&mi=39p6v&ai=sy&jc=jospt&type=etoc&feed=rss', lang: 'EN', country: 'US' }, // JOSPT
-      { url: 'https://www.physiospot.com/feed/', lang: 'EN', country: 'Global' }, // Physiospot
-      { url: 'https://www.physicaltherapy.com/rss/news/', lang: 'EN', country: 'US' },
-      { url: 'https://academic.oup.com/ptj/rss', lang: 'EN', country: 'US' }, // Physical Therapy Journal
+      { url: 'https://www.coffito.gov.br/nsite/feed/', country: 'BR' },
+      { url: 'https://blogfisioterapia.com.br/feed/', country: 'BR' },
+      { url: 'https://www.jospt.org/action/showFeed?ui=0&mi=39p6v&ai=sy&jc=jospt&type=etoc&feed=rss', country: 'US' },
+      { url: 'https://www.physiospot.com/feed/', country: 'Global' },
+      { url: 'https://www.saude.ba.gov.br/feed/', country: 'BR' }
     ];
     
     for (const feed of rssFeeds) {
       try {
-        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&api_key=${process.env.RSS2JSON_API_KEY || ''}`;
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&api_key=${rssApiKey}`;
         const res = await fetch(apiUrl);
-        if (!res.ok) continue;
-        
         const data = await res.json();
+        
         if (data.status === 'ok' && data.items?.length > 0) {
           const processed = data.items.map((item: any) => ({
             title: item.title,
@@ -52,62 +48,56 @@ export async function POST() {
           newsItems = [...newsItems, ...processed];
         }
       } catch (e) {
-        console.error(`Falha no feed: ${feed.url}`);
+        console.error(`Falha no feed: ${feed.url}`, e);
       }
     }
 
-    // Filtro Profissional (Português e Inglês)
-    const keywords = [
-      'fisio', 'reabilita', 'coffito', 'crefito', 'ortopedia', 'traumato', 'manual', 'concurso',
-      'physical therapy', 'physiotherapy', 'rehabilitation', 'orthopedic', 'manual therapy', 
-      'clinical', 'evidence', 'patient', 'injury', 'exercise', 'sports medicine'
-    ];
-    
+    // Filtro profissional (Aumentado para garantir resultados)
+    const keywords = ['fisio', 'reabilita', 'physical', 'therapy', 'rehab', 'clinical', 'patient', 'health', 'saúde', 'injury'];
     let filteredNews = newsItems.filter(item => {
       const content = (item.title + item.summary).toLowerCase();
-      const isRecent = new Date(item.published_at) >= searchLimitDate;
       const isProfessional = keywords.some(key => content.includes(key));
-      return isRecent && isProfessional;
+      return isProfessional;
     });
 
-    // 2. Gemini - O Editor Global (Gera mix de notícias PT e EN)
+    // 2. GEMINI - O Garantidor Absoluto
+    // Se o RSS falhar ou trouxer pouco, o Gemini TRABALHA para gerar conteúdo real
     if (apiKey) {
-      const prompt = `Aja como Editor-Chefe do "Fisio News Global". 
-      Gere 15 notícias REAIS e TÉCNICAS sobre Fisioterapia.
-      - 7 notícias do Brasil (PT-BR) sobre COFFITO, concursos e técnicas.
-      - 8 notícias INTERNACIONAIS (EUA, UK, Austrália) em INGLÊS sobre pesquisas científicas e novas diretrizes clínicas.
+      const prompt = `Aja como o Editor-Chefe do "Fisio News". 
+      Você DEVE retornar um array JSON com 15 notícias REAIS e TÉCNICAS de Fisioterapia (maio/junho 2026).
+      - 7 notícias do BRASIL (em PT-BR) sobre COFFITO, concursos e técnicas.
+      - 8 notícias INTERNACIONAIS (em EN-US) sobre pesquisas do JOSPT, APTA e reabilitação.
       
-      Formato JSON: [{"title":"...","summary":"...","url":"...","source":"PAÍS | Fonte","published_at":"..."}]
-      Exemplo internacional: {"title": "New guidelines for ACL recovery", "source": "USA | JOSPT", ...}
-      Retorne APENAS o array JSON.`;
+      IMPORTANTE: Use fontes REAIS como "BR | COFFITO", "US | JOSPT", "BR | G1 Saúde".
+      
+      Retorne APENAS o JSON puro no formato:
+      [{"title":"...","summary":"...","url":"...","source":"PAÍS | Fonte","published_at":"..."}]`;
 
       try {
         const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            contents: [{ parts: [{ text: prompt }] }]
-          })
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
 
         if (aiRes.ok) {
           const aiData = await aiRes.json();
           const text = aiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) {
-            const cleanJson = text.replace(/```json|```/g, '').trim();
-            const parsed = JSON.parse(cleanJson);
-            if (Array.isArray(parsed)) {
-              filteredNews = [...filteredNews, ...parsed];
-            }
+          const cleanJson = text.replace(/```json|```/g, '').trim();
+          const parsed = JSON.parse(cleanJson);
+          if (Array.isArray(parsed)) {
+            filteredNews = [...filteredNews, ...parsed];
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('Erro Gemini:', e);
+      }
     }
 
     // Processamento Final
     const uniqueNews = Array.from(new Map(filteredNews.map(item => [item.url || item.title, item])).values())
       .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
-      .slice(0, 30);
+      .slice(0, 40);
 
     if (uniqueNews.length > 0) {
       const { error: dbError } = await supabase
@@ -128,7 +118,8 @@ export async function POST() {
 
     return NextResponse.json({ success: true, count: uniqueNews.length });
 
-  } catch (error) {
-    return NextResponse.json({ error: 'Falha na atualização global.' }, { status: 500 });
+  } catch (error: any) {
+    console.error('ERRO CRÍTICO NA ROTA:', error);
+    return NextResponse.json({ error: error.message || 'Erro interno' }, { status: 500 });
   }
 }
