@@ -19,21 +19,24 @@ export async function POST() {
   try {
     let newsItems: any[] = [];
     const searchLimitDate = new Date();
-    searchLimitDate.setDate(searchLimitDate.getDate() - 20); // 20 dias para garantir volume técnico
+    searchLimitDate.setDate(searchLimitDate.getDate() - 30); // 30 dias para garantir volume internacional
 
-    // 1. Fontes Específicas e Técnicas de Fisioterapia
+    // 1. Fontes Nacionais e INTERNACIONAIS (Inglês)
     const rssFeeds = [
-      'https://www.coffito.gov.br/nsite/feed/', // COFFITO Oficial
-      'https://blogfisioterapia.com.br/feed/', // Blog Fisioterapia (Técnico)
-      'https://soufisio.com.br/blog/feed/',    // SouFisio (Carreira/Técnico)
-      'https://interfisio.com.br/feed/',       // InterFISIO (Artigos)
-      'https://portaldafisioterapia.com.br/feed/',
-      'https://www.crefito4.org.br/site/index.php/noticias?format=feed&type=rss'
+      // Nacionais
+      { url: 'https://www.coffito.gov.br/nsite/feed/', lang: 'PT', country: 'BR' },
+      { url: 'https://blogfisioterapia.com.br/feed/', lang: 'PT', country: 'BR' },
+      { url: 'https://soufisio.com.br/blog/feed/', lang: 'PT', country: 'BR' },
+      // Internacionais (EUA / Global)
+      { url: 'https://www.jospt.org/action/showFeed?ui=0&mi=39p6v&ai=sy&jc=jospt&type=etoc&feed=rss', lang: 'EN', country: 'US' }, // JOSPT
+      { url: 'https://www.physiospot.com/feed/', lang: 'EN', country: 'Global' }, // Physiospot
+      { url: 'https://www.physicaltherapy.com/rss/news/', lang: 'EN', country: 'US' },
+      { url: 'https://academic.oup.com/ptj/rss', lang: 'EN', country: 'US' }, // Physical Therapy Journal
     ];
     
-    for (const feedUrl of rssFeeds) {
+    for (const feed of rssFeeds) {
       try {
-        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}&api_key=${process.env.RSS2JSON_API_KEY || ''}`;
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&api_key=${process.env.RSS2JSON_API_KEY || ''}`;
         const res = await fetch(apiUrl);
         if (!res.ok) continue;
         
@@ -43,47 +46,40 @@ export async function POST() {
             title: item.title,
             summary: item.description?.replace(/<[^>]*>?/gm, '').substring(0, 250) || '',
             url: item.link,
-            source: data.feed?.title || 'Fisio News',
+            source: `${feed.country} | ${data.feed?.title || 'Fisio News'}`,
             published_at: new Date(item.pubDate).toISOString()
           }));
           newsItems = [...newsItems, ...processed];
         }
       } catch (e) {
-        console.error(`Falha no feed técnico: ${feedUrl}`);
+        console.error(`Falha no feed: ${feed.url}`);
       }
     }
 
-    // Filtro Cirúrgico: Só aceita se for estritamente relacionado à profissão
-    const professionalKeywords = [
-      'fisioterapeuta', 'fisioterapia', 'coffito', 'crefito', 
-      'reabilitação', 'ortopedia', 'traumato', 'neurofuncional', 
-      'respiratória', 'manual', 'resolução', 'acórdão', 'concurso',
-      'cinesioterapia', 'eletroterapia', 'pilates', 'osteopatia',
-      'quiropraxia', 'dermato', 'saúde funcional'
+    // Filtro Profissional (Português e Inglês)
+    const keywords = [
+      'fisio', 'reabilita', 'coffito', 'crefito', 'ortopedia', 'traumato', 'manual', 'concurso',
+      'physical therapy', 'physiotherapy', 'rehabilitation', 'orthopedic', 'manual therapy', 
+      'clinical', 'evidence', 'patient', 'injury', 'exercise', 'sports medicine'
     ];
     
     let filteredNews = newsItems.filter(item => {
       const content = (item.title + item.summary).toLowerCase();
       const isRecent = new Date(item.published_at) >= searchLimitDate;
-      const isProfessional = professionalKeywords.some(key => content.includes(key));
-      
-      // Bloqueia notícias genéricas de saúde que não citam fisioterapia
+      const isProfessional = keywords.some(key => content.includes(key));
       return isRecent && isProfessional;
     });
 
-    // 2. Gemini - O Editor Técnico (Foco 100% em Prática Clínica e Conselho)
+    // 2. Gemini - O Editor Global (Gera mix de notícias PT e EN)
     if (apiKey) {
-      const prompt = `Aja como o Editor-Chefe do "Fisio News". 
-      Gere 12 notícias ESTRITAMENTE profissionais para Fisioterapeutas brasileiros.
-      TEMAS OBRIGATÓRIOS:
-      - Novas resoluções e decisões do COFFITO/CREFITOs.
-      - Editais de concursos e residências em Fisioterapia.
-      - Avanços em Terapia Manual, Dry Needling, Liberação Miofascial e Pilates.
-      - Tecnologias de avaliação (Termografia, Baropodometria, etc).
-      - Fisioterapia Esportiva de alto rendimento.
+      const prompt = `Aja como Editor-Chefe do "Fisio News Global". 
+      Gere 15 notícias REAIS e TÉCNICAS sobre Fisioterapia.
+      - 7 notícias do Brasil (PT-BR) sobre COFFITO, concursos e técnicas.
+      - 8 notícias INTERNACIONAIS (EUA, UK, Austrália) em INGLÊS sobre pesquisas científicas e novas diretrizes clínicas.
       
-      PROIBIDO: Notícias de saúde geral, vacinas, dietas, hospitais em geral ou medicina sem foco em reabilitação.
-      Retorne APENAS o array JSON: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}]`;
+      Formato JSON: [{"title":"...","summary":"...","url":"...","source":"PAÍS | Fonte","published_at":"..."}]
+      Exemplo internacional: {"title": "New guidelines for ACL recovery", "source": "USA | JOSPT", ...}
+      Retorne APENAS o array JSON.`;
 
       try {
         const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -108,10 +104,10 @@ export async function POST() {
       } catch (e) {}
     }
 
-    // Processamento Final (Remover duplicatas)
+    // Processamento Final
     const uniqueNews = Array.from(new Map(filteredNews.map(item => [item.url || item.title, item])).values())
       .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
-      .slice(0, 25);
+      .slice(0, 30);
 
     if (uniqueNews.length > 0) {
       const { error: dbError } = await supabase
@@ -133,6 +129,6 @@ export async function POST() {
     return NextResponse.json({ success: true, count: uniqueNews.length });
 
   } catch (error) {
-    return NextResponse.json({ error: 'Falha na atualização profissional.' }, { status: 500 });
+    return NextResponse.json({ error: 'Falha na atualização global.' }, { status: 500 });
   }
 }
