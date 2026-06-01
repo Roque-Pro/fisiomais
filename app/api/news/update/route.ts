@@ -19,12 +19,14 @@ export async function POST() {
   try {
     let newsItems: any[] = [];
     const searchLimitDate = new Date();
-    searchLimitDate.setDate(searchLimitDate.getDate() - 15); // Aumentado para 15 dias para máxima cobertura
+    searchLimitDate.setDate(searchLimitDate.getDate() - 20); // 20 dias para garantir volume técnico
 
-    // 1. Fontes RSS Diversificadas (Tratando falhas de 500 da API externa)
+    // 1. Fontes Específicas e Técnicas de Fisioterapia
     const rssFeeds = [
-      'https://g1.globo.com/dynamo/ciencia-e-saude/rss2.xml',
-      'https://www.saude.ba.gov.br/feed/',
+      'https://www.coffito.gov.br/nsite/feed/', // COFFITO Oficial
+      'https://blogfisioterapia.com.br/feed/', // Blog Fisioterapia (Técnico)
+      'https://soufisio.com.br/blog/feed/',    // SouFisio (Carreira/Técnico)
+      'https://interfisio.com.br/feed/',       // InterFISIO (Artigos)
       'https://portaldafisioterapia.com.br/feed/',
       'https://www.crefito4.org.br/site/index.php/noticias?format=feed&type=rss'
     ];
@@ -41,38 +43,46 @@ export async function POST() {
             title: item.title,
             summary: item.description?.replace(/<[^>]*>?/gm, '').substring(0, 250) || '',
             url: item.link,
-            source: data.feed?.title || 'Notícias Saúde',
+            source: data.feed?.title || 'Fisio News',
             published_at: new Date(item.pubDate).toISOString()
           }));
           newsItems = [...newsItems, ...processed];
         }
       } catch (e) {
-        console.error(`Falha no feed: ${feedUrl}`);
+        console.error(`Falha no feed técnico: ${feedUrl}`);
       }
     }
 
-    // Filtro Inteligente: Prioridade total para Fisioterapia
-    const strictPhysioKeywords = ['fisio', 'reabilita', 'crefito', 'coffito', 'osteopatia', 'quiropraxia', 'pilates', 'cinesioterapia', 'eletroterapia'];
-    const secondaryKeywords = ['saúde', 'paciente', 'médic', 'hospital', 'tratamento'];
+    // Filtro Cirúrgico: Só aceita se for estritamente relacionado à profissão
+    const professionalKeywords = [
+      'fisioterapeuta', 'fisioterapia', 'coffito', 'crefito', 
+      'reabilitação', 'ortopedia', 'traumato', 'neurofuncional', 
+      'respiratória', 'manual', 'resolução', 'acórdão', 'concurso',
+      'cinesioterapia', 'eletroterapia', 'pilates', 'osteopatia',
+      'quiropraxia', 'dermato', 'saúde funcional'
+    ];
     
     let filteredNews = newsItems.filter(item => {
       const content = (item.title + item.summary).toLowerCase();
       const isRecent = new Date(item.published_at) >= searchLimitDate;
+      const isProfessional = professionalKeywords.some(key => content.includes(key));
       
-      // Peso 2 para termos de fisio, peso 1 para saúde geral
-      const hasStrictKey = strictPhysioKeywords.some(key => content.includes(key));
-      const hasSecondaryKey = secondaryKeywords.some(key => content.includes(key));
-      
-      // Só aceita saúde geral se tiver pelo menos um termo que lembre reabilitação ou se for muito relevante
-      return isRecent && (hasStrictKey || (hasSecondaryKey && (content.includes('recupera') || content.includes('clínica'))));
+      // Bloqueia notícias genéricas de saúde que não citam fisioterapia
+      return isRecent && isProfessional;
     });
 
-    // 2. Gemini - O Curador Especialista (Foco 100% Profissional)
+    // 2. Gemini - O Editor Técnico (Foco 100% em Prática Clínica e Conselho)
     if (apiKey) {
-      const prompt = `Aja como Editor-Chefe do "Fisio News". 
-      Gere 12 notícias REAIS e ESTRITAMENTE sobre o mercado de FISIOTERAPIA no Brasil.
-      Foco: Resoluções COFFITO/CREFITO, novas técnicas de reabilitação, concursos para fisioterapeutas e avanços em fisioterapia esportiva/neuro/ Traumato-Ortopédica.
-      NÃO inclua notícias genéricas de saúde (vacinas, dietas, etc).
+      const prompt = `Aja como o Editor-Chefe do "Fisio News". 
+      Gere 12 notícias ESTRITAMENTE profissionais para Fisioterapeutas brasileiros.
+      TEMAS OBRIGATÓRIOS:
+      - Novas resoluções e decisões do COFFITO/CREFITOs.
+      - Editais de concursos e residências em Fisioterapia.
+      - Avanços em Terapia Manual, Dry Needling, Liberação Miofascial e Pilates.
+      - Tecnologias de avaliação (Termografia, Baropodometria, etc).
+      - Fisioterapia Esportiva de alto rendimento.
+      
+      PROIBIDO: Notícias de saúde geral, vacinas, dietas, hospitais em geral ou medicina sem foco em reabilitação.
       Retorne APENAS o array JSON: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}]`;
 
       try {
@@ -98,10 +108,10 @@ export async function POST() {
       } catch (e) {}
     }
 
-    // Processamento Final
+    // Processamento Final (Remover duplicatas)
     const uniqueNews = Array.from(new Map(filteredNews.map(item => [item.url || item.title, item])).values())
       .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
-      .slice(0, 20);
+      .slice(0, 25);
 
     if (uniqueNews.length > 0) {
       const { error: dbError } = await supabase
@@ -110,7 +120,7 @@ export async function POST() {
           uniqueNews.map(item => ({
             title: item.title,
             summary: item.summary,
-            url: item.url || `https://google.com/search?q=${encodeURIComponent(item.title)}`,
+            url: item.url || `https://www.google.com/search?q=${encodeURIComponent(item.title)}`,
             source: item.source,
             published_at: item.published_at || new Date().toISOString(),
           })),
@@ -123,6 +133,6 @@ export async function POST() {
     return NextResponse.json({ success: true, count: uniqueNews.length });
 
   } catch (error) {
-    return NextResponse.json({ error: 'Erro ao atualizar' }, { status: 500 });
+    return NextResponse.json({ error: 'Falha na atualização profissional.' }, { status: 500 });
   }
 }
