@@ -18,71 +18,58 @@ export async function POST() {
   
   try {
     let newsItems: any[] = [];
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const searchLimitDate = new Date();
+    searchLimitDate.setDate(searchLimitDate.getDate() - 7); // Aumentado para 7 dias para garantir volume
 
-    // 1. RSS Search - Busca mais ampla
-    const physioNiches = [
-      'fisioterapia', 'fisioterapeuta', 'reabilitação física',
-      'COFFITO', 'CREFITO', 'concurso fisioterapia',
-      'osteopatia', 'quiropraxia', 'pilates'
+    // 1. Múltiplas Fontes RSS (Forma simplificada e direta)
+    const rssFeeds = [
+      // Google News - Fisioterapia Geral
+      `https://news.google.com/rss/search?q=${encodeURIComponent('fisioterapia OR "reabilitação física"')} when:7d&hl=pt-BR&gl=BR&ceid=BR:pt-419`,
+      // G1 Saúde
+      `https://g1.globo.com/dynamo/ciencia-e-saude/rss2.xml`,
+      // Google News - Conselhos e Órgãos
+      `https://news.google.com/rss/search?q=${encodeURIComponent('COFFITO OR CREFITO')} when:7d&hl=pt-BR&gl=BR&ceid=BR:pt-419`
     ];
     
-    // Sorteia 4 nichos para garantir variedade a cada clique
-    const selectedNiches = [...physioNiches].sort(() => 0.5 - Math.random()).slice(0, 4);
-    const searchQuery = `("${selectedNiches.join('" OR "')}") when:15d`;
-    
-    console.log(`Buscando RSS com foco em: ${selectedNiches.join(', ')}`);
-    
-    try {
-      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(searchQuery)}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
-      const rssRes = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
-      const rssData = await rssRes.json();
+    for (const feedUrl of rssFeeds) {
+      try {
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`;
+        const res = await fetch(apiUrl);
+        const data = await res.json();
 
-      if (rssData.status === 'ok' && rssData.items?.length > 0) {
-        const filteredRss = rssData.items
-          .map((item: any) => ({
+        if (data.status === 'ok' && data.items?.length > 0) {
+          const processed = data.items.map((item: any) => ({
             title: item.title,
             summary: item.content?.replace(/<[^>]*>?/gm, '').substring(0, 220) + '...',
             url: item.link,
-            source: item.author || 'Notícias Fisio',
+            source: item.author || data.feed?.title || 'Notícias Fisio',
             published_at: new Date(item.pubDate).toISOString()
-          }))
-          .filter((item: any) => {
-            const content = (item.title + item.summary).toLowerCase();
-            // Filtro de segurança: precisa ter "fisioterapia", "fisioterapeuta", "fisio", "coffito" ou "crefito"
-            return (new Date(item.published_at) >= threeDaysAgo) && 
-                   (content.includes('fisio') || content.includes('crefito') || content.includes('coffito') || 
-                    content.includes('reabilitaç') || content.includes('fisioterap'));
-          });
-        
-        newsItems = [...newsItems, ...filteredRss];
+          }));
+          newsItems = [...newsItems, ...processed];
+        }
+      } catch (e) {
+        console.error(`Erro no feed ${feedUrl}:`, e);
       }
-    } catch (e) {
-      console.error('Erro no RSS:', e);
     }
 
-    // 2. Gemini - Prompt Especialista em Fisioterapia
+    // Filtro de relevância relaxado para garantir que apareçam notícias
+    newsItems = newsItems.filter((item: any) => {
+      const content = (item.title + item.summary).toLowerCase();
+      const isRecent = new Date(item.published_at) >= searchLimitDate;
+      // Aceita qualquer coisa que lembre saúde/fisio se vier de fontes confiáveis
+      const isRelevant = content.includes('fisio') || 
+                        content.includes('reabilita') || 
+                        content.includes('saúde') || 
+                        content.includes('paciente') ||
+                        content.includes('médic');
+      return isRecent && isRelevant;
+    });
+
+    // 2. Gemini - Curadoria Técnica
     if (apiKey) {
-      console.log('Solicitando curadoria técnica ao Gemini...');
-      const prompt = `Aja como o Editor-Chefe do "Fisio News". Sua missão é fornecer 15 notícias EXCLUSIVAMENTE sobre Fisioterapia e o mercado de reabilitação no Brasil.
-
-      O QUE BUSCAR (Seja Amplo):
-      - Decisões, resoluções e comunicados do COFFITO e CREFITOs.
-      - Novos concursos públicos e oportunidades para fisioterapeutas.
-      - Avanços em pesquisas científicas e práticas clínicas.
-      - Tecnologias, softwares e inovações para clínicas.
-      - Eventos, congressos e cursos.
-      - Fisioterapia esportiva e atuação em casos de destaque.
-
-      REGRAS CRÍTICAS:
-      1. As notícias devem ser preferencialmente dos últimos 3 dias.
-      2. Foque em relevância para o profissional de fisioterapia.
-      3. Verifique a veracidade.
-      4. O campo "published_at" deve ser uma data válida recente.
-      5. RETORNE APENAS O ARRAY JSON PURO.
-
-      Formato: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}]`;
+      const prompt = `Aja como o Editor-Chefe do "Fisio News". Sua missão é fornecer 10-15 notícias recentes e EXCLUSIVAMENTE sobre Fisioterapia no Brasil.
+      Foque em: COFFITO, CREFITO, concursos, pesquisas e novas técnicas.
+      Retorne APENAS um array JSON: [{"title":"...","summary":"...","url":"...","source":"...","published_at":"..."}]`;
 
       try {
         const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -105,7 +92,7 @@ export async function POST() {
                   ...it,
                   published_at: it.published_at || new Date().toISOString()
                 }))
-                .filter(it => new Date(it.published_at) >= threeDaysAgo);
+                .filter(it => new Date(it.published_at) >= searchLimitDate);
               
               newsItems = [...newsItems, ...validatedAi];
             }
@@ -116,10 +103,10 @@ export async function POST() {
       }
     }
 
-    // Processamento Final
+    // Processamento Final (Remover duplicatas por URL)
     const uniqueNews = Array.from(new Map(newsItems.map(item => [item.url, item])).values())
       .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
-      .slice(0, 20);
+      .slice(0, 30); // Aumentado o limite para 30
 
     if (uniqueNews.length > 0) {
       const { error: dbError } = await supabase
@@ -142,6 +129,6 @@ export async function POST() {
 
   } catch (error) {
     console.error('Erro Crítico:', error);
-    return NextResponse.json({ error: 'Falha na atualização. Tente novamente.' }, { status: 500 });
+    return NextResponse.json({ error: 'Falha na atualização.' }, { status: 500 });
   }
 }
