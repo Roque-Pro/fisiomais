@@ -7,10 +7,23 @@ import {
   Heart, 
   ClipboardCheck,
   ArrowRight,
-  Smile
+  Newspaper,
+  Calendar,
+  MapPin,
+  ChevronRight
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
 
-export default function Home() {
+export const dynamic = 'force-dynamic';
+
+export default async function Home() {
+  const supabase = createClient();
+  const { data: recentNews } = await supabase
+    .from('news')
+    .select('*')
+    .order('published_at', { ascending: false })
+    .limit(3);
+
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-100 via-white to-rose-50">
       {/* Header / Nav */}
@@ -52,6 +65,59 @@ export default function Home() {
             <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
+      </section>
+
+      {/* Fisio News Hub - External Preview */}
+      <section className="mx-auto max-w-7xl px-6 pb-32">
+        <div className="mb-12 flex items-end justify-between border-b border-slate-200 pb-8">
+          <div className="space-y-2">
+            <h2 className="flex items-center gap-3 text-3xl font-black text-slate-900 tracking-tighter">
+              <span className="bg-brand-500 p-2 rounded-xl text-white"><Newspaper className="h-6 w-6" /></span>
+              FISIO NEWS <span className="text-brand-500 italic">HUB</span>
+            </h2>
+            <p className="text-lg text-slate-500 font-medium">Fique por dentro das atualizações do mundo da fisioterapia.</p>
+          </div>
+          <Link href="/login" className="hidden md:flex items-center gap-2 text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors">
+            Ver todas no sistema <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {recentNews && recentNews.length > 0 ? (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {recentNews.map((item) => (
+              <Link key={item.id} href="/login" className="group flex flex-col h-full rounded-3xl p-8 transition-all duration-300 border border-white bg-white/60 shadow-xl shadow-slate-200/50 backdrop-blur-sm hover:shadow-2xl hover:bg-white hover:-translate-y-2 relative overflow-hidden">
+                <div className="flex-1 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-tighter px-3 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-100">
+                      <MapPin className="h-3 w-3" />
+                      <span>{item.source}</span>
+                    </div>
+                    <span className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      <Calendar className="h-3 w-3" />
+                      {new Date(item.published_at).toLocaleDateString('pt-BR')}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-xl leading-tight text-slate-900 group-hover:text-brand-600 transition-colors line-clamp-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm font-medium text-slate-500 line-clamp-3 leading-relaxed">
+                    {item.summary}
+                  </p>
+                </div>
+                <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 text-xs font-black text-brand-600 transition-all group-hover:translate-x-1">
+                    ACESSAR CONTEÚDO COMPLETO
+                    <ChevronRight className="h-4 w-4" />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-white/40 rounded-[2.5rem] border-4 border-dashed border-white">
+            <p className="text-slate-400 font-bold">Sincronizando novas notícias...</p>
+          </div>
+        )}
       </section>
 
       {/* Features Grid */}
