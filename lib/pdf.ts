@@ -373,14 +373,27 @@ async function getLogoImageData(): Promise<string | null> {
       const objectUrl = URL.createObjectURL(blob);
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
+        // Tornar o canvas quadrado baseado na maior dimensão para um círculo perfeito
+        const size = Math.max(img.width, img.height);
+        canvas.width = size;
+        canvas.height = size;
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          // Manter fundo branco para o logo também, evitando artefatos de transparência
+          // Fundo branco total
           ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 0, 0);
+          ctx.fillRect(0, 0, size, size);
+
+          // Recorte circular
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+          ctx.closePath();
+          ctx.clip();
+          
+          // Desenhar logo centralizado
+          ctx.drawImage(img, (size - img.width) / 2, (size - img.height) / 2, img.width, img.height);
+          ctx.restore();
+
           const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
           URL.revokeObjectURL(objectUrl);
           resolve(dataUrl);
