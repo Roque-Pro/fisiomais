@@ -1,6 +1,5 @@
-const CACHE_NAME = 'fisio-plus-v1';
+const CACHE_NAME = 'fisio-plus-v2'; // Incremented version
 const ASSETS_TO_CACHE = [
-  '/',
   '/manifest.json',
   '/icon.svg'
 ];
@@ -26,35 +25,44 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-  self.skipWaiting();
+  self.clients.claim(); // Take control of all pages immediately
 });
 
 self.addEventListener('fetch', (event) => {
-  // Solo interceptar peticiones GET
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+
+  // Strategy for Navigation (HTML pages)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Strategy for other assets: Stale-While-Revalidate
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then((response) => {
-        // No cachear si no es una respuesta válida o es de una extensión/externo
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        
-        // Cachear la respuesta para el futuro (opcional, puede ser ruidoso)
-        // const responseToCache = response.clone();
-        // caches.open(CACHE_NAME).then((cache) => {
-          // cache.put(event.request, responseToCache);
-        // });
-
-        return response;
+        return networkResponse;
       }).catch(() => {
-        // Fallback si falla la red y no está en cache
-        return caches.match('/');
+        // Silent catch for network errors
       });
+
+      return cachedResponse || fetchPromise;
     })
   );
 });

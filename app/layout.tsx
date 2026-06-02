@@ -55,6 +55,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   navigator.serviceWorker.register('/sw.js').then(
                     function(registration) {
                       console.log('SW: Registrado com sucesso:', registration.scope);
+                      
+                      // Forçar verificação de atualização a cada carregamento
+                      registration.update();
+
+                      registration.onupdatefound = () => {
+                        const installingWorker = registration.installing;
+                        if (installingWorker) {
+                          installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed') {
+                              if (navigator.serviceWorker.controller) {
+                                console.log('SW: Nova versão disponível! Por favor, recarregue.');
+                                // Opcional: mostrar um aviso para o usuário recarregar
+                              }
+                            }
+                          };
+                        }
+                      };
                     },
                     function(err) {
                       console.log('SW: Erro no registro:', err);
