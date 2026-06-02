@@ -329,11 +329,17 @@ async function getRoundedImageData(url: string): Promise<string | null> {
           resolve(null);
           return;
         }
+
+        // Fundo branco para evitar transparência preta
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, size, size);
+
         ctx.beginPath();
         ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
         ctx.clip();
         ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
         URL.revokeObjectURL(objectUrl);
         resolve(dataUrl);
       };
@@ -351,7 +357,7 @@ async function getRoundedImageData(url: string): Promise<string | null> {
 
 async function getLogoImageData(): Promise<string | null> {
   try {
-    const res = await fetch('/logo.jpg'); // Prefer JPEG for simplicity
+    const res = await fetch('/fisio.png');
     if (!res.ok) return null;
     const blob = await res.blob();
     
@@ -365,7 +371,7 @@ async function getLogoImageData(): Promise<string | null> {
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          const dataUrl = canvas.toDataURL('image/png'); // Use PNG for logo to keep transparency if needed
           URL.revokeObjectURL(objectUrl);
           resolve(dataUrl);
         } else {
@@ -393,31 +399,28 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
   const slate600 = '#475569';
   const slate800 = '#1e293b';
 
-  // 1. Background com degradê sutil simulado
+  // 1. Background
   doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, 90, 55, 'F');
   
-  // Faixa lateral esquerda decorativa
+  // Faixa lateral esquerda
   doc.setFillColor(240, 253, 244);
   doc.rect(0, 0, 25, 55, 'F');
   
-  // Linha divisória elegante
   doc.setDrawColor(209, 250, 229);
   doc.setLineWidth(0.5);
   doc.line(25, 0, 25, 55);
 
-  // 2. Photo (Circular) - Sem bordas pretas, com sombra suave simulada
+  // 2. Photo (Circular)
   const px = 12.5, py = 18, pr = 9;
   if (profile.photo_url) {
     const data = await getRoundedImageData(profile.photo_url);
     if (data) {
       try {
-        // Círculo de fundo branco para a foto
         doc.setFillColor(255, 255, 255);
         doc.circle(px, py, pr, 'F');
-        doc.addImage(data, 'JPEG', px - pr, py - pr, pr * 2, pr * 2, undefined, 'MEDIUM');
+        doc.addImage(data, 'JPEG', px - pr, py - pr, pr * 2, pr * 2, undefined, 'HIGH');
         
-        // Borda fina na cor da marca
         doc.setDrawColor(emerald500);
         doc.setLineWidth(0.2);
         doc.circle(px, py, pr, 'S');
@@ -435,20 +438,20 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
     doc.text((profile.full_name?.[0] ?? 'F').toUpperCase(), px, py + 2, { align: 'center' });
   }
 
-  // 3. Official Logo (Símbolo de Fisioterapia)
+  // 3. Official Logo (fisio.png) - Aumentado
   const logoData = await getLogoImageData();
   if (logoData) {
     try {
-      // Posicionado abaixo da foto na faixa lateral
-      doc.addImage(logoData, 'JPEG', px - 4, 38, 8, 8, undefined, 'MEDIUM');
+      // Aumentado para 12x12 ou similar
+      doc.addImage(logoData, 'PNG', px - 6, 35, 12, 12, undefined, 'HIGH');
     } catch (e) {
       console.error('Logo render error:', e);
     }
   }
-  doc.setFontSize(5);
+  doc.setFontSize(6);
   doc.setTextColor(emerald500);
   doc.setFont('helvetica', 'bold');
-  doc.text('FISIO+', px, 48.5, { align: 'center' });
+  doc.text('FISIO+', px, 49.5, { align: 'center' });
 
   // 4. Name and Professional Info
   doc.setTextColor(emerald900);
