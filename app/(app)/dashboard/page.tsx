@@ -47,11 +47,14 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6 pb-20">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-brand-900 md:text-3xl">Olá, {firstName} 👋</h1>
-          <p className="text-sm text-slate-600">Pronto para acompanhar seus pacientes hoje?</p>
+        <div className="space-y-1">
+          <h1 className="flex items-center gap-3 text-2xl font-black text-brand-900 md:text-3xl tracking-tight">
+            <div className="h-8 w-1.5 bg-blue-500 rounded-full"></div>
+            Olá, {firstName} 👋
+          </h1>
+          <p className="text-sm text-slate-500 font-medium">Pronto para acompanhar seus pacientes hoje?</p>
         </div>
-        <Link href="/pacientes/novo" className="btn-primary">
+        <Link href="/pacientes/novo" className="btn-primary shadow-lg shadow-brand-200">
           <Plus className="h-4 w-4" /> Novo paciente
         </Link>
       </div>

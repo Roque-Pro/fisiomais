@@ -137,7 +137,7 @@ export default function PersonalizarPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -147,6 +147,13 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
       <label className="label">{label}</label>
       <div className="flex items-center gap-2">
         <input type="color" value={value} onChange={(e) => onChange(e.target.value)}
+          className="h-11 w-14 cursor-pointer rounded-lg border border-slate-200 bg-white" />
+        <input className="input" value={value} onChange={(e) => onChange(e.target.value)} />
+      </div>
+    </div>
+  );
+}
+type="color" value={value} onChange={(e) => onChange(e.target.value)}
           className="h-11 w-14 cursor-pointer rounded-lg border border-slate-200 bg-white" />
         <input className="input" value={value} onChange={(e) => onChange(e.target.value)} />
       </div>

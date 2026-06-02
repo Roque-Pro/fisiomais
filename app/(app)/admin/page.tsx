@@ -49,11 +49,12 @@ export default async function AdminPage() {
   return (
     <div className="space-y-6 pb-20">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold text-brand-900">
-            <Activity className="h-6 w-6" /> Painel Administrativo
+        <div className="space-y-1">
+          <h1 className="flex items-center gap-3 text-2xl font-black text-brand-900 md:text-3xl tracking-tight">
+            <div className="h-8 w-1.5 bg-amber-500 rounded-full"></div>
+            Painel Administrativo
           </h1>
-          <p className="text-sm text-slate-500">Gestão global de usuários, métricas e autorizações.</p>
+          <p className="text-sm text-slate-500 font-medium">Gestão global de usuários, métricas e autorizações.</p>
         </div>
         <UpdateNewsButton />
       </div>

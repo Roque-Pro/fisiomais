@@ -3,9 +3,13 @@ import { BookText, Shield, UserCheck, Mail, Info, PlayCircle } from 'lucide-reac
 export default function DocumentacaoPage() {
   return (
     <div className="space-y-8 pb-12">
-      <h1 className="flex items-center gap-2 text-2xl font-bold text-brand-900">
-        <BookText className="h-6 w-6" /> Documentação e Políticas
-      </h1>
+      <div className="space-y-1">
+        <h1 className="flex items-center gap-3 text-2xl font-black text-brand-900 md:text-3xl tracking-tight">
+          <div className="h-8 w-1.5 bg-cyan-500 rounded-full"></div>
+          Documentação e Políticas
+        </h1>
+        <p className="text-sm text-slate-500 font-medium">Tudo o que você precisa saber sobre o uso e segurança do sistema.</p>
+      </div>
 
       {/* Tutorial em Vídeo */}
       <section className="space-y-4">

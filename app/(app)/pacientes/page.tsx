@@ -63,6 +63,15 @@ export default async function PatientsPage({ searchParams }: { searchParams: { q
           </Link>
         </div>
       )}
+    </div>
+  );
+}
+slate-600">Comece cadastrando seu primeiro paciente.</p>
+          <Link href="/pacientes/novo" className="btn-primary mt-4">
+            <Plus className="h-4 w-4" /> Cadastrar paciente
+          </Link>
+        </div>
+      )}
     </>
   );
 }

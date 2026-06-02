@@ -144,9 +144,15 @@ export default function ProfilePage() {
   }
 
   return (
-    <>
+    <div className="space-y-6 pb-20">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-2xl font-bold text-brand-900">Meu perfil</h1>
+        <div className="space-y-1">
+          <h1 className="flex items-center gap-3 text-2xl font-black text-brand-900 md:text-3xl tracking-tight">
+            <div className="h-8 w-1.5 bg-indigo-500 rounded-full"></div>
+            Meu Perfil
+          </h1>
+          <p className="text-sm text-slate-500 font-medium">Gerencie sua identidade e cartão digital.</p>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2 py-1 shadow-sm">
             <span className="text-xs font-medium text-slate-500">Enviar para:</span>
