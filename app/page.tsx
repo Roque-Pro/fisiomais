@@ -18,11 +18,17 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const supabase = createClient();
-  const { data: recentNews } = await supabase
+  
+  // Testando busca simples para garantir que não trave
+  const { data: recentNews, error } = await supabase
     .from('news')
-    .select('*')
+    .select('id, title, summary, source, published_at')
     .order('published_at', { ascending: false })
     .limit(3);
+
+  if (error) {
+    console.error('Erro ao buscar notícias na Home:', error);
+  }
 
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-100 via-white to-rose-50">
@@ -115,7 +121,7 @@ export default async function Home() {
           </div>
         ) : (
           <div className="text-center py-20 bg-white/40 rounded-[2.5rem] border-4 border-dashed border-white">
-            <p className="text-slate-400 font-bold">Sincronizando novas notícias...</p>
+            <p className="text-slate-400 font-bold">As últimas novidades estão sendo preparadas...</p>
           </div>
         )}
       </section>
