@@ -71,25 +71,58 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="mx-auto max-w-7xl px-4 pt-10 pb-16 md:px-6 md:pt-16 md:pb-24 text-center">
-        <h1 className="text-balance text-3xl font-black leading-[1.1] tracking-tight text-slate-900 sm:text-5xl md:text-7xl">
-          Tecnologia para um <br className="hidden sm:block" />
-          <span className="bg-gradient-to-r from-sky-500 via-indigo-500 to-rose-500 bg-clip-text text-transparent">
-            atendimento mais humano.
-          </span>
-        </h1>
-        
-        <p className="mx-auto mt-6 md:mt-10 max-w-2xl text-base leading-relaxed text-slate-600 md:text-xl font-medium">
-          Este é o <span className="text-slate-900 font-bold underline decoration-sky-400 decoration-4">Fisio+</span>, o sistema exclusivo da 
-          <span className="text-slate-900 font-bold"> Fisio Saúde</span>. Criamos esta plataforma para que nossa equipe tenha as melhores ferramentas 
-          e nossos pacientes recebam um cuidado ágil, moderno e totalmente personalizado.
-        </p>
-        
-        <div className="mt-8 md:mt-12 flex flex-wrap items-center justify-center gap-4 md:gap-5">
-          <Link href="/cadastro" className="group flex items-center gap-2 md:gap-3 rounded-2xl md:rounded-[2rem] bg-gradient-to-r from-sky-600 to-indigo-600 px-6 py-4 md:px-10 md:py-5 text-lg md:text-xl font-black text-white shadow-2xl shadow-sky-200 transition-all hover:scale-105 active:scale-95">
-            Criar minha conta grátis
-            <ArrowRight className="h-5 w-5 md:h-6 md:w-6 transition-transform group-hover:translate-x-1" />
-          </Link>
+      <section className="relative mx-auto max-w-7xl px-4 pt-16 pb-24 md:px-6 md:pt-24 md:pb-40 text-center overflow-hidden">
+        {/* Elementos Decorativos de Fundo */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-200/30 blur-[120px] rounded-full" />
+          <div className="absolute bottom-[10%] right-[-10%] w-[40%] h-[40%] bg-rose-200/30 blur-[120px] rounded-full" />
+        </div>
+
+        <div className="relative z-10">
+          <h1 className="text-balance text-4xl font-black leading-[1.1] tracking-tight text-slate-900 sm:text-6xl md:text-8xl">
+            Tecnologia para um <br className="hidden sm:block" />
+            <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-rose-600 bg-clip-text text-transparent">
+              atendimento mais humano.
+            </span>
+          </h1>
+          
+          <p className="mx-auto mt-8 md:mt-12 max-w-3xl text-lg leading-relaxed text-slate-600 md:text-2xl font-medium">
+            Este é o <span className="text-slate-900 font-bold underline decoration-sky-400 decoration-4">Fisio+</span>, o sistema exclusivo da 
+            <span className="text-slate-900 font-bold"> Fisio Saúde</span>. Criamos esta plataforma para que nossa equipe tenha as melhores ferramentas 
+            e nossos pacientes recebam um cuidado ágil, moderno e totalmente personalizado.
+          </p>
+          
+          <div className="mt-10 md:mt-16 flex flex-wrap items-center justify-center gap-4 md:gap-6">
+            <Link href="/cadastro" className="group flex items-center gap-2 md:gap-4 rounded-2xl md:rounded-[2.5rem] bg-gradient-to-r from-sky-600 to-indigo-600 px-8 py-5 md:px-12 md:py-6 text-xl md:text-2xl font-black text-white shadow-2xl shadow-sky-200 transition-all hover:scale-105 active:scale-95">
+              Criar minha conta grátis
+              <ArrowRight className="h-6 w-6 md:h-7 md:w-7 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+
+          {/* Imagem Hero com efeito especial */}
+          <div className="mt-20 md:mt-24 relative mx-auto max-w-5xl px-4 md:px-0">
+            <div className="absolute -inset-1 bg-gradient-to-r from-sky-400 via-indigo-500 to-rose-400 rounded-[2.5rem] blur opacity-30"></div>
+            <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl shadow-slate-200">
+              <img 
+                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop" 
+                alt="Fisioterapia Moderna" 
+                className="w-full h-auto object-cover aspect-[16/9] md:aspect-[21/9]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
+              
+              {/* Badges flutuantes sobre a imagem */}
+              <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
+                <div className="flex items-center gap-3 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl border border-white/20 shadow-lg">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[10px] md:text-sm font-bold text-slate-900">Sistema Online</span>
+                </div>
+                <div className="hidden sm:flex items-center gap-3 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl border border-white/20 shadow-lg">
+                  <Users2 className="h-4 w-4 text-sky-600" />
+                  <span className="text-[10px] md:text-sm font-bold text-slate-900">+500 Pacientes Atendidos</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
