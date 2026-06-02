@@ -132,15 +132,56 @@ export default function ProfilePage() {
     set('specialties', list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
   }
 
-  function shareCard() {
-    if (!sharePhone) {
-      alert('Digite o WhatsApp para quem deseja enviar o cartão.');
-      return;
+  async function handleDownloadCard() {
+    setLoading(true);
+    try {
+      const result = await downloadDigitalCardPdf(profile);
+      if (result?.save) result.save();
+    } catch (err) {
+      console.error(err);
+      setError('Erro ao gerar PDF.');
+    } finally {
+      setLoading(false);
     }
-    const cleanPhone = sharePhone.replace(/\D/g, '');
-    const msg = encodeURIComponent(`Olá! Aqui está meu cartão digital profissional da Fisio+.`);
-    window.open(`https://wa.me/55${cleanPhone}?text=${msg}`, '_blank');
-    downloadDigitalCardPdf(profile);
+  }
+
+  async function shareCard() {
+    setLoading(true);
+    try {
+      const result = await downloadDigitalCardPdf(profile);
+      
+      if (!result) {
+        throw new Error('Falha ao gerar o cartão.');
+      }
+
+      const { blob, fileName } = result;
+      const file = new File([blob as Blob], fileName, { type: 'application/pdf' });
+
+      // Se suportar compartilhamento nativo de arquivos (Mobile)
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Meu Cartão Digital - Fisio+',
+          text: 'Olá! Aqui está meu cartão digital profissional da Fisio+.'
+        });
+      } else {
+        // Fallback para o comportamento antigo de apenas link de texto do WhatsApp
+        if (!sharePhone) {
+          alert('Digite o WhatsApp para quem deseja enviar o cartão (ou use um dispositivo que suporte compartilhamento de arquivos).');
+          setLoading(false);
+          return;
+        }
+        const cleanPhone = sharePhone.replace(/\D/g, '');
+        const msg = encodeURIComponent(`Olá! Aqui está meu cartão digital profissional da Fisio+.`);
+        window.open(`https://wa.me/55${cleanPhone}?text=${msg}`, '_blank');
+        if (result.save) result.save();
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Erro ao compartilhar ou gerar o cartão.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -155,19 +196,19 @@ export default function ProfilePage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2 py-1 shadow-sm">
-            <span className="text-xs font-medium text-slate-500">Enviar para:</span>
+            <span className="hidden xs:inline text-xs font-medium text-slate-500">Enviar para:</span>
             <input 
-              className="w-32 bg-transparent text-sm outline-none" 
+              className="w-24 md:w-32 bg-transparent text-sm outline-none" 
               placeholder="DDD+Número" 
               value={sharePhone}
               onChange={(e) => setSharePhone(e.target.value)}
             />
-            <button onClick={shareCard} className="btn-primary py-1.5 px-3 text-xs">
-              Enviar WhatsApp
+            <button onClick={shareCard} disabled={loading} className="btn-primary py-1.5 px-3 text-xs whitespace-nowrap">
+              {loading ? '...' : 'Enviar'}
             </button>
           </div>
-          <button onClick={() => downloadDigitalCardPdf(profile)} className="btn-secondary">
-            <FileDown className="h-4 w-4" /> Cartão digital (PDF)
+          <button onClick={handleDownloadCard} disabled={loading} className="btn-secondary whitespace-nowrap">
+            <FileDown className="h-4 w-4" /> <span className="hidden xs:inline">Cartão digital (PDF)</span><span className="xs:hidden">PDF</span>
           </button>
         </div>
       </div>

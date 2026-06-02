@@ -478,7 +478,19 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
   doc.setTextColor(emerald500);
   doc.text('Fisio+', 82, 53, { align: 'center' });
 
-  doc.save(`cartao-${(profile.full_name ?? 'fisio').replace(/\s+/g, '-').toLowerCase()}.pdf`);
+  const fileName = `cartao-${(profile.full_name ?? 'fisio').replace(/\s+/g, '-').toLowerCase()}.pdf`;
+  
+  if (typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    // Better handling for mobile: return blob for sharing or open in new tab
+    return {
+      blob: doc.output('blob'),
+      fileName,
+      save: () => doc.save(fileName)
+    };
+  }
+
+  doc.save(fileName);
+  return { fileName, save: () => doc.save(fileName) };
 }
 
 function hexToRgb(hex: string): [number, number, number] {
