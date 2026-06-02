@@ -54,12 +54,16 @@ export default function PersonalizarPage() {
   }
 
   return (
-    <>
+    <div className="space-y-6 pb-20">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-brand-900">
-          <Palette className="h-6 w-6" /> Personalizar
-        </h1>
-        <button onClick={save} disabled={loading} className="btn-primary">
+        <div className="space-y-1">
+          <h1 className="flex items-center gap-3 text-2xl font-black text-brand-900 md:text-3xl tracking-tight">
+            <div className="h-8 w-1.5 bg-rose-500 rounded-full"></div>
+            Personalizar
+          </h1>
+          <p className="text-sm text-slate-500 font-medium">Deixe o sistema com a sua identidade visual.</p>
+        </div>
+        <button onClick={save} disabled={loading} className="btn-primary shadow-lg shadow-brand-200">
           <Save className="h-4 w-4" /> {loading ? 'Salvando…' : 'Salvar tema'}
         </button>
       </div>
@@ -147,13 +151,6 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
       <label className="label">{label}</label>
       <div className="flex items-center gap-2">
         <input type="color" value={value} onChange={(e) => onChange(e.target.value)}
-          className="h-11 w-14 cursor-pointer rounded-lg border border-slate-200 bg-white" />
-        <input className="input" value={value} onChange={(e) => onChange(e.target.value)} />
-      </div>
-    </div>
-  );
-}
-type="color" value={value} onChange={(e) => onChange(e.target.value)}
           className="h-11 w-14 cursor-pointer rounded-lg border border-slate-200 bg-white" />
         <input className="input" value={value} onChange={(e) => onChange(e.target.value)} />
       </div>
