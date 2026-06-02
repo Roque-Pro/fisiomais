@@ -308,7 +308,7 @@ export function downloadEvolutionPdf(opts: { profile: Profile; patient: Patient;
   doc.save(`evolucao-${patient.full_name}.pdf`);
 }
 
-async function getRoundedImageData(url: string): Promise<string | null> {
+async function getRoundedImageData(url: string, bgColor: string = '#ffffff'): Promise<string | null> {
   if (!url) return null;
   try {
     const res = await fetch(url, { mode: 'cors' });
@@ -330,8 +330,8 @@ async function getRoundedImageData(url: string): Promise<string | null> {
           return;
         }
 
-        // Fundo branco TOTAL para os cantos não ficarem pretos no PDF
-        ctx.fillStyle = '#ffffff';
+        // Fundo combinando com a cor da seção no PDF para esconder os cantos do quadrado
+        ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, size, size);
 
         // Desenhar círculo com anti-aliasing melhorado
@@ -345,7 +345,6 @@ async function getRoundedImageData(url: string): Promise<string | null> {
         ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
         ctx.restore();
         
-        // JPEG de alta qualidade, mas sem transparência (cantos brancos)
         const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
         URL.revokeObjectURL(objectUrl);
         resolve(dataUrl);
@@ -362,7 +361,7 @@ async function getRoundedImageData(url: string): Promise<string | null> {
   }
 }
 
-async function getLogoImageData(): Promise<string | null> {
+async function getLogoImageData(bgColor: string = '#ffffff'): Promise<string | null> {
   try {
     const res = await fetch('/fisio.png');
     if (!res.ok) return null;
@@ -373,24 +372,20 @@ async function getLogoImageData(): Promise<string | null> {
       const objectUrl = URL.createObjectURL(blob);
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        // Tornar o canvas quadrado baseado na maior dimensão para um círculo perfeito
         const size = Math.max(img.width, img.height);
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          // Fundo branco total
-          ctx.fillStyle = '#ffffff';
+          ctx.fillStyle = bgColor;
           ctx.fillRect(0, 0, size, size);
 
-          // Recorte circular
           ctx.save();
           ctx.beginPath();
           ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
           ctx.closePath();
           ctx.clip();
           
-          // Desenhar logo centralizado
           ctx.drawImage(img, (size - img.width) / 2, (size - img.height) / 2, img.width, img.height);
           ctx.restore();
 
@@ -415,6 +410,7 @@ async function getLogoImageData(): Promise<string | null> {
 
 export async function downloadDigitalCardPdf(profile: Profile & { theme?: { primary?: string } }) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [90, 55] });
+  const emerald50 = '#f0fdf4'; // A cor exata da faixa lateral
   const emerald500 = '#10b981';
   const emerald600 = '#059669';
   const emerald900 = '#064e3b';
@@ -427,7 +423,7 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
   doc.rect(0, 0, 90, 55, 'F');
   
   // Faixa lateral esquerda
-  doc.setFillColor(240, 253, 244);
+  doc.setFillColor(emerald50);
   doc.rect(0, 0, 25, 55, 'F');
   
   doc.setDrawColor(209, 250, 229);
@@ -437,11 +433,9 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
   // 2. Photo (Circular)
   const px = 12.5, py = 18, pr = 9;
   if (profile.photo_url) {
-    const data = await getRoundedImageData(profile.photo_url);
+    const data = await getRoundedImageData(profile.photo_url, emerald50);
     if (data) {
       try {
-        doc.setFillColor(255, 255, 255);
-        doc.circle(px, py, pr, 'F');
         doc.addImage(data, 'JPEG', px - pr, py - pr, pr * 2, pr * 2, undefined, 'FAST');
         
         doc.setDrawColor(emerald500);
@@ -462,10 +456,9 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
   }
 
   // 3. Official Logo (fisio.png) - Aumentado
-  const logoData = await getLogoImageData();
+  const logoData = await getLogoImageData(emerald50);
   if (logoData) {
     try {
-      // Usando JPEG com fundo branco e compressão FAST para estabilidade mobile
       doc.addImage(logoData, 'JPEG', px - 7.5, 35, 15, 15, undefined, 'FAST');
     } catch (e) {
       console.error('Logo render error:', e);
