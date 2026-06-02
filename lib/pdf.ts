@@ -309,29 +309,40 @@ export function downloadEvolutionPdf(opts: { profile: Profile; patient: Patient;
 }
 
 async function getRoundedImageData(url: string): Promise<string | null> {
+  if (!url) return null;
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { mode: 'cors' });
+    if (!res.ok) throw new Error('Failed to fetch image');
     const blob = await res.blob();
-    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const i = new Image();
-      i.onload = () => resolve(i);
-      i.onerror = reject;
-      i.src = URL.createObjectURL(blob);
-    });
-
-    const canvas = document.createElement('canvas');
-    const size = Math.min(img.width, img.height);
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-
-    ctx.beginPath();
-    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
     
-    return canvas.toDataURL('image/png');
+    return await new Promise((resolve) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(blob);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const size = Math.min(img.width, img.height);
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          URL.revokeObjectURL(objectUrl);
+          resolve(null);
+          return;
+        }
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        URL.revokeObjectURL(objectUrl);
+        resolve(dataUrl);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(null);
+      };
+      img.src = objectUrl;
+    });
   } catch (e) {
     console.error('Error rounding image:', e);
     return null;
@@ -340,25 +351,33 @@ async function getRoundedImageData(url: string): Promise<string | null> {
 
 async function getLogoImageData(): Promise<string | null> {
   try {
-    const res = await fetch('/logo.svg');
-    const svgText = await res.text();
-    const blob = new Blob([svgText], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
+    const res = await fetch('/logo.jpg'); // Prefer JPEG for simplicity
+    if (!res.ok) return null;
+    const blob = await res.blob();
     
     return await new Promise((resolve) => {
       const img = new Image();
+      const objectUrl = URL.createObjectURL(blob);
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = img.width || 200;
-        canvas.height = img.height || 300;
+        canvas.width = img.width;
+        canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL('image/png'));
-        } else resolve(null);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          URL.revokeObjectURL(objectUrl);
+          resolve(dataUrl);
+        } else {
+          URL.revokeObjectURL(objectUrl);
+          resolve(null);
+        }
       };
-      img.onerror = () => resolve(null);
-      img.src = url;
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(null);
+      };
+      img.src = objectUrl;
     });
   } catch {
     return null;
