@@ -28,7 +28,8 @@ export async function POST() {
       { url: 'https://blogfisioterapia.com.br/feed/', country: 'BR' },
       { url: 'https://www.jospt.org/action/showFeed?ui=0&mi=39p6v&ai=sy&jc=jospt&type=etoc&feed=rss', country: 'US' },
       { url: 'https://www.physiospot.com/feed/', country: 'Global' },
-      { url: 'https://www.saude.ba.gov.br/feed/', country: 'BR' }
+      { url: 'https://academic.oup.com/ptj/rss', country: 'US' },
+      { url: 'https://www.crefito4.org.br/site/index.php/noticias?format=feed&type=rss', country: 'BR' }
     ];
     
     for (const feed of rssFeeds) {
@@ -42,6 +43,7 @@ export async function POST() {
             title: item.title,
             summary: item.description?.replace(/<[^>]*>?/gm, '').substring(0, 250) || '',
             url: item.link,
+            // IMPORTANTE: Manter o padrão 'PAÍS | Fonte' para o frontend filtrar corretamente
             source: `${feed.country} | ${data.feed?.title || 'Fisio News'}`,
             published_at: new Date(item.pubDate).toISOString()
           }));
@@ -52,23 +54,23 @@ export async function POST() {
       }
     }
 
-    // Filtro profissional (Aumentado para garantir resultados)
-    const keywords = ['fisio', 'reabilita', 'physical', 'therapy', 'rehab', 'clinical', 'patient', 'health', 'saúde', 'injury'];
+    // Filtro profissional (Removendo 'saúde' e 'health' para ser mais específico)
+    const keywords = ['fisio', 'reabilita', 'physical', 'therapy', 'rehab', 'clinical', 'patient', 'injury', 'crefito', 'coffito'];
     let filteredNews = newsItems.filter(item => {
       const content = (item.title + item.summary).toLowerCase();
-      const isProfessional = keywords.some(key => content.includes(key));
-      return isProfessional;
+      return keywords.some(key => content.includes(key));
     });
 
-    // 2. GEMINI - O Garantidor Absoluto
-    // Se o RSS falhar ou trouxer pouco, o Gemini TRABALHA para gerar conteúdo real
+    // 2. GEMINI - O Garantidor Absoluto (REFINADO PARA IDIOMA)
     if (apiKey) {
       const prompt = `Aja como o Editor-Chefe do "Fisio News". 
-      Você DEVE retornar um array JSON com 15 notícias REAIS e TÉCNICAS de Fisioterapia (maio/junho 2026).
-      - 7 notícias do BRASIL (em PT-BR) sobre COFFITO, concursos e técnicas.
-      - 8 notícias INTERNACIONAIS (em EN-US) sobre pesquisas do JOSPT, APTA e reabilitação.
+      Você DEVE retornar um array JSON com 20 notícias REAIS e TÉCNICAS de Fisioterapia (maio/junho 2026).
       
-      IMPORTANTE: Use fontes REAIS como "BR | COFFITO", "US | JOSPT", "BR | G1 Saúde".
+      REGRAS DE IDIOMA E FONTE:
+      - 10 notícias do BRASIL: O título e o resumo DEVEM estar em PORTUGUÊS. A fonte deve começar com "BR | ".
+      - 10 notícias INTERNACIONAIS: O título e o resumo DEVEM estar em INGLÊS. A fonte deve começar com "US | " ou "GLOBAL | ".
+      
+      IMPORTANTE: Não traduza as notícias internacionais. Mantenha-as em Inglês técnico.
       
       Retorne APENAS o JSON puro no formato:
       [{"title":"...","summary":"...","url":"...","source":"PAÍS | Fonte","published_at":"..."}]`;
@@ -86,7 +88,12 @@ export async function POST() {
           const cleanJson = text.replace(/```json|```/g, '').trim();
           const parsed = JSON.parse(cleanJson);
           if (Array.isArray(parsed)) {
-            filteredNews = [...filteredNews, ...parsed];
+            // Garantir que a fonte do Gemini siga o padrão para o filtro do frontend
+            const validatedAi = parsed.map(item => ({
+              ...item,
+              published_at: item.published_at || new Date().toISOString()
+            }));
+            filteredNews = [...filteredNews, ...validatedAi];
           }
         }
       } catch (e) {
@@ -97,7 +104,7 @@ export async function POST() {
     // Processamento Final
     const uniqueNews = Array.from(new Map(filteredNews.map(item => [item.url || item.title, item])).values())
       .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
-      .slice(0, 40);
+      .slice(0, 50);
 
     if (uniqueNews.length > 0) {
       const { error: dbError } = await supabase
