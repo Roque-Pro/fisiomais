@@ -10,7 +10,8 @@ import {
   Newspaper,
   Calendar,
   MapPin,
-  ChevronRight
+  ChevronRight,
+  Share2
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 
@@ -18,17 +19,11 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const supabase = createClient();
-  
-  // Testando busca simples para garantir que não trave
-  const { data: recentNews, error } = await supabase
+  const { data: recentNews } = await supabase
     .from('news')
-    .select('id, title, summary, source, published_at')
+    .select('*')
     .order('published_at', { ascending: false })
     .limit(3);
-
-  if (error) {
-    console.error('Erro ao buscar notícias na Home:', error);
-  }
 
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-100 via-white to-rose-50">
@@ -66,8 +61,8 @@ export default async function Home() {
         </p>
         
         <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
-          <Link href="/login" className="group flex items-center gap-3 rounded-[2rem] bg-gradient-to-r from-sky-600 to-indigo-600 px-10 py-5 text-xl font-black text-white shadow-2xl shadow-sky-200 transition-all hover:scale-105 active:scale-95">
-            Entrar no Sistema
+          <Link href="/cadastro" className="group flex items-center gap-3 rounded-[2rem] bg-gradient-to-r from-sky-600 to-indigo-600 px-10 py-5 text-xl font-black text-white shadow-2xl shadow-sky-200 transition-all hover:scale-105 active:scale-95">
+            Criar minha conta grátis
             <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
@@ -83,7 +78,7 @@ export default async function Home() {
             </h2>
             <p className="text-lg text-slate-500 font-medium">Fique por dentro das atualizações do mundo da fisioterapia.</p>
           </div>
-          <Link href="/login" className="hidden md:flex items-center gap-2 text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors">
+          <Link href="/cadastro" className="hidden md:flex items-center gap-2 text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors">
             Ver todas no sistema <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -91,7 +86,7 @@ export default async function Home() {
         {recentNews && recentNews.length > 0 ? (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {recentNews.map((item) => (
-              <Link key={item.id} href="/login" className="group flex flex-col h-full rounded-3xl p-8 transition-all duration-300 border border-white bg-white/60 shadow-xl shadow-slate-200/50 backdrop-blur-sm hover:shadow-2xl hover:bg-white hover:-translate-y-2 relative overflow-hidden">
+              <div key={item.id} className="group flex flex-col h-full rounded-3xl p-8 transition-all duration-300 border border-white bg-white/60 shadow-xl shadow-slate-200/50 backdrop-blur-sm hover:shadow-2xl hover:bg-white hover:-translate-y-2 relative overflow-hidden">
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-tighter px-3 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-100">
@@ -103,20 +98,32 @@ export default async function Home() {
                       {new Date(item.published_at).toLocaleDateString('pt-BR')}
                     </span>
                   </div>
-                  <h3 className="font-bold text-xl leading-tight text-slate-900 group-hover:text-brand-600 transition-colors line-clamp-2">
-                    {item.title}
-                  </h3>
+                  <Link href="/cadastro" className="block group/title">
+                    <h3 className="font-bold text-xl leading-tight text-slate-900 group-hover/title:text-brand-600 transition-colors line-clamp-2">
+                      {item.title}
+                    </h3>
+                  </Link>
                   <p className="text-sm font-medium text-slate-500 line-clamp-3 leading-relaxed">
                     {item.summary}
                   </p>
                 </div>
                 <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 text-xs font-black text-brand-600 transition-all group-hover:translate-x-1">
-                    ACESSAR CONTEÚDO COMPLETO
+                  <Link href="/cadastro" className="inline-flex items-center gap-2 text-xs font-black text-brand-600 transition-all hover:translate-x-1">
+                    LER NO SISTEMA
                     <ChevronRight className="h-4 w-4" />
-                  </span>
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      const text = encodeURIComponent(`Acabei de ver essa notícia no Fisio+: ${item.title}\n\nConfira no sistema: `);
+                      window.open(`https://wa.me/?text=${text}${encodeURIComponent(window.location.origin)}`, '_blank');
+                    }}
+                    className="p-2 bg-slate-100 hover:bg-brand-500 hover:text-white rounded-full transition-all"
+                    title="Compartilhar"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         ) : (

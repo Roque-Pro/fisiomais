@@ -1,6 +1,6 @@
 'use client';
 
-import { Newspaper, ExternalLink, Calendar, MapPin, ChevronRight, Plus, RefreshCw } from 'lucide-react';
+import { Newspaper, ExternalLink, Calendar, MapPin, ChevronRight, Plus, RefreshCw, Share2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
 
@@ -36,6 +36,12 @@ export default function FisioNewsPage() {
     loadNews();
   }, []);
 
+  const handleShare = (title: string) => {
+    const text = encodeURIComponent(`Notícia técnica importante para fisioterapeutas: ${title}\n\nVeja no Fisio+: `);
+    const url = encodeURIComponent(window.location.origin);
+    window.open(`https://wa.me/?text=${text}${url}`, '_blank');
+  };
+
   const NewsCard = ({ item }: { item: NewsItem }) => {
     return (
       <article className="group flex flex-col h-full rounded-2xl p-6 transition-all duration-300 border border-slate-100 bg-white shadow-sm hover:shadow-xl hover:border-brand-200 relative overflow-hidden">
@@ -45,10 +51,19 @@ export default function FisioNewsPage() {
               <MapPin className="h-3 w-3" />
               <span>{item.source.replace(/^BR \| /, '')}</span>
             </div>
-            <span className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
-              <Calendar className="h-3 w-3" />
-              {new Date(item.published_at).toLocaleDateString('pt-BR')}
-            </span>
+            <div className="flex items-center gap-3">
+               <span className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
+                <Calendar className="h-3 w-3" />
+                {new Date(item.published_at).toLocaleDateString('pt-BR')}
+              </span>
+              <button 
+                onClick={() => handleShare(item.title)}
+                className="text-slate-400 hover:text-brand-600 transition-colors"
+                title="Compartilhar"
+              >
+                <Share2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
           <h3 className="font-bold text-lg leading-tight line-clamp-2 text-slate-900 group-hover:text-brand-600 transition-colors">
             {item.title}
