@@ -49,77 +49,85 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-100 via-white to-rose-50">
-      {/* Header / Nav */}
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6 md:py-8">
-        <div className="flex items-center gap-3 md:gap-4">
-          <img src="/logo.jpg" alt="Logo" className="h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl object-cover shadow-soft" />
-          <div className="flex flex-col">
-            <span className="text-lg md:text-2xl font-black tracking-tight text-slate-900 leading-none">Fisio Saúde</span>
-            <span className="mt-0.5 md:mt-1 flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-[0.1em] md:tracking-[0.2em] text-sky-600">
-              <Zap className="h-2.5 w-2.5 md:h-3 md:w-3 fill-sky-600" /> <span className="hidden xs:inline">Sistema</span> Fisio+
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 md:gap-4">
-          <Link href="/login" className="flex items-center gap-2 rounded-xl md:rounded-2xl bg-slate-900 px-4 py-2 md:px-7 md:py-3 text-xs md:text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5 active:scale-95">
-            <span className="hidden xs:inline">Acessar Sistema</span>
-            <span className="xs:hidden">Entrar</span>
-            <ArrowRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
+    <main className="min-h-screen bg-white">
+      {/* Elementos Decorativos de Fundo Global */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-sky-100/40 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] bg-rose-100/40 blur-[120px] rounded-full" />
+      </div>
+
+      {/* Header / Nav - Slim and Elegant */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-slate-100">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
+          <Link href="/" className="flex items-center gap-3 group">
+            <img src="/logo.jpg" alt="Logo" className="h-9 w-9 md:h-10 md:w-10 rounded-lg object-cover shadow-sm transition-transform group-hover:scale-105" />
+            <span className="text-xl font-bold tracking-tight text-slate-900">Fisio+</span>
           </Link>
+          
+          <div className="flex items-center gap-4">
+            <Link href="/login" className="relative group overflow-hidden rounded-full p-[1px] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-sky-100">
+              <div className="absolute inset-0 bg-gradient-to-r from-sky-500 via-indigo-500 to-rose-500 animate-gradient-x"></div>
+              <div className="relative flex items-center gap-2 rounded-full bg-white px-5 py-1.5 md:px-6 md:py-2 text-sm font-bold text-slate-900 transition-colors group-hover:bg-transparent group-hover:text-white">
+                Acessar <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
+          </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative mx-auto max-w-7xl px-4 pt-16 pb-24 md:px-6 md:pt-24 md:pb-40 text-center overflow-hidden">
-        {/* Elementos Decorativos de Fundo */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-sky-200/30 blur-[120px] rounded-full" />
-          <div className="absolute bottom-[10%] right-[-10%] w-[40%] h-[40%] bg-rose-200/30 blur-[120px] rounded-full" />
-        </div>
-
-        <div className="relative z-10">
-          <h1 className="text-balance text-4xl font-black leading-[1.1] tracking-tight text-slate-900 sm:text-6xl md:text-8xl">
-            Tecnologia para um <br className="hidden sm:block" />
-            <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-rose-600 bg-clip-text text-transparent">
-              atendimento mais humano.
-            </span>
-          </h1>
-          
-          <p className="mx-auto mt-8 md:mt-12 max-w-3xl text-lg leading-relaxed text-slate-600 md:text-2xl font-medium">
-            Este é o <span className="text-slate-900 font-bold underline decoration-sky-400 decoration-4">Fisio+</span>, o sistema exclusivo da 
-            <span className="text-slate-900 font-bold"> Fisio Saúde</span>. Criamos esta plataforma para que nossa equipe tenha as melhores ferramentas 
-            e nossos pacientes recebam um cuidado ágil, moderno e totalmente personalizado.
-          </p>
-          
-          <div className="mt-10 md:mt-16 flex flex-wrap items-center justify-center gap-4 md:gap-6">
-            <Link href="/cadastro" className="group flex items-center gap-2 md:gap-4 rounded-2xl md:rounded-[2.5rem] bg-gradient-to-r from-sky-600 to-indigo-600 px-8 py-5 md:px-12 md:py-6 text-xl md:text-2xl font-black text-white shadow-2xl shadow-sky-200 transition-all hover:scale-105 active:scale-95">
-              Criar minha conta grátis
-              <ArrowRight className="h-6 w-6 md:h-7 md:w-7 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
-
-          {/* Imagem Hero com efeito especial */}
-          <div className="mt-20 md:mt-24 relative mx-auto max-w-5xl px-4 md:px-0">
-            <div className="absolute -inset-1 bg-gradient-to-r from-sky-400 via-indigo-500 to-rose-400 rounded-[2.5rem] blur opacity-30"></div>
-            <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl shadow-slate-200">
-              <img 
-                src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop" 
-                alt="Fisioterapia Moderna" 
-                className="w-full h-auto object-cover aspect-[16/9] md:aspect-[21/9]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
+      {/* Hero Section - Integrated and Elegant */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-left space-y-8 relative z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-100 text-sky-600 text-xs font-bold uppercase tracking-wider animate-fade-in">
+                <Zap className="h-3 w-3 fill-sky-600" /> Sistema Exclusivo Fisio Saúde
+              </div>
               
-              {/* Badges flutuantes sobre a imagem */}
-              <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
-                <div className="flex items-center gap-3 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl border border-white/20 shadow-lg">
-                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] md:text-sm font-bold text-slate-900">Sistema Online</span>
+              <h1 className="text-balance text-4xl font-black leading-[1.1] tracking-tight text-slate-900 sm:text-6xl md:text-7xl">
+                Tecnologia para um <br />
+                <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-rose-600 bg-clip-text text-transparent">
+                  atendimento humano.
+                </span>
+              </h1>
+              
+              <p className="max-w-xl text-lg leading-relaxed text-slate-600 font-medium">
+                O <span className="text-slate-900 font-bold underline decoration-sky-400 decoration-4">Fisio+</span> foi criado para transformar a gestão clínica em uma experiência ágil, moderna e totalmente focada no que importa: <span className="text-slate-900 font-bold">o seu paciente</span>.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-start gap-4 pt-4">
+                <Link href="/cadastro" className="group flex items-center gap-3 rounded-2xl bg-slate-900 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-slate-800 hover:shadow-2xl hover:-translate-y-1 active:scale-95">
+                  Começar agora grátis
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="relative order-first lg:order-last">
+              {/* Efeito de Vidro e Moldura */}
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-to-r from-sky-400 via-indigo-500 to-rose-400 rounded-[2.5rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                <div className="relative rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl">
+                  <img 
+                    src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop" 
+                    alt="Fisioterapia Moderna" 
+                    className="w-full h-full object-cover aspect-[4/3] sm:aspect-video lg:aspect-[4/5]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/60 via-transparent to-transparent"></div>
+                  
+                  {/* Floating Info Card */}
+                  <div className="absolute bottom-6 left-6 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-white max-w-[200px] animate-float">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Tempo Real</span>
+                    </div>
+                    <p className="text-xs font-medium leading-tight">Evolução clínica monitorada instantaneamente.</p>
+                  </div>
                 </div>
-                <div className="hidden sm:flex items-center gap-3 bg-white/90 backdrop-blur px-4 py-2 rounded-2xl border border-white/20 shadow-lg">
-                  <Users2 className="h-4 w-4 text-sky-600" />
-                  <span className="text-[10px] md:text-sm font-bold text-slate-900">+500 Pacientes Atendidos</span>
-                </div>
+
+                {/* Decorative Shapes */}
+                <div className="absolute -top-6 -right-6 h-24 w-24 bg-rose-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
+                <div className="absolute -bottom-8 -left-8 h-32 w-32 bg-sky-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000" />
               </div>
             </div>
           </div>
