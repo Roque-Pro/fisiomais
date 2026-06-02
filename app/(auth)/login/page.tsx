@@ -4,13 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { LogIn } from 'lucide-react';
+import { LogIn, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +42,19 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)} />
         </div>
         {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
+        <button disabled={loading} className="btn-primary w-full">
+          <LogIn className="h-4 w-4" />
+          {loading ? 'Entrando…' : 'Entrar'}
+        </button>
+      </form>
+
+      <p className="mt-5 text-center text-sm text-slate-600">
+        Não tem conta? <Link href="/cadastro" className="font-medium text-brand-700 hover:underline">Cadastre-se</Link>
+      </p>
+    </div>
+  );
+}
+t-sm text-rose-700">{error}</p>}
         <button disabled={loading} className="btn-primary w-full">
           <LogIn className="h-4 w-4" />
           {loading ? 'Entrando…' : 'Entrar'}

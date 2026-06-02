@@ -24,6 +24,7 @@ function CadastroForm() {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [referredBy, setReferredBy] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,8 +92,23 @@ function CadastroForm() {
         </div>
         <div>
           <label className="label">Senha</label>
-          <input className="input" type="password" required minLength={6} value={password}
-            onChange={(e) => setPassword(e.target.value)} />
+          <div className="relative">
+            <input 
+              className="input pr-10" 
+              type={showPassword ? "text" : "password"} 
+              required 
+              minLength={6} 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} 
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
         {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
         <button disabled={loading} className="btn-primary w-full">
