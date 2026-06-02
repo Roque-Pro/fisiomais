@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { 
   Sparkles, 
@@ -13,17 +15,38 @@ import {
   ChevronRight,
   Share2
 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/client';
+import { useEffect, useState } from 'react';
 
-export const dynamic = 'force-dynamic';
+interface NewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  source: string;
+  published_at: string;
+}
 
-export default async function Home() {
+export default function Home() {
+  const [recentNews, setRecentNews] = useState<NewsItem[]>([]);
   const supabase = createClient();
-  const { data: recentNews } = await supabase
-    .from('news')
-    .select('*')
-    .order('published_at', { ascending: false })
-    .limit(3);
+
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from('news')
+        .select('id, title, summary, source, published_at')
+        .order('published_at', { ascending: false })
+        .limit(3);
+      if (data) setRecentNews(data);
+    }
+    load();
+  }, []);
+
+  const handleShare = (title: string) => {
+    const text = encodeURIComponent(`Acabei de ver essa notícia no Fisio+: ${title}\n\nConfira no sistema: `);
+    const url = encodeURIComponent(window.location.origin);
+    window.open(`https://wa.me/?text=${text}${url}`, '_blank');
+  };
 
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-100 via-white to-rose-50">
@@ -83,7 +106,7 @@ export default async function Home() {
           </Link>
         </div>
 
-        {recentNews && recentNews.length > 0 ? (
+        {recentNews.length > 0 ? (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {recentNews.map((item) => (
               <div key={item.id} className="group flex flex-col h-full rounded-3xl p-8 transition-all duration-300 border border-white bg-white/60 shadow-xl shadow-slate-200/50 backdrop-blur-sm hover:shadow-2xl hover:bg-white hover:-translate-y-2 relative overflow-hidden">
@@ -113,10 +136,7 @@ export default async function Home() {
                     <ChevronRight className="h-4 w-4" />
                   </Link>
                   <button 
-                    onClick={() => {
-                      const text = encodeURIComponent(`Acabei de ver essa notícia no Fisio+: ${item.title}\n\nConfira no sistema: `);
-                      window.open(`https://wa.me/?text=${text}${encodeURIComponent(window.location.origin)}`, '_blank');
-                    }}
+                    onClick={() => handleShare(item.title)}
                     className="p-2 bg-slate-100 hover:bg-brand-500 hover:text-white rounded-full transition-all"
                     title="Compartilhar"
                   >
