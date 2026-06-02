@@ -330,17 +330,23 @@ async function getRoundedImageData(url: string): Promise<string | null> {
           return;
         }
 
-        // Fundo branco para evitar transparência preta/quadrificada no PDF
+        // Fundo branco TOTAL para os cantos não ficarem pretos no PDF
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, size, size);
 
+        // Desenhar círculo com anti-aliasing melhorado
+        ctx.save();
         ctx.beginPath();
         ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+        ctx.closePath();
         ctx.clip();
-        ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
         
-        // JPEG é mais leve e compatível
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        // Desenhar a imagem centralizada
+        ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
+        ctx.restore();
+        
+        // JPEG de alta qualidade, mas sem transparência (cantos brancos)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
         URL.revokeObjectURL(objectUrl);
         resolve(dataUrl);
       };
@@ -371,11 +377,11 @@ async function getLogoImageData(): Promise<string | null> {
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          // Preencher fundo com branco para remover transparência problemática no PDF
+          // Manter fundo branco para o logo também, evitando artefatos de transparência
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0);
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
           URL.revokeObjectURL(objectUrl);
           resolve(dataUrl);
         } else {
