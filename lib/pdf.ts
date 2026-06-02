@@ -387,29 +387,39 @@ async function getLogoImageData(): Promise<string | null> {
 export async function downloadDigitalCardPdf(profile: Profile & { theme?: { primary?: string } }) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [90, 55] });
   const emerald500 = '#10b981';
+  const emerald600 = '#059669';
   const emerald900 = '#064e3b';
-  const slate500 = '#64748b';
+  const slate400 = '#94a3b8';
+  const slate600 = '#475569';
   const slate800 = '#1e293b';
 
-  // 1. Background
+  // 1. Background com degradê sutil simulado
   doc.setFillColor(255, 255, 255);
   doc.rect(0, 0, 90, 55, 'F');
   
-  // Subtle top bar
-  doc.setFillColor(240, 253, 244); // Emerald 50
-  doc.rect(0, 0, 90, 15, 'F');
-  doc.setFillColor(emerald500);
-  doc.rect(0, 14.5, 90, 0.5, 'F');
+  // Faixa lateral esquerda decorativa
+  doc.setFillColor(240, 253, 244);
+  doc.rect(0, 0, 25, 55, 'F');
+  
+  // Linha divisória elegante
+  doc.setDrawColor(209, 250, 229);
+  doc.setLineWidth(0.5);
+  doc.line(25, 0, 25, 55);
 
-  // 2. Photo (Circular)
-  const px = 15, py = 18, pr = 10;
+  // 2. Photo (Circular) - Sem bordas pretas, com sombra suave simulada
+  const px = 12.5, py = 18, pr = 9;
   if (profile.photo_url) {
     const data = await getRoundedImageData(profile.photo_url);
     if (data) {
       try {
-        doc.addImage(data, 'PNG', px - pr, py - pr, pr * 2, pr * 2, undefined, 'FAST');
+        // Círculo de fundo branco para a foto
+        doc.setFillColor(255, 255, 255);
+        doc.circle(px, py, pr, 'F');
+        doc.addImage(data, 'JPEG', px - pr, py - pr, pr * 2, pr * 2, undefined, 'MEDIUM');
+        
+        // Borda fina na cor da marca
         doc.setDrawColor(emerald500);
-        doc.setLineWidth(0.3);
+        doc.setLineWidth(0.2);
         doc.circle(px, py, pr, 'S');
       } catch (e) {
         doc.setFillColor(emerald500);
@@ -425,82 +435,87 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
     doc.text((profile.full_name?.[0] ?? 'F').toUpperCase(), px, py + 2, { align: 'center' });
   }
 
-  // 3. Name and Title
+  // 3. Official Logo (Símbolo de Fisioterapia)
+  const logoData = await getLogoImageData();
+  if (logoData) {
+    try {
+      // Posicionado abaixo da foto na faixa lateral
+      doc.addImage(logoData, 'JPEG', px - 4, 38, 8, 8, undefined, 'MEDIUM');
+    } catch (e) {
+      console.error('Logo render error:', e);
+    }
+  }
+  doc.setFontSize(5);
+  doc.setTextColor(emerald500);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FISIO+', px, 48.5, { align: 'center' });
+
+  // 4. Name and Professional Info
   doc.setTextColor(emerald900);
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.text(profile.full_name ?? 'Fisioterapeuta', 30, 9);
+  doc.setFontSize(15);
+  doc.text(profile.full_name ?? 'Fisioterapeuta', 30, 12);
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(7);
-  doc.setTextColor(slate500);
-  doc.text(`CREFITO: ${profile.crefito ?? '—'}`, 30, 13);
+  doc.setTextColor(emerald600);
+  doc.text(`CREFITO: ${profile.crefito ?? '—'}`, 30, 16);
 
-  // 4. Specialties
-  let sy = 22;
+  // Divisor horizontal sutil
+  doc.setDrawColor(241, 245, 249);
+  doc.setLineWidth(0.2);
+  doc.line(30, 18, 85, 18);
+
+  // 5. Specialties
+  let sy = 23;
   if (profile.specialties?.length) {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
-    doc.setTextColor(emerald500);
+    doc.setTextColor(slate800);
     const specs = profile.specialties.join('  •  ');
     const specLines = doc.splitTextToSize(specs, 55);
     doc.text(specLines, 30, sy);
     sy += (specLines.length * 4);
   }
 
-  // 5. Bio
+  // 6. Bio
   if (profile.bio) {
     doc.setFont('helvetica', 'italic');
     doc.setFontSize(7);
-    doc.setTextColor(slate800);
+    doc.setTextColor(slate600);
     const bioLines = doc.splitTextToSize(profile.bio, 55);
-    doc.text(bioLines, 30, sy + 2);
+    doc.text(bioLines, 30, sy + 1);
   }
 
-  // 6. Contact Info
+  // 7. Contact Info Footer Card
   doc.setFillColor(248, 250, 252);
-  doc.rect(0, 42, 90, 13, 'F');
-  doc.setDrawColor(226, 232, 240);
-  doc.line(0, 42, 90, 42);
-
-  doc.setFont('helvetica', 'normal');
+  doc.roundedRect(28, 41, 58, 11, 2, 2, 'F');
+  
+  doc.setFont('helvetica', 'bold');
   doc.setFontSize(7);
   doc.setTextColor(slate800);
   
-  let cy = 46.5;
   if (profile.whatsapp) {
-    doc.setFont('helvetica', 'bold');
-    doc.text(`WhatsApp: ${profile.whatsapp}`, 6, cy);
-    doc.setFont('helvetica', 'normal');
+    doc.text(`WhatsApp: ${profile.whatsapp}`, 32, 45);
   }
   if (profile.email) {
-    doc.text(`E-mail: ${profile.email}`, 6, cy + 4);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.text(`E-mail: ${profile.email}`, 32, 49);
   }
   
   if (profile.workplace || profile.city) {
     const loc = [profile.workplace, profile.city].filter(Boolean).join(', ');
-    const locLines = doc.splitTextToSize(loc, 40);
-    doc.text(locLines, 50, cy);
+    const locLines = doc.splitTextToSize(loc, 25);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6);
+    doc.setTextColor(slate600);
+    doc.text(locLines, 60, 45);
   }
-
-  // 7. Official Logo
-  const logoData = await getLogoImageData();
-  if (logoData) {
-    try {
-      doc.addImage(logoData, 'PNG', 78, 44, 8, 10, undefined, 'FAST');
-    } catch (e) {
-      console.error('Logo render error:', e);
-    }
-  }
-
-  doc.setFontSize(5);
-  doc.setTextColor(emerald500);
-  doc.text('Fisio+', 82, 53, { align: 'center' });
 
   const fileName = `cartao-${(profile.full_name ?? 'fisio').replace(/\s+/g, '-').toLowerCase()}.pdf`;
   
   if (typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-    // Better handling for mobile: return blob for sharing or open in new tab
     return {
       blob: doc.output('blob'),
       fileName,
