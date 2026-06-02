@@ -330,7 +330,7 @@ async function getRoundedImageData(url: string): Promise<string | null> {
           return;
         }
 
-        // Fundo branco para evitar transparência preta
+        // Fundo branco para evitar transparência preta/quadrificada no PDF
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, size, size);
 
@@ -339,7 +339,8 @@ async function getRoundedImageData(url: string): Promise<string | null> {
         ctx.clip();
         ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size);
         
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+        // JPEG é mais leve e compatível
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
         URL.revokeObjectURL(objectUrl);
         resolve(dataUrl);
       };
@@ -370,8 +371,11 @@ async function getLogoImageData(): Promise<string | null> {
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         if (ctx) {
+          // Preencher fundo com branco para remover transparência problemática no PDF
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0);
-          const dataUrl = canvas.toDataURL('image/png'); // Use PNG for logo to keep transparency if needed
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
           URL.revokeObjectURL(objectUrl);
           resolve(dataUrl);
         } else {
@@ -419,7 +423,7 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
       try {
         doc.setFillColor(255, 255, 255);
         doc.circle(px, py, pr, 'F');
-        doc.addImage(data, 'JPEG', px - pr, py - pr, pr * 2, pr * 2, undefined, 'HIGH');
+        doc.addImage(data, 'JPEG', px - pr, py - pr, pr * 2, pr * 2, undefined, 'FAST');
         
         doc.setDrawColor(emerald500);
         doc.setLineWidth(0.2);
@@ -442,8 +446,8 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
   const logoData = await getLogoImageData();
   if (logoData) {
     try {
-      // Aumentado para 12x12 ou similar
-      doc.addImage(logoData, 'PNG', px - 6, 35, 12, 12, undefined, 'HIGH');
+      // Usando JPEG com fundo branco e compressão FAST para estabilidade mobile
+      doc.addImage(logoData, 'JPEG', px - 7.5, 35, 15, 15, undefined, 'FAST');
     } catch (e) {
       console.error('Logo render error:', e);
     }
@@ -451,7 +455,7 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
   doc.setFontSize(6);
   doc.setTextColor(emerald500);
   doc.setFont('helvetica', 'bold');
-  doc.text('FISIO+', px, 49.5, { align: 'center' });
+  doc.text('FISIO+', px, 51, { align: 'center' });
 
   // 4. Name and Professional Info
   doc.setTextColor(emerald900);
