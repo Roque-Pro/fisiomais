@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { ArrowRight, ClipboardList, FileText, Palette, Plus, TrendingUp, Users } from 'lucide-react';
+import { ArrowRight, ClipboardList, FileText, Newspaper, Palette, Plus, TrendingUp, Users } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { DashboardCharts } from '@/components/dashboard-charts';
 
@@ -35,6 +35,12 @@ export default async function DashboardPage() {
     .select('session_date')
     .eq('profile_id', user.id)
     .gte('session_date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+
+  const { data: recentNews } = await supabase
+    .from('news')
+    .select('id, title, source, published_at')
+    .order('published_at', { ascending: false })
+    .limit(3);
 
   const firstName = (profile?.full_name ?? 'Profissional').split(' ')[0];
 
@@ -141,6 +147,38 @@ export default async function DashboardPage() {
                 </div>
               </Link>
             </div>
+          </div>
+
+          <div className="card">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-brand-900 flex items-center gap-2">
+                <Newspaper className="h-5 w-5 text-brand-500" /> Fisio News
+              </h2>
+              <Link href="/fisio-news" className="text-xs font-bold text-brand-700 hover:underline">
+                Ver todas
+              </Link>
+            </div>
+            {recentNews && recentNews.length > 0 ? (
+              <div className="space-y-3">
+                {recentNews.map((n) => (
+                  <Link key={n.id} href="/fisio-news" className="block p-3 rounded-xl border border-slate-50 bg-slate-50/50 hover:border-brand-200 hover:bg-brand-50/30 transition-all group">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-black text-brand-600 uppercase tracking-tighter bg-brand-50 px-2 py-0.5 rounded-full border border-brand-100">
+                        {n.source}
+                      </span>
+                      <span className="text-[9px] text-slate-400 font-bold uppercase">
+                        {new Date(n.published_at).toLocaleDateString('pt-BR')}
+                      </span>
+                    </div>
+                    <div className="text-sm font-bold text-slate-900 line-clamp-2 leading-tight group-hover:text-brand-600 transition-colors">
+                      {n.title}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center py-4 text-sm text-slate-400 italic">Buscando novidades...</p>
+            )}
           </div>
         </div>
       </div>
