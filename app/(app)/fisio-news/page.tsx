@@ -1,6 +1,6 @@
 'use client';
 
-import { Newspaper, ExternalLink, Calendar, Globe, MapPin, ChevronRight, Plus } from 'lucide-react';
+import { Newspaper, ExternalLink, Calendar, MapPin, ChevronRight, Plus, RefreshCw } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
 
@@ -14,173 +14,139 @@ interface NewsItem {
 }
 
 export default function FisioNewsPage() {
-  const [allNews, setAllNews] = useState<NewsItem[]>([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [visibleIntl, setVisibleIntl] = useState(3);
-  const [visibleBr, setVisibleBr] = useState(3);
+  const [visibleCount, setVisibleCount] = useState(6);
 
   const supabase = createClient();
 
+  async function loadNews() {
+    setLoading(true);
+    const { data } = await supabase
+      .from('news')
+      .select('*')
+      .order('published_at', { ascending: false })
+      .limit(60);
+    
+    if (data) setNews(data);
+    setLoading(false);
+  }
+
   useEffect(() => {
-    async function loadNews() {
-      const { data } = await supabase
-        .from('news')
-        .select('*')
-        .order('published_at', { ascending: false })
-        .limit(60);
-      
-      if (data) setAllNews(data);
-      setLoading(false);
-    }
     loadNews();
   }, []);
 
-  const brNews = allNews.filter(n => n.source.startsWith('BR'));
-  const intlNews = allNews.filter(n => !n.source.startsWith('BR'));
-
-  const NewsCard = ({ item, variant }: { item: NewsItem, variant: 'intl' | 'br' }) => {
-    const isIntl = variant === 'intl';
+  const NewsCard = ({ item }: { item: NewsItem }) => {
     return (
-      <article className={`group flex flex-col h-full rounded-2xl p-5 transition-all duration-300 border shadow-sm hover:shadow-xl relative overflow-hidden ${
-        isIntl 
-          ? 'bg-gradient-to-br from-blue-50 to-white border-blue-100 hover:border-blue-400' 
-          : 'bg-gradient-to-br from-emerald-50 to-white border-emerald-100 hover:border-emerald-400'
-      }`}>
-        <div className="flex-1 space-y-3">
+      <article className="group flex flex-col h-full rounded-2xl p-6 transition-all duration-300 border border-slate-100 bg-white shadow-sm hover:shadow-xl hover:border-brand-200 relative overflow-hidden">
+        <div className="flex-1 space-y-4">
           <div className="flex items-center justify-between">
-            <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full ${
-              isIntl ? 'bg-blue-600 text-white' : 'bg-emerald-600 text-white'
-            }`}>
-              {isIntl ? <Globe className="h-3 w-3" /> : <MapPin className="h-3 w-3" />}
-              <span>{item.source}</span>
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-tighter px-3 py-1 rounded-full bg-brand-50 text-brand-700 border border-brand-100">
+              <MapPin className="h-3 w-3" />
+              <span>{item.source.replace(/^BR \| /, '')}</span>
             </div>
             <span className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
               <Calendar className="h-3 w-3" />
               {new Date(item.published_at).toLocaleDateString('pt-BR')}
             </span>
           </div>
-          <h3 className={`font-bold leading-tight line-clamp-2 transition-colors ${
-            isIntl ? 'text-blue-950 group-hover:text-blue-700' : 'text-emerald-950 group-hover:text-emerald-700'
-          }`}>
+          <h3 className="font-bold text-lg leading-tight line-clamp-2 text-slate-900 group-hover:text-brand-600 transition-colors">
             {item.title}
           </h3>
-          <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
+          <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed">
             {item.summary}
           </p>
         </div>
-        <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
-          <a href={item.url} target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 text-xs font-bold transition-transform group-hover:translate-x-1 ${
-            isIntl ? 'text-blue-600' : 'text-emerald-600'
-          }`}>
-            {isIntl ? 'Full Access' : 'Acesso Completo'}
-            <ChevronRight className="h-3 w-3" />
+        <div className="mt-6 pt-5 border-t border-slate-50 flex items-center justify-between">
+          <a 
+            href={item.url} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="inline-flex items-center gap-2 text-xs font-black text-brand-600 hover:text-brand-700 transition-all group-hover:translate-x-1"
+          >
+            LER NOTÍCIA COMPLETA
+            <ChevronRight className="h-4 w-4" />
           </a>
         </div>
       </article>
     );
   };
 
-  if (loading) {
+  if (loading && news.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500"></div>
-        <p className="text-slate-500 font-medium animate-pulse">Sincronizando novidades globais...</p>
+        <p className="text-slate-500 font-medium animate-pulse">Carregando as últimas da Fisioterapia...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-12 pb-20">
-      <header className="relative p-8 rounded-3xl bg-slate-900 overflow-hidden shadow-2xl">
+    <div className="space-y-10 pb-20">
+      <header className="relative p-10 rounded-3xl bg-gradient-to-br from-brand-900 to-brand-800 overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 p-12 opacity-10">
           <Newspaper className="h-40 w-40 text-white" />
         </div>
-        <div className="relative z-10 space-y-2">
-          <h1 className="text-3xl font-black text-white flex items-center gap-3">
-            <span className="bg-brand-500 p-2 rounded-xl"><Newspaper className="h-7 w-7 text-white" /></span>
-            FISIO NEWS <span className="text-brand-400 italic">HUB</span>
-          </h1>
-          <p className="text-slate-300 text-sm max-w-md font-medium">
-            Inteligência e curadoria técnica em tempo real. O conhecimento que move a sua carreira.
+        <div className="relative z-10 space-y-3">
+          <div className="flex items-center gap-3">
+            <span className="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+              <Newspaper className="h-8 w-8 text-brand-300" />
+            </span>
+            <h1 className="text-4xl font-black text-white tracking-tighter">
+              FISIO<span className="text-brand-400">NEWS</span>
+            </h1>
+          </div>
+          <p className="text-brand-100 text-base max-w-lg font-medium leading-relaxed">
+            As notícias mais relevantes e recentes da fisioterapia brasileira em um só lugar.
           </p>
         </div>
       </header>
 
-      {/* Seção Internacional */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between border-b border-blue-100 pb-4">
-          <div className="space-y-1">
-            <h2 className="flex items-center gap-2 text-xl font-black text-blue-900 uppercase tracking-tight">
-              <Globe className="h-6 w-6 text-blue-600" /> Global Research
-            </h2>
-            <p className="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Scientific Evidence & Trends</p>
-          </div>
-          <span className="text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-            {intlNews.length} articles
-          </span>
+      <section className="space-y-8">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-6">
+          <h2 className="flex items-center gap-3 text-2xl font-black text-slate-900 uppercase tracking-tight">
+            <div className="h-8 w-1.5 bg-brand-500 rounded-full"></div>
+            Destaques Nacionais
+          </h2>
+          <button 
+            onClick={loadNews}
+            className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-brand-600"
+            title="Atualizar lista"
+          >
+            <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
         
-        {intlNews.length === 0 ? (
-          <div className="bg-blue-50/50 rounded-2xl p-10 text-center border border-dashed border-blue-200">
-             <p className="text-blue-400 font-medium">No international news at the moment.</p>
+        {news.length === 0 ? (
+          <div className="bg-slate-50 rounded-3xl p-16 text-center border-2 border-dashed border-slate-200">
+             <p className="text-slate-400 font-bold text-lg">Buscando novas atualizações...</p>
           </div>
         ) : (
-          <div className="space-y-8">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {intlNews.slice(0, visibleIntl).map(item => (
-                <NewsCard key={item.id} item={item} variant="intl" />
+          <div className="space-y-10">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {news.slice(0, visibleCount).map(item => (
+                <NewsCard key={item.id} item={item} />
               ))}
             </div>
-            {visibleIntl < intlNews.length && (
+            
+            {visibleCount < news.length && (
               <button 
-                onClick={() => setVisibleIntl(prev => prev + 6)}
-                className="w-full py-4 bg-white border-2 border-blue-100 rounded-2xl text-blue-600 font-black text-sm hover:bg-blue-50 hover:border-blue-300 transition-all flex items-center justify-center gap-2 group"
+                onClick={() => setVisibleCount(prev => prev + 6)}
+                className="w-full py-6 bg-white border-2 border-slate-100 rounded-3xl text-slate-900 font-black text-sm hover:border-brand-500 hover:text-brand-600 hover:shadow-xl transition-all flex items-center justify-center gap-3 group shadow-sm"
               >
-                <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform" />
-                EXIBIR MAIS CONTEÚDO GLOBAL
+                <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform text-brand-500" />
+                VER MAIS NOTÍCIAS DA FISIOTERAPIA
               </button>
             )}
           </div>
         )}
       </section>
 
-      {/* Seção Nacional */}
-      <section className="space-y-6">
-        <div className="flex items-center justify-between border-b border-emerald-100 pb-4">
-          <div className="space-y-1">
-            <h2 className="flex items-center gap-2 text-xl font-black text-emerald-900 uppercase tracking-tight">
-              <MapPin className="h-6 w-6 text-emerald-600" /> Brasil Profissional
-            </h2>
-            <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Conselhos, Carreira e Técnica</p>
-          </div>
-          <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full">
-            {brNews.length} artigos
-          </span>
-        </div>
-        
-        {brNews.length === 0 ? (
-          <div className="bg-emerald-50/50 rounded-2xl p-10 text-center border border-dashed border-emerald-200">
-             <p className="text-emerald-400 font-medium">Nenhuma notícia nacional encontrada.</p>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {brNews.slice(0, visibleBr).map(item => (
-                <NewsCard key={item.id} item={item} variant="br" />
-              ))}
-            </div>
-            {visibleBr < brNews.length && (
-              <button 
-                onClick={() => setVisibleBr(prev => prev + 6)}
-                className="w-full py-4 bg-white border-2 border-emerald-100 rounded-2xl text-emerald-600 font-black text-sm hover:bg-emerald-50 hover:border-emerald-300 transition-all flex items-center justify-center gap-2 group"
-              >
-                <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform" />
-                VER MAIS NOTÍCIAS DO BRASIL
-              </button>
-            )}
-          </div>
-        )}
-      </section>
+      <footer className="bg-slate-50 rounded-3xl p-8 border border-slate-100 text-center">
+        <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
+          Curadoria inteligente processada em tempo real por IA
+        </p>
+      </footer>
     </div>
   );
 }
