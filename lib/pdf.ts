@@ -513,30 +513,36 @@ export async function downloadDigitalCardPdf(profile: Profile & { theme?: { prim
     doc.text(bioLines, 30, sy + 1);
   }
 
-  // 7. Contact Info Footer Card
+  // 7. Contact Info Footer Card - Agora vertical para evitar sobreposição
+  const hasLocation = !!(profile.workplace || profile.city);
+  const footerHeight = hasLocation ? 15 : 11;
   doc.setFillColor(248, 250, 252);
-  doc.roundedRect(28, 41, 58, 11, 2, 2, 'F');
+  doc.roundedRect(28, 39, 58, footerHeight, 2, 2, 'F');
   
+  let currentY = 43;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7);
   doc.setTextColor(slate800);
   
   if (profile.whatsapp) {
-    doc.text(`WhatsApp: ${profile.whatsapp}`, 32, 45);
+    doc.text(`WhatsApp: ${profile.whatsapp}`, 32, currentY);
+    currentY += 4;
   }
+  
   if (profile.email) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6.5);
-    doc.text(`E-mail: ${profile.email}`, 32, 49);
+    doc.text(`E-mail: ${profile.email}`, 32, currentY);
+    currentY += 3.5;
   }
   
-  if (profile.workplace || profile.city) {
+  if (hasLocation) {
     const loc = [profile.workplace, profile.city].filter(Boolean).join(', ');
-    const locLines = doc.splitTextToSize(loc, 25);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6);
     doc.setTextColor(slate600);
-    doc.text(locLines, 60, 45);
+    const locLines = doc.splitTextToSize(loc, 50);
+    doc.text(locLines, 32, currentY);
   }
 
   const fileName = `cartao-${(profile.full_name ?? 'fisio').replace(/\s+/g, '-').toLowerCase()}.pdf`;
