@@ -13,6 +13,8 @@ type Profile = {
   full_name: string;
   crefito: string;
   email: string;
+  whatsapp?: string;
+  city?: string;
   trial_started_at: string;
   plan_status: string;
   created_at: string;
