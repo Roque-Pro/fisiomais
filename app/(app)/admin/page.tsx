@@ -41,6 +41,8 @@ export default async function AdminPage() {
 
   const total = profiles?.length ?? 0;
   const authorized = profiles?.filter((p) => p.plan_status === 'active').length ?? 0;
+  const inTrial = profiles?.filter((p) => p.plan_status === 'trial').length ?? 0;
+  const expired = profiles?.filter((p) => p.plan_status === 'expired' || p.plan_status === 'canceled').length ?? 0;
   
   const totalPatients = statsList.reduce((acc, p) => acc + p.patients_count, 0);
   const totalAssessments = statsList.reduce((acc, p) => acc + p.assessments_count, 0);
@@ -59,11 +61,12 @@ export default async function AdminPage() {
         <UpdateNewsButton />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Stat label="Profissionais" value={total} subLabel={`${authorized} autorizados`} />
-        <Stat label="Total Pacientes" value={totalPatients} />
-        <Stat label="Avaliações" value={totalAssessments} />
-        <Stat label="Evoluções" value={totalEvolutions} />
+      <div className="grid gap-4 md:grid-cols-5">
+        <Stat label="Profissionais" value={total} subLabel={`${authorized} ativos`} />
+        <Stat label="Em Trial" value={inTrial} subLabel="período grátis" />
+        <Stat label="Expirados" value={expired} subLabel="não assinaram" />
+        <Stat label="Pacientes" value={totalPatients} />
+        <Stat label="Avaliações" value={totalEvolutions} />
       </div>
 
       {/* Seção de Gráficos Diversificados */}
@@ -88,13 +91,16 @@ export default async function AdminPage() {
             <tbody className="divide-y divide-slate-100">
               {statsList.map((p) => {
                 const isAuthorized = p.plan_status === 'active';
+                const isTrial = p.plan_status === 'trial';
+                const isExpired = p.plan_status === 'expired' || p.plan_status === 'canceled';
                 const daysSinceJoin = Math.floor((new Date().getTime() - new Date(p.created_at).getTime()) / (1000 * 60 * 60 * 24));
+                const statusColor = isAuthorized ? 'bg-emerald-500' : isTrial ? 'bg-amber-500' : 'bg-rose-500';
                 
                 return (
                   <tr key={p.id} className="hover:bg-brand-50/30 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`h-2 w-2 rounded-full ${isAuthorized ? 'bg-emerald-500' : 'bg-rose-500'} animate-pulse`} />
+                        <div className={`h-2 w-2 rounded-full ${statusColor} animate-pulse`} />
                         <div>
                           <div className="font-bold text-brand-950">{p.full_name}</div>
                           <div className="text-xs text-slate-500">{p.email}</div>
@@ -129,9 +135,13 @@ export default async function AdminPage() {
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200 uppercase">
                           <ShieldCheck className="h-3 w-3" /> Ativo
                         </span>
+                      ) : isTrial ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 border border-amber-200 uppercase">
+                          Trial
+                        </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-100 px-2.5 py-0.5 text-[10px] font-bold text-rose-700 border border-rose-200 uppercase">
-                          Bloqueado
+                          Expirado
                         </span>
                       )}
                     </td>

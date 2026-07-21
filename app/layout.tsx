@@ -17,9 +17,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Fisio Saúde — Sistema Fisio+',
+  title: 'Fisio+ — Sistema para Fisioterapeuta | Gestão Clínica e Ficha de Avaliação',
   description:
-    'Portal interno da Fisio Saúde para gestão clínica e atendimento de excelência aos nossos pacientes.',
+    'O Fisio+ é o sistema para fisioterapeuta que une ficha de avaliação fisioterapêutica, anamnese, evolução por sessão, relatórios em PDF, CREFITO digital e gestão completa da sua clínica. Experimente 30 dias grátis.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

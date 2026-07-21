@@ -60,7 +60,11 @@ function CadastroForm() {
   return (
     <div className="card">
       <h1 className="mb-1 text-2xl font-bold text-brand-900">Crie sua conta</h1>
-      <p className="mb-6 text-sm text-slate-600">30 dias grátis. Sem cartão de crédito.</p>
+      <p className="mb-6 text-sm text-slate-600">30 dias grátis. Depois apenas <strong>R$ 19,90/mês</strong>. Sem cartão de crédito agora.</p>
+
+      <div className="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800">
+        <strong>🕐 Teste grátis de 30 dias!</strong> Você terá acesso completo ao sistema. Quando o trial acabar, assine por apenas R$ 19,90/mês para continuar.
+      </div>
 
       {referredBy && (
         <div className="mb-4 rounded-xl bg-brand-50 px-3 py-2 text-sm text-brand-700">
