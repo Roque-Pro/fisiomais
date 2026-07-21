@@ -123,7 +123,7 @@ export default function Home() {
               </h1>
 
               <p className="max-w-xl text-lg leading-relaxed text-slate-600 font-medium">
-                O <span className="text-slate-900 font-bold underline decoration-sky-400 decoration-4">Fisio+</span> é o sistema para fisioterapeuta que une prontuário digital, ficha de avaliação fisioterapêutica completa, evolução clínica por sessão e relatórios em PDF — tudo em um só lugar e pensado para o fisioterapeuta brasileiro.
+                O <span className="text-slate-900 font-bold underline decoration-sky-400 decoration-4">Fisio+</span> é o sistema para fisioterapeuta que une prontuário digital, ficha de avaliação fisioterapêutica completa, agenda, evolução clínica por sessão e relatórios em PDF — um verdadeiro software de gestão para clínica de fisioterapia, tudo em um só lugar.
               </p>
 
               <div className="flex flex-wrap items-center gap-3">
@@ -175,7 +175,7 @@ export default function Home() {
             Tudo que você precisa em <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">um só lugar</span>
           </h2>
           <p className="mt-4 text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-            Ficha de anamnese, avaliações, evoluções, relatórios em PDF e atualização profissional — o Fisio+ centraliza a gestão da sua clínica para você focar no atendimento.
+            Um aplicativo completo para fisioterapeuta com ficha de anamnese, avaliações, evoluções e relatórios em PDF — o Fisio+ centraliza a gestão da sua clínica para você focar no atendimento.
           </p>
         </div>
 
@@ -183,7 +183,7 @@ export default function Home() {
           {[
             { Icon: Heart, t: 'Prontuário Digital', d: 'Cadastro completo com dados pessoais, histórico clínico, medicações, queixa principal e evolução — tudo organizado por paciente.', color: 'text-rose-500', bg: 'bg-rose-100/50' },
             { Icon: ClipboardCheck, t: 'Ficha de Avaliação', d: 'Ficha de avaliação fisioterapêutica completa para 6 especialidades: Pilates, Hidroterapia, RPG, Ortopedia, Neurofuncional e Esportiva.', color: 'text-sky-500', bg: 'bg-sky-100/50' },
-            { Icon: BarChart3, t: 'Evolução por Sessão', d: 'Registre dor (0-10) e mobilidade (0-10) a cada sessão. Gráfico de evolução no dashboard para decisões baseadas em dados.', color: 'text-emerald-500', bg: 'bg-emerald-100/50' },
+            { Icon: BarChart3, t: 'Evolução por Sessão', d: 'Sistema de evolução fisioterapia completo: registre dor (0-10) e mobilidade (0-10) a cada sessão com gráfico no dashboard.', color: 'text-emerald-500', bg: 'bg-emerald-100/50' },
             { Icon: FileText, t: 'Relatórios em PDF', d: 'Avaliações, evoluções e cartão digital profissional em PDF com um clique. Compartilhe com médicos, pacientes e convênios.', color: 'text-amber-500', bg: 'bg-amber-100/50' },
             { Icon: Palette, t: 'Personalização Completa', d: 'Temas com 6 paletas de cores, seleção de fontes, arredondamento e estilo de botões. Sua identidade visual em cada detalhe.', color: 'text-indigo-500', bg: 'bg-indigo-100/50' },
             { Icon: Newspaper, t: 'Fisio News Hub', d: 'Notícias curadas do mundo da fisioterapia via RSS + IA (Google Gemini). Mantenha-se atualizado sem sair do sistema.', color: 'text-violet-500', bg: 'bg-violet-100/50' },
@@ -209,7 +209,7 @@ export default function Home() {
               Avaliações para <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">6 especialidades</span>
             </h2>
             <p className="mt-4 text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-              Formulários dinâmicos adaptados para cada área de atuação, com campos específicos e escalas validadas.
+              Um sistema para fisioterapia e pilates com formulários dinâmicos adaptados para cada área de atuação, campos específicos e escalas validadas.
             </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
@@ -232,7 +232,7 @@ export default function Home() {
             Banco de <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">Escalas Profissionais</span>
           </h2>
           <p className="mt-4 text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-            Sua ficha de avaliação fisioterapêutica com mais de 20 escalas validadas internacionalmente integradas diretamente nos formulários.
+            O modelo de ficha de avaliação fisioterapêutica mais completo, com mais de 20 escalas validadas internacionalmente integradas diretamente nos formulários.
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
@@ -258,7 +258,7 @@ export default function Home() {
               Sua identidade profissional em <span className="bg-gradient-to-r from-violet-600 to-sky-600 bg-clip-text text-transparent">formato digital</span>
             </h2>
             <p className="mt-4 text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-              Seu CREFITO digital, cartão de visita profissional e temas personalizados — tudo que você precisa para apresentar e divulgar seu trabalho.
+              Sua carteira CREFITO digital, cartão de visita profissional e temas personalizados — tudo que você precisa para apresentar e divulgar seu trabalho.
             </p>
           </div>
 

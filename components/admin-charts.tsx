@@ -7,7 +7,7 @@ export function AdminCharts({ statsList }: { statsList: any[] }) {
   const rankingData = statsList
     .map(p => ({
       id: p.id,
-      name: p.full_name, // Unique identifier
+      name: p.full_name,
       shortName: p.full_name.split(' ')[0],
       total: p.evolutions_count + p.assessments_count,
       avaliacoes: p.assessments_count,
@@ -20,7 +20,7 @@ export function AdminCharts({ statsList }: { statsList: any[] }) {
   const patientsData = statsList
     .map(p => ({
       id: p.id,
-      name: p.full_name, // Unique identifier
+      name: p.full_name,
       shortName: p.full_name.split(' ')[0],
       value: p.patients_count
     }))
