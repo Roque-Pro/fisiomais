@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { Check, Sparkles, Clock, ArrowLeft, Loader2 } from 'lucide-react';
+import { Check, Sparkles, Clock, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -13,7 +13,6 @@ export default function PlanosPage() {
   const [trialEndDate, setTrialEndDate] = useState<Date | null>(null);
   const [daysLeft, setDaysLeft] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [generatingLink, setGeneratingLink] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -36,39 +35,8 @@ export default function PlanosPage() {
   }, [supabase, router]);
 
   async function handleAssinar() {
-    setGeneratingLink(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name, email')
-        .eq('id', user.id)
-        .single();
-
-      const response = await fetch('/api/mercado-pago/create-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          email: profile?.email || user.email,
-          name: profile?.full_name || 'Profissional',
-        }),
-      });
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Erro ao gerar link de pagamento. Tente novamente.');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Erro ao conectar com o pagamento.');
-    } finally {
-      setGeneratingLink(false);
-    }
+    const msg = encodeURIComponent('Olá! Quero assinar o Fisio+ (R$ 19,90/mês). Meu nome: ');
+    window.open(`https://wa.me/5532991075164?text=${msg}`, '_blank');
   }
 
   if (loading) {
@@ -189,12 +157,10 @@ export default function PlanosPage() {
 
             <button
               onClick={handleAssinar}
-              disabled={isSubscribed || generatingLink}
+              disabled={isSubscribed}
               className="btn-primary w-full py-3 text-base"
             >
-              {generatingLink ? (
-                <><Loader2 className="h-4 w-4 animate-spin" /> Gerando link...</>
-              ) : isSubscribed ? (
+              {isSubscribed ? (
                 'Plano Ativo'
               ) : (
                 <><Sparkles className="h-4 w-4" /> Assinar Agora</>
@@ -205,18 +171,18 @@ export default function PlanosPage() {
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-6">
-        <h3 className="text-base font-bold text-brand-900">Pagamento via Mercado Pago</h3>
+        <h3 className="text-base font-bold text-brand-900">Pagamento via WhatsApp</h3>
         <p className="mt-1 text-sm text-slate-500">
-          Aceitamos cartão de crédito, boleto bancário e PIX. Pagamento 100% seguro processado pelo Mercado Pago.
+          Após clicar em "Assinar Agora", você será direcionado ao nosso WhatsApp para finalizar a contratação. Aceitamos PIX, cartão e boleto.
         </p>
         <div className="mt-4 flex items-center gap-4 text-xs text-slate-400">
-          <span className="font-bold">🔒 Pagamento Seguro</span>
-          <span>•</span>
-          <span>Cartão de Crédito</span>
-          <span>•</span>
-          <span>Boleto</span>
+          <span className="font-bold">📱 Atendimento via WhatsApp</span>
           <span>•</span>
           <span>PIX</span>
+          <span>•</span>
+          <span>Cartão</span>
+          <span>•</span>
+          <span>Boleto</span>
         </div>
       </div>
 
