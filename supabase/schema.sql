@@ -36,6 +36,7 @@ create table if not exists public.profiles (
   referral_code text unique default substr(md5(random()::text), 0, 8),
   referred_by uuid references public.profiles(id) on delete set null,
   role text not null default 'user', -- user | admin
+  blocked boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

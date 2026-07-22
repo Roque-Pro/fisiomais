@@ -23,7 +23,7 @@ export default async function AdminPage() {
   const { data: profiles } = await supabase
     .from('profiles')
     .select(`
-      id, full_name, crefito, whatsapp, email, city, trial_started_at, plan_status, created_at,
+      id, full_name, crefito, whatsapp, email, city, trial_started_at, plan_status, blocked, created_at,
       patients:patients(count),
       assessments:assessments(count),
       evolutions:evolutions(count)

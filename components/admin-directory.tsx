@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import {
   Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
-  ShieldCheck, ShieldAlert, Clock, Trash2, Loader2, AlertTriangle, X
+  ShieldCheck, ShieldAlert, Clock, Trash2, Loader2, AlertTriangle, X,
+  Ban, CheckCircle
 } from 'lucide-react';
 
 type Profile = {
@@ -17,6 +18,7 @@ type Profile = {
   city?: string;
   trial_started_at: string;
   plan_status: string;
+  blocked?: boolean;
   created_at: string;
   patients_count: number;
   assessments_count: number;
@@ -45,6 +47,7 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [changingStatus, setChangingStatus] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [blockingId, setBlockingId] = useState<string | null>(null);
   const PER_PAGE = 10;
   const router = useRouter();
   const supabase = createClient();
@@ -76,10 +79,26 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
     setDeletingId(null);
   }
 
+  async function handleToggleBlock(profileId: string, currentBlocked: boolean) {
+    setBlockingId(profileId);
+    await supabase.from('profiles').update({ blocked: !currentBlocked }).eq('id', profileId);
+    router.refresh();
+    setBlockingId(null);
+  }
+
   const getStatusColor = (status: string) => {
     if (status === 'active') return 'bg-emerald-500';
     if (status === 'trial') return 'bg-amber-500';
     return 'bg-rose-500';
+  };
+
+  const getBlockedBadge = (blocked?: boolean) => {
+    if (!blocked) return null;
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 px-2 py-0.5 text-[9px] font-bold text-white uppercase ml-2">
+        <Ban className="h-2.5 w-2.5" /> Bloqueado
+      </span>
+    );
   };
 
   const getStatusBadge = (p: Profile) => {
@@ -194,10 +213,29 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {getStatusBadge(p)}
+                      <div className="flex items-center gap-1">
+                        {getStatusBadge(p)}
+                        {getBlockedBadge(p.blocked)}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => handleToggleBlock(p.id, !!p.blocked)}
+                          disabled={blockingId === p.id}
+                          className={`p-1.5 rounded-lg transition-all ${
+                            p.blocked
+                              ? 'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'
+                              : 'text-slate-300 hover:text-rose-600 hover:bg-rose-50'
+                          }`}
+                          title={p.blocked ? 'Desbloquear' : 'Bloquear'}>
+                          {blockingId === p.id
+                            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            : p.blocked
+                              ? <CheckCircle className="h-3.5 w-3.5" />
+                              : <Ban className="h-3.5 w-3.5" />
+                          }
+                        </button>
+
                         <div className="relative group">
                           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:border-brand-300 transition-colors">
                             {changingStatus === p.id ? (

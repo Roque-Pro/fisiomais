@@ -117,7 +117,11 @@ begin
 end;
 $$;
 
--- 7. Criar índices que podem estar faltando
+-- 7. Adicionar coluna blocked na tabela profiles (Bloqueio manual pelo admin)
+alter table public.profiles
+  add column if not exists blocked boolean not null default false;
+
+-- 8. Criar índices que podem estar faltando
 create index if not exists idx_patients_profile on public.patients(profile_id);
 create index if not exists idx_assessments_patient on public.assessments(patient_id);
 create index if not exists idx_assessments_profile on public.assessments(profile_id);
