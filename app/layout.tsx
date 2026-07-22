@@ -17,9 +17,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Fisio+ — Sistema para Fisioterapeuta | Gestão Clínica e Ficha de Avaliação',
+  title: 'Fisio+ — Mapa de Oportunidades para Fisioterapeuta | Mercado de Trabalho e Inteligência de Mercado',
   description:
-    'O Fisio+ é o sistema para fisioterapeuta que une ficha de avaliação fisioterapêutica, anamnese, evolução por sessão, relatórios em PDF, CREFITO digital e gestão completa da sua clínica. Experimente 30 dias grátis.',
+    'Descubra as melhores cidades para atuar como fisioterapeuta com dados reais de mercado. Mapa gratuito de oportunidades com indicadores demográficos, concorrência e nível de oportunidade por especialidade: Ortopedia, Neurofuncional, Geriátrica, Pediátrica e mais. Sistema de gestão clínica com 30 dias grátis.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

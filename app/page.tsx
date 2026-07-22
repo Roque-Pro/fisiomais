@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
+import OpportunityMap from '@/components/opportunity-map';
 
 interface NewsItem {
   id: string;
@@ -107,67 +108,7 @@ export default function Home() {
         </div>
       </nav>
 
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-left space-y-8 relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 border border-sky-100 text-sky-600 text-xs font-bold uppercase tracking-wider">
-                <Zap className="h-3 w-3 fill-sky-600" /> Sistema para Fisioterapeuta
-              </div>
-
-              <h1 className="text-balance text-4xl font-black leading-[1.1] tracking-tight text-slate-900 sm:text-6xl md:text-7xl">
-                O sistema que todo <br />
-                <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-rose-600 bg-clip-text text-transparent">
-                  fisioterapeuta merece.
-                </span>
-              </h1>
-
-              <p className="max-w-xl text-lg leading-relaxed text-slate-600 font-medium">
-                O <span className="text-slate-900 font-bold underline decoration-sky-400 decoration-4">Fisio+</span> é o sistema para fisioterapeuta que une prontuário digital, ficha de avaliação fisioterapêutica completa, agenda, evolução clínica por sessão e relatórios em PDF — um verdadeiro software de gestão para clínica de fisioterapia, tudo em um só lugar.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-bold text-emerald-700">
-                  <Sparkles className="h-4 w-4" /> 30 dias grátis · depois R$ 19,90/mês
-                </div>
-                <div className="inline-flex items-center gap-1 text-xs text-slate-400 font-bold">
-                  <Check className="h-3 w-3 text-emerald-500" /> Sem cartão de crédito
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-start gap-4 pt-4">
-                <Link href="/cadastro" className="group flex items-center gap-3 rounded-2xl bg-slate-900 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-slate-800 hover:shadow-2xl hover:-translate-y-1 active:scale-95">
-                  Começar agora grátis
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="relative order-first lg:order-last">
-              <div className="relative group">
-                <div className="absolute -inset-4 bg-gradient-to-r from-sky-400 via-indigo-500 to-rose-400 rounded-[2.5rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                <div className="relative rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl">
-                  <img
-                    src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop"
-                    alt="Fisioterapia Moderna"
-                    className="w-full h-full object-cover aspect-[4/3] sm:aspect-video lg:aspect-[4/5]"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/60 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-6 left-6 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-white max-w-[200px] animate-float">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="h-2 w-2 rounded-full bg-emerald-400" />
-                      <span className="text-[10px] font-bold uppercase tracking-widest">Tempo Real</span>
-                    </div>
-                    <p className="text-xs font-medium leading-tight">Evolução clínica monitorada instantaneamente.</p>
-                  </div>
-                </div>
-                <div className="absolute -top-6 -right-6 h-24 w-24 bg-rose-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
-                <div className="absolute -bottom-8 -left-8 h-32 w-32 bg-sky-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <OpportunityMap />
 
       <section className="mx-auto max-w-7xl px-4 md:px-6 pb-20 md:pb-32">
         <div className="text-center mb-12 md:mb-16">

@@ -1,37 +1,77 @@
-18:59:39.069 Running build in Washington, D.C., USA (East) – iad1
-18:59:39.070 Build machine configuration: 2 cores, 8 GB
-18:59:39.196 Cloning github.com/Roque-Pro/fisiomais (Branch: main, Commit: 16e8254)
-18:59:39.550 Cloning completed: 354.000ms
-18:59:40.487 Restored build cache from previous deployment (BPTG1esRCw3oDg6U4Shbshqg51iA)
-18:59:40.738 Running "vercel build"
-18:59:40.756 Vercel CLI 56.4.0
-18:59:41.142 Installing dependencies...
-18:59:42.342 
-18:59:42.343 up to date in 1s
-18:59:42.343 
-18:59:42.344 157 packages are looking for funding
-18:59:42.344   run `npm fund` for details
-18:59:42.372 Detected Next.js version: 14.2.15
-18:59:42.377 Running "npm run build"
-18:59:42.481 
-18:59:42.482 > fisioflow@0.1.0 build
-18:59:42.482 > next build
-18:59:42.482 
-18:59:43.177   ▲ Next.js 14.2.15
-18:59:43.177 
-18:59:43.196    Creating an optimized production build ...
-18:59:54.413  ✓ Compiled successfully
-18:59:54.414    Linting and checking validity of types ...
-19:00:00.694 Failed to compile.
-19:00:00.695 
-19:00:00.696 ./components/admin-directory.tsx:244:81
-19:00:00.696 Type error: Property 'whatsapp' does not exist on type 'Profile'.
-19:00:00.696 
-19:00:00.696   242 |                           <div>
-19:00:00.696   243 |                             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">WhatsApp</span>
-19:00:00.696 > 244 |                             <p className="font-medium text-brand-900 mt-0.5">{p.whatsapp || '—'}</p>
-19:00:00.697       |                                                                                 ^
-19:00:00.697   245 |                           </div>
-19:00:00.697   246 |                           <div>
-19:00:00.697   247 |                             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Cidade</span>
-19:00:00.774 Error: Command "npm run build" exited with 1s
+Desenvolva exclusivamente a funcionalidade descrita abaixo. Não altere nenhuma outra parte do sistema, não refatore componentes existentes, não modifique regras de negócio, rotas, autenticação, banco de dados, layout ou funcionalidades já implementadas. O foco desta tarefa é apenas adicionar uma nova seção na Hero da página pública (landing page) do sistema.
+
+Objetivo
+
+Transformar a Hero da página inicial em um forte atrativo para fisioterapeutas, oferecendo uma ferramenta gratuita de inteligência de mercado que desperte interesse antes mesmo do cadastro.
+
+Funcionalidade
+
+Adicionar uma seção de destaque na Hero chamada, por exemplo:
+
+"Mapa de Oportunidades para Fisioterapeutas"
+
+ou outro nome mais atrativo e profissional.
+
+A ferramenta deve permitir que o visitante selecione:
+
+- Estado
+- Cidade
+- Especialidade (Ortopedia, Neurofuncional, Respiratória, Geriátrica, Pediátrica, Esportiva, Dermatofuncional, Pélvica etc.)
+
+Após selecionar os filtros, apresentar um painel com indicadores como:
+
+- População do município
+- População idosa
+- Número estimado de fisioterapeutas
+- Número de estabelecimentos relacionados
+- Índice de oportunidade (calculado)
+- Nível da oportunidade (Baixa, Média ou Alta)
+
+O índice deverá ser calculado utilizando dados públicos disponíveis, priorizando:
+
+- DATASUS
+- CNES
+- IBGE
+
+A arquitetura deve ser preparada para que futuramente possamos enriquecer os indicadores sem necessidade de grandes alterações.
+
+Objetivo comercial
+
+A ferramenta deve servir como um "gancho" para converter visitantes em usuários do SaaS.
+
+Após exibir os indicadores, apresentar um CTA como:
+
+"Gostou da análise? Organize seus pacientes, prontuários e evoluções gratuitamente por 30 dias."
+
+com o botão direcionando para o cadastro.
+
+Interface
+
+A ferramenta deve ficar integrada à Hero, acima da dobra (above the fold), com aparência moderna, limpa e profissional.
+
+Ela deve parecer parte do produto, e não um elemento separado.
+
+Priorizar excelente experiência em desktop e mobile.
+
+Implementação
+
+- Reutilizar a arquitetura existente sempre que possível.
+- Não quebrar compatibilidade.
+- Não alterar APIs existentes.
+- Não modificar funcionalidades do sistema.
+- Não alterar autenticação.
+- Não alterar banco de dados sem necessidade.
+- Não remover componentes existentes.
+- Não modificar estilos globais desnecessariamente.
+- Caso seja necessário criar novos componentes, fazê-lo de forma isolada.
+
+Qualidade
+
+Antes de finalizar:
+
+- Verificar se nenhuma funcionalidade existente foi afetada.
+- Garantir que não existam regressões.
+- Manter o mesmo padrão visual e arquitetural do projeto.
+- Escrever código limpo, modular e facilmente expansível.
+
+O objetivo é adicionar somente essa nova funcionalidade, preservando integralmente todo o restante do sistema.
