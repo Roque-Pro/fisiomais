@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   Search, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   ShieldCheck, ShieldAlert, Clock, Trash2, Loader2, AlertTriangle, X,
-  Ban, CheckCircle
+  Ban, CheckCircle, DollarSign
 } from 'lucide-react';
 
 type Profile = {
@@ -18,6 +18,7 @@ type Profile = {
   city?: string;
   trial_started_at: string;
   plan_status: string;
+  payment_date?: string;
   blocked?: boolean;
   created_at: string;
   patients_count: number;
@@ -37,6 +38,22 @@ function getDaysSince(date: string): number {
   return Math.floor((new Date().getTime() - new Date(date).getTime()) / (1000 * 60 * 60 * 24));
 }
 
+function getDaysOverdue(paymentDate: string): number {
+  const paid = new Date(paymentDate);
+  const nextDue = new Date(paid);
+  nextDue.setDate(nextDue.getDate() + 30);
+  const now = new Date();
+  return Math.ceil((now.getTime() - nextDue.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function getDaysUntilDue(paymentDate: string): number {
+  const paid = new Date(paymentDate);
+  const nextDue = new Date(paid);
+  nextDue.setDate(nextDue.getDate() + 30);
+  const now = new Date();
+  return Math.ceil((nextDue.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+}
+
 type StatusFilter = 'all' | 'active' | 'trial' | 'expired';
 
 export function AdminDirectory({ statsList, total }: { statsList: Profile[]; total: number }) {
@@ -48,6 +65,7 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
   const [changingStatus, setChangingStatus] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [blockingId, setBlockingId] = useState<string | null>(null);
+  const [payingId, setPayingId] = useState<string | null>(null);
   const PER_PAGE = 10;
   const router = useRouter();
   const supabase = createClient();
@@ -86,10 +104,56 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
     setBlockingId(null);
   }
 
+  async function handleMarkPaid(profileId: string) {
+    setPayingId(profileId);
+    const now = new Date().toISOString();
+    await supabase.from('profiles').update({
+      payment_date: now,
+      plan_status: 'active',
+    }).eq('id', profileId);
+    router.refresh();
+    setPayingId(null);
+  }
+
   const getStatusColor = (status: string) => {
     if (status === 'active') return 'bg-emerald-500';
     if (status === 'trial') return 'bg-amber-500';
     return 'bg-rose-500';
+  };
+
+  const getPaymentBadge = (p: Profile) => {
+    if (p.plan_status === 'trial') return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-bold text-slate-500 uppercase">
+        Trial grátis
+      </span>
+    );
+    if (p.plan_status !== 'active') return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[9px] font-bold text-rose-600 uppercase">
+        Sem cobrança
+      </span>
+    );
+    if (!p.payment_date) return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-700 uppercase">
+        Pendente
+      </span>
+    );
+    const overdue = getDaysOverdue(p.payment_date);
+    if (overdue > 0) return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[9px] font-bold text-rose-700 border border-rose-200">
+        <AlertTriangle className="h-2.5 w-2.5" /> Venceu há {overdue}d
+      </span>
+    );
+    const daysLeft = getDaysUntilDue(p.payment_date);
+    if (daysLeft <= 5) return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[9px] font-bold text-amber-700 border border-amber-200">
+        <Clock className="h-2.5 w-2.5" /> Vence em {daysLeft}d
+      </span>
+    );
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[9px] font-bold text-emerald-700 border border-emerald-200">
+        <CheckCircle className="h-2.5 w-2.5" /> Em dia ({daysLeft}d)
+      </span>
+    );
   };
 
   const getBlockedBadge = (blocked?: boolean) => {
@@ -156,13 +220,14 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
               <th className="px-6 py-3 text-center">Dias</th>
               <th className="px-6 py-3">Métricas</th>
               <th className="px-6 py-3">Autorização</th>
+              <th className="px-6 py-3">Pagamento</th>
               <th className="px-6 py-3 text-right">Ação</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {paged.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-400 font-medium">
+                <td colSpan={7} className="px-6 py-12 text-center text-sm text-slate-400 font-medium">
                   Nenhum profissional encontrado.
                 </td>
               </tr>
@@ -218,8 +283,31 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
                         {getBlockedBadge(p.blocked)}
                       </div>
                     </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col gap-0.5">
+                        {getPaymentBadge(p)}
+                        {p.payment_date && (
+                          <span className="text-[10px] text-slate-400 font-medium">
+                            Pago {new Date(p.payment_date).toLocaleDateString('pt-BR')}
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <button onClick={() => handleMarkPaid(p.id)}
+                          disabled={payingId === p.id}
+                          className={`p-1.5 rounded-lg transition-all ${
+                            p.payment_date
+                              ? 'text-emerald-600 hover:bg-emerald-50'
+                              : 'text-slate-300 hover:text-brand-600 hover:bg-brand-50'
+                          }`}
+                          title="Marcar como pago">
+                          {payingId === p.id
+                            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            : <DollarSign className="h-3.5 w-3.5" />
+                          }
+                        </button>
                         <button onClick={() => handleToggleBlock(p.id, !!p.blocked)}
                           disabled={blockingId === p.id}
                           className={`p-1.5 rounded-lg transition-all ${
@@ -277,8 +365,8 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
                   </tr>
                   {expanded && (
                     <tr key={`${p.id}-detail`}>
-                      <td colSpan={6} className="px-6 py-4 bg-slate-50/50 border-b border-slate-100">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <td colSpan={7} className="px-6 py-4 bg-slate-50/50 border-b border-slate-100">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
                           <div>
                             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">WhatsApp</span>
                             <p className="font-medium text-brand-900 mt-0.5">{p.whatsapp || '—'}</p>
@@ -295,6 +383,12 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
                             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Trial expira em</span>
                             <p className="font-medium text-brand-900 mt-0.5">
                               {p.trial_started_at ? new Date(new Date(p.trial_started_at).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR') : '—'}
+                            </p>
+                          </div>
+                          <div>
+                            <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Último pagamento</span>
+                            <p className="font-medium text-brand-900 mt-0.5">
+                              {p.payment_date ? `${new Date(p.payment_date).toLocaleDateString('pt-BR')} · vence ${new Date(new Date(p.payment_date).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')}` : '—'}
                             </p>
                           </div>
                         </div>
