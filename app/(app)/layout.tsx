@@ -53,7 +53,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </p>
         <div className="mt-8 flex flex-col items-center gap-3">
           <a
-            href="mailto:suporte@fisioapp.com"
+            href="https://wa.me/5532991075164"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-brand-700 hover:shadow-lg"
           >
             <Mail className="h-4 w-4" /> Falar com Suporte
