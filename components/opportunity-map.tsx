@@ -17,21 +17,10 @@ import {
   ChevronDown,
   RotateCcw,
   Lightbulb,
-  Newspaper,
   Loader2,
-  Calendar,
 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
 import { statesData, specialties, findState, calculateOpportunity } from '@/lib/opportunity-data';
 import type { AnalysisResult } from '@/lib/opportunity-data';
-
-interface NewsItem {
-  id: string;
-  title: string;
-  summary: string;
-  source: string;
-  published_at: string;
-}
 
 const levelConfig = {
   Alta: { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', label: 'Alta' },
@@ -49,10 +38,8 @@ export default function OpportunityMap() {
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [insight, setInsight] = useState<string | null>(null);
-  const [relatedNews, setRelatedNews] = useState<NewsItem[]>([]);
   const [loadingInsight, setLoadingInsight] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
 
   const cities = useMemo(() => {
     const state = findState(selectedState);
@@ -66,7 +53,6 @@ export default function OpportunityMap() {
     const res = calculateOpportunity(selectedState, selectedCity, selectedSpecialty);
     setResult(res);
     setInsight(null);
-    setRelatedNews([]);
   };
 
   const handleReset = () => {
@@ -75,7 +61,6 @@ export default function OpportunityMap() {
     setSelectedSpecialty('');
     setResult(null);
     setInsight(null);
-    setRelatedNews([]);
   };
 
   useEffect(() => {
@@ -117,26 +102,7 @@ export default function OpportunityMap() {
       }
     }
 
-    async function fetchRelatedNews() {
-      const currentResult = result;
-      if (!currentResult) return;
-      const { data } = await supabase
-        .from('news')
-        .select('id, title, summary, source, published_at')
-        .order('published_at', { ascending: false })
-        .limit(5);
-      if (data) {
-        const keywords = [currentResult.state, currentResult.city, currentResult.specialty].map(k => k.toLowerCase());
-        const matched = data.filter(item => {
-          const text = `${item.title} ${item.summary} ${item.source}`.toLowerCase();
-          return keywords.some(k => text.includes(k));
-        });
-        setRelatedNews(matched.length >= 2 ? matched.slice(0, 3) : data.slice(0, 3));
-      }
-    }
-
     fetchInsight();
-    fetchRelatedNews();
   }, [result]);
 
   return (
@@ -345,37 +311,6 @@ export default function OpportunityMap() {
                 <div className="flex items-center justify-center gap-3 py-6 text-slate-400">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <span className="text-sm font-medium">Gerando insight com IA...</span>
-                </div>
-              )}
-
-              {relatedNews.length > 0 && (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Newspaper className="h-4 w-4 text-sky-600" />
-                    <span className="text-xs font-black text-slate-500 uppercase tracking-wider">Notícias do Setor</span>
-                    <span className="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full">curadas por IA</span>
-                  </div>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {relatedNews.map(item => (
-                      <div key={item.id} className="rounded-xl border border-slate-100 bg-white/60 p-4 shadow-md shadow-slate-200/30 backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100 truncate">
-                            {item.source}
-                          </span>
-                          <span className="flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase tracking-widest shrink-0">
-                            <Calendar className="h-2.5 w-2.5" />
-                            {new Date(item.published_at).toLocaleDateString('pt-BR')}
-                          </span>
-                        </div>
-                        <p className="text-xs md:text-sm font-bold text-slate-900 leading-snug line-clamp-2">
-                          {item.title}
-                        </p>
-                        <p className="mt-1 text-[11px] font-medium text-slate-500 line-clamp-2 leading-relaxed">
-                          {item.summary}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               )}
 
