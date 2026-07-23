@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [redirectTo, setRedirectTo] = useState('/dashboard');
+  const [redirectTo, setRedirectTo] = useState('/');
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

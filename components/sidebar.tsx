@@ -53,16 +53,15 @@ export function Sidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () =>
       
       {/* Header com Logo e Botão de Colapsar */}
       <div className="flex items-center justify-between px-4 py-6">
-        {(!collapsed || isOpen) && (
-          <div className="flex items-center gap-2">
+        {(!collapsed || isOpen) ? (
+          <Link href="/" className="flex items-center gap-2">
             <img src="/logo.jpg" alt="Logo" className="h-9 w-9 rounded-xl object-cover shadow-soft" />
             <span className="font-bold text-brand-900">Fisio+</span>
-          </div>
-        )}
-        {(collapsed && !isOpen) && (
-          <div className="mx-auto">
+          </Link>
+        ) : (
+          <Link href="/" className="mx-auto">
             <img src="/logo.jpg" alt="Logo" className="h-9 w-9 rounded-xl object-cover shadow-soft" />
-          </div>
+          </Link>
         )}
         
         {/* Botão para fechar no Mobile */}
@@ -165,17 +164,15 @@ export function MobileTopbar({ onOpenMenu }: { onOpenMenu?: () => void }) {
         <button onClick={onOpenMenu} className="text-brand-600 p-1 bg-brand-50 rounded-lg active:scale-95 transition-transform">
           <Menu className="h-6 w-6" />
         </button>
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <img src="/logo.jpg" alt="Logo" className="h-8 w-8 rounded-lg object-cover" />
           <div className="flex flex-col">
             <span className="text-xs font-bold leading-none text-brand-900">Fisio+</span>
             <span className="mt-0.5 text-[10px] font-medium text-slate-500">
-              {name ? `Olá, ${name.split(' ')[0]}` : (
-                <Link href="/perfil" className="text-brand-600">Cadastrar nome</Link>
-              )}
+              {name ? `Olá, ${name.split(' ')[0]}` : 'Bem-vindo'}
             </span>
           </div>
-        </div>
+        </Link>
       </div>
       <button onClick={logout} className="text-rose-600 p-2">
         <LogOut className="h-5 w-5" />
