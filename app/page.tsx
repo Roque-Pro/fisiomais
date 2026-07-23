@@ -25,7 +25,9 @@ import {
   BarChart3,
   UserCheck,
   Star,
-  Check
+  Check,
+  LogOut,
+  User
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
@@ -63,6 +65,9 @@ const scales = [
 
 export default function Home() {
   const [recentNews, setRecentNews] = useState<NewsItem[]>([]);
+  const [user, setUser] = useState<any>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const supabase = createClient();
 
   useEffect(() => {
@@ -76,6 +81,25 @@ export default function Home() {
     }
     load();
   }, []);
+
+  useEffect(() => {
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUser(user);
+        const { data } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+        if (data?.full_name) setProfileName(data.full_name);
+      }
+      setAuthLoading(false);
+    }
+    checkAuth();
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setUser(null);
+    setProfileName(null);
+  }
 
   const handleShare = (title: string) => {
     const text = encodeURIComponent(`Acabei de ver essa notícia no Fisio+: ${title}\n\nConfira no sistema: `);
@@ -98,12 +122,40 @@ export default function Home() {
           </Link>
 
           <div className="flex items-center gap-4">
-            <Link href="/login" className="relative group overflow-hidden rounded-full p-[1px] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-sky-100">
-              <div className="absolute inset-0 bg-gradient-to-r from-sky-500 via-indigo-500 to-rose-500 animate-gradient-x"></div>
-              <div className="relative flex items-center gap-2 rounded-full bg-white px-5 py-1.5 md:px-6 md:py-2 text-sm font-bold text-slate-900 transition-colors group-hover:bg-transparent group-hover:text-white">
-                Acessar <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            {authLoading ? (
+              <div className="h-9 w-20 animate-pulse rounded-full bg-slate-100" />
+            ) : user ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  href="/dashboard"
+                  className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl active:scale-[0.98]"
+                >
+                  Painel
+                </Link>
+                <div className="flex items-center gap-2">
+                  <div className="h-9 w-9 rounded-full bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-md">
+                    {profileName ? profileName.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                  </div>
+                  <span className="hidden md:block text-sm font-bold text-slate-800">
+                    {profileName?.split(' ')[0] || 'Usuário'}
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-slate-400 hover:text-rose-500 transition-colors rounded-xl hover:bg-rose-50"
+                  title="Sair"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
               </div>
-            </Link>
+            ) : (
+              <Link href="/login" className="relative group overflow-hidden rounded-full p-[1px] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-sky-100">
+                <div className="absolute inset-0 bg-gradient-to-r from-sky-500 via-indigo-500 to-rose-500 animate-gradient-x"></div>
+                <div className="relative flex items-center gap-2 rounded-full bg-white px-5 py-1.5 md:px-6 md:py-2 text-sm font-bold text-slate-900 transition-colors group-hover:bg-transparent group-hover:text-white">
+                  Acessar <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </div>
+              </Link>
+            )}
           </div>
         </div>
       </nav>

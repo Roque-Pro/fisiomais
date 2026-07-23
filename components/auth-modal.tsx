@@ -61,7 +61,7 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
               Criar conta gratuita
             </Link>
             <Link
-              href="/login"
+              href="/login?redirect=/"
               onClick={onClose}
               className="flex items-center justify-center gap-2 w-full rounded-2xl border-2 border-slate-200 px-6 py-3.5 text-sm font-bold text-slate-600 transition-all hover:border-slate-300 hover:text-slate-800 active:scale-[0.98]"
             >
