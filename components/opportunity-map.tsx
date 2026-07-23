@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 import { statesData, specialties, findState, calculateOpportunity } from '@/lib/opportunity-data';
 import type { AnalysisResult } from '@/lib/opportunity-data';
+import { createClient } from '@/lib/supabase/client';
+import AuthModal from './auth-modal';
 
 const levelConfig = {
   Alta: { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', label: 'Alta' },
@@ -39,6 +41,7 @@ export default function OpportunityMap() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [insight, setInsight] = useState<string | null>(null);
   const [loadingInsight, setLoadingInsight] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const cities = useMemo(() => {
@@ -48,8 +51,17 @@ export default function OpportunityMap() {
 
   const canAnalyze = selectedState && selectedCity && selectedSpecialty;
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!canAnalyze) return;
+
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
     const res = calculateOpportunity(selectedState, selectedCity, selectedSpecialty);
     setResult(res);
     setInsight(null);
@@ -358,6 +370,8 @@ export default function OpportunityMap() {
           )}
         </div>
       </div>
+
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </section>
   );
 }
