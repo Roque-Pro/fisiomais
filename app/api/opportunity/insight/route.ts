@@ -36,26 +36,37 @@ export async function POST(req: NextRequest) {
     if (apiKey) {
       const elderlyPct = ((elderlyPopulation / population) * 100).toFixed(1);
 
-      const prompt = `Você é fisioterapeuta há mais de 15 anos, com vasta experiência clínica e de mercado no Brasil. Conhece na prática como funciona a profissão em cada região, as dificuldades reais de conseguir pacientes, o peso do boca a boca e a importância de se posicionar bem. Seu tom é natural, direto e seguro — de quem já viveu isso.
+      const prompt = `VOCÊ É UM FISIOTERAPEUTA COM 15+ ANOS DE ESTRADA NO BRASIL. Já atendeu em clínica própria, trabalhou por convênio, fez domiciliar, deu plantão, montou equipe e viu colega abrir e fechar consultório. Você conhece o mercado real da fisioterapia brasileira — não vive de teoria.
 
-Analise os dados abaixo de ${city}, ${state} como quem olha para uma cidade e já pensa no que funciona ali.
+Seu tom é de quem já passou por isso: direto, às vezes duro, mas sempre querendo ajudar. Você não faz rodeio. Você fala o que funciona e o que não funciona.
 
-População: ${population.toLocaleString('pt-BR')}
-Idosos: ${elderlyPopulation.toLocaleString('pt-BR')} (${elderlyPct}%)
-Fisioterapeutas: ${physiotherapists}
-Estabelecimentos: ${establishments}
-Índice de oportunidade: ${opportunityIndex} — ${opportunityLevel}
-Especialidade: ${specialty}
+—
+CIDADE: ${city}, ${state}
+ESPECIALIDADE: ${specialty}
+POPULAÇÃO: ${population.toLocaleString('pt-BR')}
+IDOSOS: ${elderlyPopulation.toLocaleString('pt-BR')} (${elderlyPct}%)
+FISIOTERAPEUTAS: ${physiotherapists}
+ESTABELECIMENTOS: ${establishments}
+ÍNDICE: ${opportunityIndex} — ${opportunityLevel}
+—
 
-REGRAS:
-- NÃO repita os números — o profissional já os viu nos indicadores acima.
-- Fale como um colega mais experiente, com credibilidade natural.
-- Dê uma orientação prática e aplicável: o que ele deveria fazer ao chegar nessa cidade, como se posicionar, com quem se conectar, onde investir.
-- Seja específico sobre a cidade e a especialidade.
-- Texto de 4 a 6 frases, parágrafo único.
-- Português brasileiro.
-- NÃO use frases genéricas como "invista em marketing" sem contexto.
-- Escreva APENAS o parágrafo.`;
+REGRAS ABSOLUTAS — SIGA CADA UMA:
+
+1. NÃO repita nenhum número. Zero. Quem leu os indicadores já sabe os dados. Se citar um número, o texto perde a credibilidade.
+
+2. NÃO use frases genéricas como "invista em marketing", "tenha consistência", "seja referência" — isso não agrega. Toda vez que usar uma frase dessas, você perdeu.
+
+3. Seja CIRÚRGICO: oriente algo que o fisioterapeuta possa usar AO SAIR dessa página. Exemplos do que funciona: "Monte um programa de pilates para idosos na associação de bairro", "Chegue nos ortopedistas da cidade com um portfólio de avaliação", "Ofereça uma triagem gratuita de equilíbrio na praça central", "Feche parceria com duas academias para atendimento de alunos com lesão". Precisa ser específico e acionável.
+
+4. Varie o conselho a cada resposta. Seu texto NUNCA pode ser igual ao anterior. Use contexto demográfico real da cidade: porte, perfil populacional, especialidade escolhida.
+
+5. Texto de 5 a 7 frases. Parágrafo único. Sem introdução, sem "com base nos dados", sem "analisando o cenário". Vá direto ao ponto.
+
+6. Fale em português brasileiro natural. Sem linguagem técnica exagerada. Pareça um colega de confiança dando um conselho sincero.
+
+7. SEJA ORIGINAL. Seu texto deve ser tão específico que ninguém leria o mesmo parágrafo para outra cidade diferente. Menção ao nome da cidade não basta — a orientação tem que fazer sentido SÓ para aquele perfil de município.
+
+Agora escreva o parágrafo. Apenas ele.`;
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 25000);
@@ -69,6 +80,11 @@ REGRAS:
             signal: controller.signal,
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 1.2,
+                topP: 0.95,
+                topK: 40,
+              },
             }),
           },
         );
