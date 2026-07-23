@@ -118,13 +118,15 @@ export default function OpportunityMap() {
     }
 
     async function fetchRelatedNews() {
+      const currentResult = result;
+      if (!currentResult) return;
       const { data } = await supabase
         .from('news')
         .select('id, title, summary, source, published_at')
         .order('published_at', { ascending: false })
         .limit(5);
       if (data) {
-        const keywords = [result.state, result.city, result.specialty].map(k => k.toLowerCase());
+        const keywords = [currentResult.state, currentResult.city, currentResult.specialty].map(k => k.toLowerCase());
         const matched = data.filter(item => {
           const text = `${item.title} ${item.summary} ${item.source}`.toLowerCase();
           return keywords.some(k => text.includes(k));
