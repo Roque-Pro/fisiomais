@@ -2,25 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 
 function generateFallbackInsight(
   city: string,
-  state: string,
+  _state: string,
   specialty: string,
-  population: number,
-  elderlyPopulation: number,
+  _population: number,
+  _elderlyPopulation: number,
   physiotherapists: number,
-  establishments: number,
-  opportunityIndex: number,
+  _establishments: number,
+  _opportunityIndex: number,
   opportunityLevel: string,
 ): string {
-  const elderlyPct = ((elderlyPopulation / population) * 100).toFixed(1);
-  const physioPerCapita = (physiotherapists / population * 10000).toFixed(1);
-
   if (opportunityLevel === 'Alta') {
-    return `Com ${population.toLocaleString('pt-BR')} habitantes e apenas ${physiotherapists} fisioterapeutas (${physioPerCapita} por 10 mil hab.), ${city} apresenta baixa concorrência e alta demanda, especialmente em ${specialty.toLowerCase()}. A população idosa de ${elderlyPct}% reforça a necessidade de profissionais na região. Um cenário promissor para quem busca crescimento e impacto profissional.`;
+    return `O mercado em ${city} está aquecido e com espaço para mais profissionais. Com poucos fisioterapeutas atuando na região, investir em ${specialty.toLowerCase()} pode te colocar à frente da concorrência. Considere montar seu consultório ou buscar parcerias com clínicas locais — a demanda tende a crescer.`;
   }
   if (opportunityLevel === 'Média') {
-    return `${city} oferece um mercado equilibrado para fisioterapeutas, com ${physiotherapists} profissionais para uma população de ${population.toLocaleString('pt-BR')} habitantes (${physioPerCapita} por 10 mil hab.). Os ${elderlyPct}% de idosos indicam demanda consistente, especialmente em ${specialty.toLowerCase()}. É uma cidade com potencial para construir uma carreira sólida.`;
+    return `${city} tem um mercado competitivo, mas com boas oportunidades para quem se posiciona bem. Especializar-se em ${specialty.toLowerCase()} é um bom caminho para se destacar. Invista em marketing profissional, parcerias com médicos e presença digital para atrair pacientes na região.`;
   }
-  return `${city} possui ${physiotherapists} fisioterapeutas para ${population.toLocaleString('pt-BR')} habitantes e ${elderlyPct}% de população idosa. A concorrência é mais elevada, mas a especialidade em ${specialty.toLowerCase()} pode ser seu diferencial competitivo. Considere focar em um nicho específico para se destacar no mercado local.`;
+  return `Em ${city}, a concorrência entre fisioterapeutas é mais acirrada. Para conseguir espaço, vale apostar em um atendimento de nicho — ${specialty.toLowerCase()} pode ser seu diferencial. Ofereça um serviço especializado e construa autoridade local para se destacar no mercado.`;
 }
 
 export async function POST(req: NextRequest) {
@@ -37,15 +34,21 @@ export async function POST(req: NextRequest) {
     if (apiKey) {
       const elderlyPct = ((elderlyPopulation / population) * 100).toFixed(1);
 
-      const prompt = `Dados de mercado para fisioterapeuta em ${city}, ${state}:
+      const prompt = `Você é um mentor de carreira para fisioterapeutas.
+
+Dados de mercado de ${city}, ${state}:
 - População: ${population.toLocaleString('pt-BR')}
 - Idosos: ${elderlyPopulation.toLocaleString('pt-BR')} (${elderlyPct}%)
 - Fisioterapeutas: ${physiotherapists}
 - Estabelecimentos: ${establishments}
 - Índice: ${opportunityIndex} (${opportunityLevel})
-- Especialidade: ${specialty}
+- Especialidade buscada: ${specialty}
 
-Com base nesses números, escreva 1 parágrafo curto (2 a 4 frases) orientando um fisioterapeuta sobre essa cidade. Use os dados, seja direto, tom de mentor. Português brasileiro. Apenas o parágrafo.`;
+IMPORTANTE: NÃO repita os números acima. O usuário já os viu.
+
+Seu papel: gere UM parágrafo curto (2 a 4 frases) com uma orientação estratégica genuína. Pense como um mentor que interpreta os dados e dá um conselho prático. Sugira um próximo passo, um posicionamento ou uma estratégia de atuação para essa cidade.
+
+Tom: direto, profissional, encorajador. Português brasileiro. Apenas o parágrafo, sem introduções.`;
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 20000);
