@@ -122,13 +122,6 @@ export default function OpportunityMap() {
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center space-y-5 mb-10 md:mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-sky-50 to-indigo-50 border border-sky-100/80 shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 text-sky-600" />
-              <span className="text-[11px] md:text-xs font-black text-sky-700 uppercase tracking-[0.15em]">
-                Ferramenta Gratuita de Inteligência de Mercado
-              </span>
-            </div>
-
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.05] text-balance">
               Mapa de Oportunidades
               <br />
