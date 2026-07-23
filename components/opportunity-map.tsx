@@ -16,9 +16,22 @@ import {
   Check,
   ChevronDown,
   RotateCcw,
+  Lightbulb,
+  Newspaper,
+  Loader2,
+  Calendar,
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 import { statesData, specialties, findState, calculateOpportunity } from '@/lib/opportunity-data';
 import type { AnalysisResult } from '@/lib/opportunity-data';
+
+interface NewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  source: string;
+  published_at: string;
+}
 
 const levelConfig = {
   Alta: { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', label: 'Alta' },
@@ -35,7 +48,11 @@ export default function OpportunityMap() {
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [insight, setInsight] = useState<string | null>(null);
+  const [relatedNews, setRelatedNews] = useState<NewsItem[]>([]);
+  const [loadingInsight, setLoadingInsight] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const supabase = createClient();
 
   const cities = useMemo(() => {
     const state = findState(selectedState);
@@ -48,6 +65,8 @@ export default function OpportunityMap() {
     if (!canAnalyze) return;
     const res = calculateOpportunity(selectedState, selectedCity, selectedSpecialty);
     setResult(res);
+    setInsight(null);
+    setRelatedNews([]);
   };
 
   const handleReset = () => {
@@ -55,6 +74,8 @@ export default function OpportunityMap() {
     setSelectedCity('');
     setSelectedSpecialty('');
     setResult(null);
+    setInsight(null);
+    setRelatedNews([]);
   };
 
   useEffect(() => {
@@ -72,6 +93,48 @@ export default function OpportunityMap() {
         resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     }
+  }, [result]);
+
+  useEffect(() => {
+    if (!result) return;
+
+    async function fetchInsight() {
+      setLoadingInsight(true);
+      try {
+        const response = await fetch('/api/opportunity/insight', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(result),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setInsight(data.insight);
+        }
+      } catch {
+        setInsight(null);
+      } finally {
+        setLoadingInsight(false);
+      }
+    }
+
+    async function fetchRelatedNews() {
+      const { data } = await supabase
+        .from('news')
+        .select('id, title, summary, source, published_at')
+        .order('published_at', { ascending: false })
+        .limit(5);
+      if (data) {
+        const keywords = [result.state, result.city, result.specialty].map(k => k.toLowerCase());
+        const matched = data.filter(item => {
+          const text = `${item.title} ${item.summary} ${item.source}`.toLowerCase();
+          return keywords.some(k => text.includes(k));
+        });
+        setRelatedNews(matched.length >= 2 ? matched.slice(0, 3) : data.slice(0, 3));
+      }
+    }
+
+    fetchInsight();
+    fetchRelatedNews();
   }, [result]);
 
   return (
@@ -257,6 +320,62 @@ export default function OpportunityMap() {
                   </div>
                 </div>
               </div>
+
+              {insight && (
+                <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-5 md:p-7 shadow-lg shadow-indigo-100/30">
+                  <div className="flex items-start gap-4">
+                    <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100">
+                      <Lightbulb className="h-5 w-5 text-indigo-600" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-black text-indigo-500 uppercase tracking-wider">Insight da Análise</span>
+                        <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">gerado por IA</span>
+                      </div>
+                      <p className="text-sm md:text-base text-slate-700 leading-relaxed font-medium italic">
+                        &ldquo;{insight}&rdquo;
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {loadingInsight && (
+                <div className="flex items-center justify-center gap-3 py-6 text-slate-400">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="text-sm font-medium">Gerando insight com IA...</span>
+                </div>
+              )}
+
+              {relatedNews.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Newspaper className="h-4 w-4 text-sky-600" />
+                    <span className="text-xs font-black text-slate-500 uppercase tracking-wider">Notícias do Setor</span>
+                    <span className="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full">curadas por IA</span>
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {relatedNews.map(item => (
+                      <div key={item.id} className="rounded-xl border border-slate-100 bg-white/60 p-4 shadow-md shadow-slate-200/30 backdrop-blur-sm transition-all hover:bg-white hover:shadow-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100 truncate">
+                            {item.source}
+                          </span>
+                          <span className="flex items-center gap-1 text-[9px] font-bold text-slate-400 uppercase tracking-widest shrink-0">
+                            <Calendar className="h-2.5 w-2.5" />
+                            {new Date(item.published_at).toLocaleDateString('pt-BR')}
+                          </span>
+                        </div>
+                        <p className="text-xs md:text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+                          {item.title}
+                        </p>
+                        <p className="mt-1 text-[11px] font-medium text-slate-500 line-clamp-2 leading-relaxed">
+                          {item.summary}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-600 via-indigo-600 to-rose-600 p-0.5 shadow-2xl">
                 <div className="relative rounded-[calc(1.5rem-1px)] bg-gradient-to-br from-sky-600 via-indigo-600 to-rose-600 p-8 md:p-10 text-center">
