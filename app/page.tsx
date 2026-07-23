@@ -418,7 +418,7 @@ export default function Home() {
             Planos que <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">cabem no seu bolso</span>
           </h2>
           <p className="mt-4 text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-            Comece com 30 dias grátis, sem compromisso. Depois, apenas R$ 19,90/mês.
+            Comece com 30 dias grátis, sem compromisso. Depois, apenas R$ 39,90/mês.
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 max-w-3xl mx-auto">
@@ -455,7 +455,7 @@ export default function Home() {
                 <p className="text-sm text-slate-500 font-medium">Para uso profissional completo</p>
               </div>
               <div>
-                <span className="text-4xl font-black text-slate-900">R$ 19,90</span>
+                <span className="text-4xl font-black text-slate-900">R$ 39,90</span>
                 <span className="text-sm text-slate-500"> / mês</span>
               </div>
               <ul className="space-y-3">

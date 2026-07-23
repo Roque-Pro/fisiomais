@@ -79,7 +79,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
         <h1 className="text-2xl font-bold text-brand-900">Acesso Expirado</h1>
         <p className="mt-2 max-w-sm text-slate-600">
-          Seu período de teste gratuito de 30 dias encerrou. Assine agora por apenas <strong>R$ 19,90/mês</strong> para continuar usando todos os recursos.
+          Seu período de teste gratuito de 30 dias encerrou. Assine agora por apenas <strong>R$ 39,90/mês</strong> para continuar usando todos os recursos.
         </p>
         <div className="mt-8 flex flex-col items-center gap-3">
           <Link

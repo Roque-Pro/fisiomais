@@ -35,7 +35,7 @@ export default function PlanosPage() {
   }, [supabase, router]);
 
   async function handleAssinar() {
-    const msg = encodeURIComponent('Olá! Quero assinar o Fisio+ (R$ 19,90/mês). Meu nome: ');
+    const msg = encodeURIComponent('Olá! Quero assinar o Fisio+ (R$ 39,90/mês). Meu nome: ');
     window.open(`https://wa.me/5532991075164?text=${msg}`, '_blank');
   }
 
@@ -135,7 +135,7 @@ export default function PlanosPage() {
               <p className="mt-1 text-sm text-slate-500">Para uso profissional completo</p>
             </div>
             <div>
-              <span className="text-4xl font-black text-brand-900">R$ 19,90</span>
+              <span className="text-4xl font-black text-brand-900">R$ 39,90</span>
               <span className="text-sm text-slate-500"> / mês</span>
             </div>
             <ul className="space-y-3">
