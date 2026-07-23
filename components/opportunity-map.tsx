@@ -123,7 +123,7 @@ export default function OpportunityMap() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center space-y-5 mb-10 md:mb-12">
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.05] text-balance">
-              Mapa de Oportunidades
+              Mapa de Demandas
               <br />
               <span className="bg-gradient-to-r from-sky-600 via-indigo-600 to-rose-600 bg-clip-text text-transparent">
                 para Fisioterapeutas
