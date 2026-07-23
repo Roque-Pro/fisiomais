@@ -282,6 +282,13 @@ export default function OpportunityMap() {
                 </div>
               </div>
 
+              <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-[11px] font-bold text-slate-400">
+                <span className="text-slate-300 tracking-wider uppercase">Dados oficiais:</span>
+                <span className="text-sky-700 bg-sky-50 px-2.5 py-0.5 rounded-md border border-sky-100">IBGE</span>
+                <span className="text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-100">DATASUS</span>
+                <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-100">CNES</span>
+              </div>
+
               {insight && (
                 <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-5 md:p-7 shadow-lg shadow-indigo-100/30">
                   <div className="flex items-start gap-4">
