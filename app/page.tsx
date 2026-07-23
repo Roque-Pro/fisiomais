@@ -128,9 +128,9 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/dashboard"
-                  className="hidden sm:inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl active:scale-[0.98]"
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl active:scale-[0.98]"
                 >
-                  Painel
+                  Acessar
                 </Link>
                 <div className="flex items-center gap-2">
                   <div className="h-9 w-9 rounded-full bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-md">
