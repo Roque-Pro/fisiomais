@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { KeyRound, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { KeyRound, Eye, EyeOff, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function RedefinirSenhaPage() {
   const router = useRouter();
@@ -14,13 +14,25 @@ export default function RedefinirSenhaPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [valid, setValid] = useState(false);
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        // Usuário chegou via link de recuperação - sessão já está ativa
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setValid(true);
+      }
+      setReady(true);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' && session) {
+        setValid(true);
+        setReady(true);
       }
     });
+
+    return () => subscription?.unsubscribe();
   }, [supabase]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -49,6 +61,31 @@ export default function RedefinirSenhaPage() {
       setDone(true);
       setTimeout(() => router.push('/login'), 3000);
     }
+  }
+
+  if (!ready) {
+    return (
+      <div className="card flex items-center justify-center py-16">
+        <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!valid) {
+    return (
+      <div className="card text-center">
+        <div className="mx-auto mb-4 h-14 w-14 rounded-2xl bg-amber-100 flex items-center justify-center">
+          <AlertCircle className="h-7 w-7 text-amber-600" />
+        </div>
+        <h1 className="mb-1 text-2xl font-bold text-brand-900">Link inválido ou expirado</h1>
+        <p className="mb-6 text-sm text-slate-600">
+          Este link de redefinição de senha não é válido ou expirou. Solicite um novo.
+        </p>
+        <a href="/esqueci-senha" className="text-sm font-medium text-brand-700 hover:underline">
+          Solicitar novo link
+        </a>
+      </div>
+    );
   }
 
   if (done) {
