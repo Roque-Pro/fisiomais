@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
   );
 
   // Somente rodar getUser se estiver em rota protegida ou de auth
-  const isAuthRoute = url.pathname.startsWith('/login') || url.pathname.startsWith('/cadastro');
+  const isAuthRoute = url.pathname.startsWith('/login') || url.pathname.startsWith('/cadastro') || url.pathname.startsWith('/esqueci-senha') || url.pathname.startsWith('/redefinir-senha');
   const isAppRoute = 
     url.pathname !== '/' && 
     !isAuthRoute && 
