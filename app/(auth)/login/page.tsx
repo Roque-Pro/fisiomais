@@ -63,6 +63,11 @@ export default function LoginPage() {
           </div>
         </div>
         {error && <p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
+        <div className="flex items-center justify-end">
+          <Link href="/esqueci-senha" className="text-sm font-medium text-brand-700 hover:underline">
+            Esqueci minha senha
+          </Link>
+        </div>
         <button disabled={loading} className="btn-primary w-full">
           <LogIn className="h-4 w-4" />
           {loading ? 'Entrando…' : 'Entrar'}

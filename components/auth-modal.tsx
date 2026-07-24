@@ -39,16 +39,16 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
         </button>
 
         <div className="text-center space-y-4">
-          <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-sky-100 to-indigo-100 flex items-center justify-center">
-            <svg className="h-7 w-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center">
+            <svg className="h-7 w-7 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
             </svg>
           </div>
 
           <div>
-            <h3 className="text-xl font-black text-slate-900">Cadastro necessário</h3>
+            <h3 className="text-xl font-black text-slate-900">Explore os mercados</h3>
             <p className="mt-2 text-sm font-medium text-slate-500 leading-relaxed">
-              Para usar o <strong className="text-slate-700">Mapa de Demandas</strong>, você precisa estar cadastrado no <strong className="text-slate-700">Fisio+</strong>. É gratuito por 30 dias!
+              Veja como a demanda por fisioterapia se distribui em cada região do Brasil. Crie sua conta grátis para acessar o <strong className="text-slate-700">Mapa de Demandas</strong> completo!
             </p>
           </div>
 
@@ -58,7 +58,7 @@ export default function AuthModal({ open, onClose }: AuthModalProps) {
               onClick={onClose}
               className="flex items-center justify-center gap-2 w-full rounded-2xl bg-slate-900 px-6 py-3.5 text-base font-bold text-white transition-all hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
             >
-              Criar conta gratuita
+              Quero explorar grátis
             </Link>
             <Link
               href="/login?redirect=/"
