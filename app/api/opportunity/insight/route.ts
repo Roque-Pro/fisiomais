@@ -52,10 +52,12 @@ REGRAS ABSOLUTAS — SIGA CADA UMA:
 
 10. VARIE COMPLETAMENTE A ABERTURA DA PARTE DE MARKETING. Nunca comece com "Google Meu Negócio". Cada resposta precisa abrir o marketing de um jeito diferente — pode ser por rede social, panfleto, parceria com médico, evento, indicação, conteúdo digital. Se duas respostas seguidas começarem igual, está errado.
 
-Agora escreva sua resposta em DUAS PARTES separadas pelo marcador exato "---MARKETING---". Primeiro a parte clínica com análise dos dados e estratégia de atuação. Depois do marcador, a parte de marketing com estratégias de captação de pacientes. Exemplo do formato esperado:
-[texto clínico aqui...]
+Agora escreva sua resposta EXATAMENTE neste formato, com o marcador ---MARKETING--- na linha que separa as duas partes. É obrigatório. Se não colocar o marcador, a resposta será inválida.
+
+FORMATO OBRIGATÓRIO:
+[texto clínico com análise dos dados e estratégia de atuação aqui]
 ---MARKETING---
-[texto de marketing aqui...]`;
+[texto de marketing com estratégias de captação de pacientes aqui]`;
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30000);
@@ -82,11 +84,15 @@ Agora escreva sua resposta em DUAS PARTES separadas pelo marcador exato "---MARK
 
         if (response.ok) {
           const result = await response.json();
-          const insight: string | null =
+          const raw: string | null =
             result?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
 
-          if (insight) {
-            return NextResponse.json({ insight });
+          if (raw) {
+            const parts = raw.split('---MARKETING---');
+            return NextResponse.json({
+              clinicalInsight: (parts[0] || raw).trim(),
+              marketingInsight: parts[1]?.trim() || null,
+            });
           }
         }
       } catch {
@@ -94,10 +100,23 @@ Agora escreva sua resposta em DUAS PARTES separadas pelo marcador exato "---MARK
       }
     }
 
+    const fallbackText = `${city} tem demanda para fisioterapia na área de ${specialty}. Com ${population.toLocaleString('pt-BR')} habitantes e ${physiotherapists} fisioterapeutas na cidade, a relação é de ${(physiotherapists / (population / 10000)).toFixed(1)} profissionais por 10 mil habitantes — ${parseFloat((physiotherapists / (population / 10000)).toFixed(1)) < 5 ? 'um número baixo, indicando mercado com espaço' : 'um número que exige posicionamento estratégico para se destacar'}. ${elderlyPopulation.toLocaleString('pt-BR')} pessoas (${((elderlyPopulation / population) * 100).toFixed(1)}%) são idosos — ${parseFloat(((elderlyPopulation / population) * 100).toFixed(1)) > 15 ? 'um percentual alto que direciona o foco para geriatria, prevenção de quedas e atendimento domiciliar' : 'um percentual moderado que sugere equilibrar o atendimento entre diferentes faixas etárias'}. A cidade possui ${establishments} estabelecimentos de saúde, definindo o ecossistema de parcerias disponível para construir rede de referenciamento. O índice de oportunidade é ${opportunityIndex} (${opportunityLevel}), indicando um mercado ${opportunityLevel === 'Alta' ? 'com baixa concorrência e alta demanda — momento ideal para entrada estruturada' : opportunityLevel === 'Média' ? 'com concorrência moderada — espaço para quem se diferenciar com nicho específico' : 'mais competitivo — exige especialização extrema e posicionamento claro'}. Na parte clínica, invista em protocolos baseados em escalas validadas e mostre evolução objetiva em cada paciente — isso gera confiança e indicação espontânea.`;
+
+    let marketingText = '';
+    if (specialty === 'ortopedia') marketingText = 'Monte parcerias diretas com ortopedistas da cidade — eles operam, você reabilita. Leve um portfólio impresso com seu protocolo de pós-operatório de joelho e ombro.';
+    else if (specialty === 'geriatrica') marketingText = 'Vá até os grupos de convivência do CRAS e centros do idoso. Ofereça uma oficina gratuita de prevenção de quedas de 1 hora — o idoso que participa vira paciente e indica.';
+    else if (specialty === 'neurofuncional') marketingText = 'Cadastre-se como prestador nas UBS e centros de reabilitação da região. O paciente neurológico é referenciado pelo sistema público — esteja no cadastro deles.';
+    else if (specialty === 'pediatrica') marketingText = 'Crie um grupo de WhatsApp para mães com conteúdo sobre marcos do desenvolvimento infantil. Mãe que confia leva o filho por anos e indica para o grupo todo.';
+    else if (specialty === 'esportiva') marketingText = 'Bata na porta das assessorias de corrida e boxes de crossfit da cidade. Ofereça uma avaliação biomecânica gratuita de 15 minutos como porta de entrada.';
+    else if (specialty === 'respiratoria') marketingText = 'Faça contato com pneumologistas da cidade. Eles têm pacientes com DPOC e fibrose que precisam de reabilitação pulmonar e não têm para onde encaminhar.';
+    else if (specialty === 'pelvica') marketingText = 'Seja parceiro de maternidades e ginecologistas. Ofereça uma avaliação de assoalho pélvico gratuita no pós-parto — a demanda existe, mas o público precisa ser educado.';
+    else marketingText = 'Mapeie os médicos da cidade que mais podem referenciar pacientes para sua área e construa relacionamento profissional com cada um.';
+
+    marketingText += ` Invista em conteúdo educativo no Instagram 3x por semana — mostre casos (com autorização), dicas rápidas e seu dia a dia. O Google Meu Negócio bem configurado com fotos, horários e avaliações é o que faz o paciente local te encontrar quando busca "fisioterapeuta em ${city}". Distribua um panfleto simples com foto, contato e especialidade nos consultórios médicos da cidade. Crie um programa de indicação: paciente que indica ganha desconto ou avaliação gratuita para um familiar. Faça palestras gratuitas em academias, empresas ou grupos locais — quem te ouve falar confia no seu trabalho.`;
+
     return NextResponse.json({
-      insight: `${city} tem demanda para fisioterapia na área de ${specialty}. Com ${population.toLocaleString('pt-BR')} habitantes e ${physiotherapists} fisioterapeutas na cidade, a relação é de ${(physiotherapists / (population / 10000)).toFixed(1)} profissionais por 10 mil habitantes — ${parseFloat((physiotherapists / (population / 10000)).toFixed(1)) < 5 ? 'um número baixo, indicando mercado com espaço' : 'um número que exige posicionamento estratégico para se destacar'}. ${elderlyPopulation.toLocaleString('pt-BR')} pessoas (${((elderlyPopulation / population) * 100).toFixed(1)}%) são idosos — ${parseFloat(((elderlyPopulation / population) * 100).toFixed(1)) > 15 ? 'um percentual alto que direciona o foco para geriatria, prevenção de quedas e atendimento domiciliar' : 'um percentual moderado que sugere equilibrar o atendimento entre diferentes faixas etárias'}. A cidade possui ${establishments} estabelecimentos de saúde, definindo o ecossistema de parcerias disponível para construir rede de referenciamento. O índice de oportunidade é ${opportunityIndex} (${opportunityLevel}), indicando um mercado ${opportunityLevel === 'Alta' ? 'com baixa concorrência e alta demanda — momento ideal para entrada estruturada' : opportunityLevel === 'Média' ? 'com concorrência moderada — espaço para quem se diferenciar com nicho específico' : 'mais competitivo — exige especialização extrema e posicionamento claro'}. Na parte clínica, invista em protocolos baseados em escalas validadas e mostre evolução objetiva em cada paciente — isso gera confiança e indicação espontânea.
----MARKETING---
-${specialty === 'ortopedia' ? 'Monte parcerias diretas com ortopedistas da cidade — eles operam, você reabilita. Leve um portfólio impresso com seu protocolo de pós-operatório de joelho e ombro.' : specialty === 'geriatrica' ? 'Vá até os grupos de convivência do CRAS e centros do idoso. Ofereça uma oficina gratuita de prevenção de quedas de 1 hora — o idoso que participa vira paciente e indica.' : specialty === 'neurofuncional' ? 'Cadastre-se como prestador nas UBS e centros de reabilitação da região. O paciente neurológico é referenciado pelo sistema público — esteja no cadastro deles.' : specialty === 'pediatrica' ? 'Crie um grupo de WhatsApp para mães com conteúdo sobre marcos do desenvolvimento infantil. Mãe que confia leva o filho por anos e indica para o grupo todo.' : specialty === 'esportiva' ? 'Bata na porta das assessorias de corrida e boxes de crossfit da cidade. Ofereça uma avaliação biomecânica gratuita de 15 minutos como porta de entrada.' : specialty === 'respiratoria' ? 'Faça contato com pneumologistas da cidade. Eles têm pacientes com DPOC e fibrose que precisam de reabilitação pulmonar e não têm para onde encaminhar.' : specialty === 'pelvica' ? 'Seja parceiro de maternidades e ginecologistas. Ofereça uma avaliação de assoalho pélvico gratuita no pós-parto — a demanda existe, mas o público precisa ser educado.' : 'Mapeie os médicos da cidade que mais podem referenciar pacientes para sua área e construa relacionamento profissional com cada um.'} Invista em conteúdo educativo no Instagram 3x por semana — mostre casos (com autorização), dicas rápidas e seu dia a dia. O Google Meu Negócio bem configurado com fotos, horários e avaliações é o que faz o paciente local te encontrar quando busca "fisioterapeuta em ${city}". Distribua um panfleto simples com foto, contato e especialidade nos consultórios médicos da cidade. Crie um programa de indicação: paciente que indica ganha desconto ou avaliação gratuita para um familiar. Faça palestras gratuitas em academias, empresas ou grupos locais — quem te ouve falar confia no seu trabalho.`,
+      clinicalInsight: fallbackText,
+      marketingInsight: marketingText,
     });
   } catch (error: any) {
     console.error('Insight error:', error?.message || error);

@@ -39,6 +39,7 @@ export default function OpportunityMap() {
   const [selectedSpecialty, setSelectedSpecialty] = useState('');
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [insight, setInsight] = useState<string | null>(null);
+  const [marketingInsight, setMarketingInsight] = useState<string | null>(null);
   const [loadingInsight, setLoadingInsight] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -72,6 +73,7 @@ export default function OpportunityMap() {
     setSelectedSpecialty('');
     setResult(null);
     setInsight(null);
+    setMarketingInsight(null);
   };
 
   useEffect(() => {
@@ -104,7 +106,8 @@ export default function OpportunityMap() {
         });
         if (response.ok) {
           const data = await response.json();
-          setInsight(data.insight);
+          setInsight(data.clinicalInsight || null);
+          setMarketingInsight(data.marketingInsight || null);
         }
       } catch {
         setInsight(null);
@@ -284,49 +287,40 @@ export default function OpportunityMap() {
 
           {insight && (
             <div className="space-y-4">
-              {(() => {
-                const parts = insight.split('---MARKETING---');
-                const clinicalPart = parts[0]?.trim();
-                const marketingPart = parts[1]?.trim();
-                return (
-                  <>
-                    <div className="card bg-gradient-to-br from-indigo-50 via-white to-purple-50 border-indigo-100">
-                      <div className="flex items-start gap-4">
-                        <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100">
-                          <Lightbulb className="h-5 w-5 text-indigo-600" />
-                        </div>
-                        <div className="space-y-2 flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-black text-indigo-500 uppercase tracking-wider">Insight da Análise</span>
-                            <span className="chip">gerado por IA</span>
-                          </div>
-                          <p className="text-sm md:text-base text-slate-700 leading-relaxed font-medium italic">
-                            &ldquo;{clinicalPart || insight}&rdquo;
-                          </p>
-                        </div>
-                      </div>
+              <div className="card bg-gradient-to-br from-indigo-50 via-white to-purple-50 border-indigo-100">
+                <div className="flex items-start gap-4">
+                  <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100">
+                    <Lightbulb className="h-5 w-5 text-indigo-600" />
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black text-indigo-500 uppercase tracking-wider">Insight da Análise</span>
+                      <span className="chip">gerado por IA</span>
                     </div>
-                    {marketingPart && (
-                      <div className="card bg-gradient-to-br from-emerald-50 via-white to-sky-50 border-emerald-100">
-                        <div className="flex items-start gap-4">
-                          <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100">
-                            <Target className="h-5 w-5 text-emerald-600" />
-                          </div>
-                          <div className="space-y-2 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-black text-emerald-600 uppercase tracking-wider">Estratégias de Captação</span>
-                              <span className="chip">marketing</span>
-                            </div>
-                            <p className="text-sm md:text-base text-slate-700 leading-relaxed font-medium">
-                              {marketingPart}
-                            </p>
-                          </div>
-                        </div>
+                    <p className="text-sm md:text-base text-slate-700 leading-relaxed font-medium italic">
+                      &ldquo;{insight}&rdquo;
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {marketingInsight && (
+                <div className="card bg-gradient-to-br from-emerald-50 via-white to-sky-50 border-emerald-100">
+                  <div className="flex items-start gap-4">
+                    <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100">
+                      <Target className="h-5 w-5 text-emerald-600" />
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-black text-emerald-600 uppercase tracking-wider">Estratégias de Captação</span>
+                        <span className="chip">marketing</span>
                       </div>
-                    )}
-                  </>
-                );
-              })()}
+                      <p className="text-sm md:text-base text-slate-700 leading-relaxed font-medium">
+                        {marketingInsight}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {loadingInsight && (
