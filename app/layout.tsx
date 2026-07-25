@@ -17,9 +17,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Fisio+ — Mapa de Demandas para Fisioterapeuta | Mercado de Trabalho e Inteligência de Mercado',
+  title: 'Fisio+ — Software para Fisioterapia | Sistema para Clínica de Fisioterapia',
   description:
-    'Descubra as melhores cidades para atuar como fisioterapeuta com dados reais de mercado. Mapa gratuito de oportunidades com indicadores demográficos, concorrência e nível de oportunidade por especialidade: Ortopedia, Neurofuncional, Geriátrica, Pediátrica e mais. Sistema de gestão clínica com 30 dias grátis.',
+    'Software para fisioterapia completo: prontuário digital, ficha de avaliação, evolução por sessão e relatórios em PDF. Sistema para clínica de fisioterapia com 30 dias grátis. Organize sua clínica, atenda mais pacientes.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
