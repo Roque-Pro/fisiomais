@@ -465,7 +465,7 @@ export default function Home() {
 
                 <p className="text-base md:text-lg text-white/85 font-medium leading-relaxed">
                   Descubra regiões com maior potencial de atendimento utilizando dados oficiais do IBGE, CNES e DataSUS. 
-                  Uma ferramenta de inteligência de mercado exclusiva para você decidir onde atuar.
+                  Além da análise de mercado, você recebe estratégias de marketing e captação de pacientes para cada especialidade.
                 </p>
 
                 <ul className="space-y-3">
@@ -473,6 +473,7 @@ export default function Home() {
                     'População, idosos e concorrência por cidade',
                     'Índice de oportunidade por especialidade',
                     'Insights gerados por IA',
+                    'Estratégias de marketing e captação de pacientes',
                     'Grátis para usuários do Fisio+'
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-sm md:text-base text-white/80 font-medium">
