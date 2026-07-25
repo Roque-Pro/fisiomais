@@ -682,6 +682,68 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FISIO NEWS */}
+      <section className="mx-auto max-w-7xl px-4 md:px-6 py-20 md:py-28">
+        <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between border-b border-slate-200 pb-6 md:pb-8 gap-4">
+          <div className="space-y-2">
+            <h2 className="flex items-center gap-3 text-2xl md:text-3xl font-black text-slate-900 tracking-tighter">
+              <span className="bg-sky-500 p-2 rounded-xl text-white"><Newspaper className="h-5 w-5 md:h-6 md:w-6" /></span>
+              FISIO NEWS
+            </h2>
+            <p className="text-base md:text-lg text-slate-500 font-medium max-w-md">Fique por dentro das atualizações do mundo da fisioterapia.</p>
+          </div>
+          <Link href="/cadastro" className="flex items-center gap-2 text-sm font-bold text-sky-600 hover:text-sky-700 transition-colors">
+            Ver todas no sistema <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {recentNews.length > 0 ? (
+          <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {recentNews.map((item) => (
+              <div key={item.id} className="group flex flex-col h-full rounded-3xl p-6 md:p-8 transition-all duration-300 border border-white bg-white/60 shadow-xl shadow-slate-200/50 backdrop-blur-sm hover:shadow-2xl hover:bg-white hover:-translate-y-2 relative overflow-hidden">
+                <div className="flex-1 space-y-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-black uppercase tracking-tighter px-2 md:px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-100 truncate">
+                      <MapPin className="h-2.5 w-2.5 md:h-3 md:w-3 shrink-0" />
+                      <span className="truncate">{item.source}</span>
+                    </div>
+                    <span className="flex items-center gap-1 text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest shrink-0">
+                      <Calendar className="h-2.5 w-2.5 md:h-3 md:w-3" />
+                      {new Date(item.published_at).toLocaleDateString('pt-BR')}
+                    </span>
+                  </div>
+                  <Link href="/cadastro" className="block group/title">
+                    <h3 className="font-bold text-lg md:text-xl leading-tight text-slate-900 group-hover/title:text-sky-600 transition-colors line-clamp-2">
+                      {item.title}
+                    </h3>
+                  </Link>
+                  <p className="text-xs md:text-sm font-medium text-slate-500 line-clamp-3 leading-relaxed">
+                    {item.summary}
+                  </p>
+                </div>
+                <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-slate-100 flex items-center justify-between">
+                  <Link href="/cadastro" className="inline-flex items-center gap-2 text-[10px] md:text-xs font-black text-sky-600 transition-all hover:translate-x-1">
+                    LER NO SISTEMA
+                    <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  </Link>
+                  <button
+                    onClick={() => handleShare(item.title)}
+                    className="p-2 bg-slate-100 hover:bg-sky-500 hover:text-white rounded-full transition-all"
+                    title="Compartilhar"
+                  >
+                    <Share2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 md:py-20 bg-white/40 rounded-[2rem] md:rounded-[2.5rem] border-4 border-dashed border-white px-6">
+            <p className="text-slate-400 font-bold">As últimas novidades estão sendo preparadas...</p>
+          </div>
+        )}
+      </section>
+
       {/* CTA FINAL */}
       <section className="bg-gradient-to-br from-sky-600 via-indigo-600 to-rose-600 py-20 md:py-28">
         <div className="mx-auto max-w-4xl px-4 md:px-6 text-center">
