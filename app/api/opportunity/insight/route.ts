@@ -50,7 +50,10 @@ REGRAS ABSOLUTAS — SIGA CADA UMA:
 
 9. INCLUA ESTRATÉGIAS DE MARKETING E CAPTAÇÃO DE PACIENTES específicas para a especialidade e a cidade. Estratégias para redes sociais (que tipo de conteúdo postar, para qual público, com que frequência), Google (anúncio local, SEO para "fisioterapeuta em [cidade]", Google Meu Negócio), parcerias locais (médicos, academias, UBS, escolas, maternidades), material impresso (panfletos, cartão de visita, folder de apresentação para médicos), indicação (programa de indicação de pacientes), eventos (palestras gratuitas, workshop, avaliação gratuita na praça ou no parque). Seja específico para a especialidade e o porte da cidade. Exemplo: "Crie um Instagram com conteúdo educativo sobre dores lombares e poste 3x por semana — em 3 meses você será a referência local em coluna." ou "Distribua um panfleto simples nos consultórios médicos da cidade apresentando seu serviço de reabilitação pós-operatória com foto e contato direto do WhatsApp."
 
-Agora escreva o parágrafo. APENAS ELE.`;
+Agora escreva sua resposta em DUAS PARTES separadas pelo marcador exato "---MARKETING---". Primeiro a parte clínica com análise dos dados e estratégia de atuação. Depois do marcador, a parte de marketing com estratégias de captação de pacientes. Exemplo do formato esperado:
+[texto clínico aqui...]
+---MARKETING---
+[texto de marketing aqui...]`;
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30000);
