@@ -1,2 +1,201 @@
-SW: Registrado com sucesso: https://fisiomais.technexos.com.br/
-/api/opportunity/insight:1  Failed to load resource: the server responded with a status of 502 ()
+```text
+Analise toda a landing page do Fisio+ sob a ótica de CRO (Conversion Rate Optimization), copywriting e Google Ads.
+
+IMPORTANTE:
+- Não altere nenhuma funcionalidade do sistema.
+- Não altere backend, frontend, lógica, componentes ou rotas.
+- Trabalhe APENAS na copy, hierarquia das informações, títulos, subtítulos, ordem das seções e CTAs.
+- Preserve todo o design existente sempre que possível.
+
+Objetivo:
+Aumentar a taxa de conversão para usuários vindos do Google Ads pesquisando por:
+- software para fisioterapia
+- sistema para fisioterapia
+- software para clínica de fisioterapia
+- prontuário fisioterapia
+- ficha de avaliação fisioterapia
+
+Quero que a página venda PRIMEIRO o resultado que o fisioterapeuta obtém, e somente depois apresente as funcionalidades.
+
+### HERO
+
+A Hero precisa ser completamente reformulada.
+
+Ela deve comunicar imediatamente:
+
+- menos burocracia
+- menos papel
+- mais organização
+- economia de tempo
+- atendimento mais profissional
+
+Criar uma headline extremamente forte.
+
+Exemplo de direção (não copiar literalmente):
+
+"Atenda mais pacientes com menos burocracia."
+
+ou
+
+"Organize toda sua clínica em um único sistema."
+
+Subheadline curta mostrando:
+
+- prontuário digital
+- avaliações prontas
+- evolução por sessão
+- PDFs automáticos
+- 30 dias grátis
+
+Adicionar destaque visual para:
+
+✓ 30 dias grátis
+
+✓ Sem cartão de crédito
+
+✓ Apenas R$39,90/mês após o período de testes
+
+✓ Cancelamento quando quiser
+
+### REORGANIZAR A PÁGINA
+
+As primeiras seções precisam mostrar benefícios.
+
+Somente depois apresentar funcionalidades.
+
+Nova ordem sugerida:
+
+1 Hero
+
+2 Benefícios
+
+3 Como funciona
+
+4 Recursos principais
+
+5 Avaliações por especialidade
+
+6 Escalas
+
+7 Segurança
+
+8 Planos
+
+9 FAQ
+
+10 CTA Final
+
+### BENEFÍCIOS
+
+Criar uma seção focada em transformação.
+
+Exemplos:
+
+• Pare de perder tempo com papel.
+
+• Tenha todas as avaliações organizadas.
+
+• Gere PDFs profissionais em segundos.
+
+• Evolua cada sessão com histórico completo.
+
+• Tenha tudo salvo com segurança.
+
+Não falar de tecnologia.
+
+Falar do ganho para o fisioterapeuta.
+
+### FUNCIONALIDADES
+
+Reduzir muito o excesso de texto.
+
+Cada recurso deve responder:
+
+"O que isso resolve?"
+
+Evitar listas enormes.
+
+Destacar apenas os diferenciais reais.
+
+### DIFERENCIAIS
+
+Dar muito destaque para:
+
+- Avaliações prontas para 6 especialidades
+
+- Mais de 20 escalas integradas
+
+- Evolução com gráficos
+
+- Relatórios em PDF
+
+- LGPD
+
+- 30 dias grátis
+
+- Apenas R$39,90
+
+### REDUZIR DESTAQUE
+
+Não remover.
+
+Apenas deixar mais abaixo:
+
+- Cartão digital
+
+- Personalização de tema
+
+- Fontes
+
+- Cores
+
+- Fisio News
+
+Esses recursos não são decisivos para compra.
+
+### SEO
+
+Reescrever títulos utilizando naturalmente termos como:
+
+software para fisioterapia
+
+sistema para fisioterapia
+
+prontuário digital fisioterapia
+
+sistema para clínica de fisioterapia
+
+ficha de avaliação fisioterapia
+
+evolução fisioterapia
+
+### CTA
+
+Todos os CTAs devem reforçar:
+
+Comece grátis por 30 dias.
+
+Sem cartão de crédito.
+
+### MAPA DE DEMANDAS
+
+Criar um bloco de destaque apresentando o Mapa de Demandas como bônus exclusivo.
+
+Nunca como produto principal.
+
+Exemplo da ideia:
+
+"Ganhe acesso exclusivo ao Mapa de Demandas da Fisioterapia e descubra regiões com maior potencial de atendimento utilizando dados oficiais do IBGE, CNES e DataSUS."
+
+Esse bônus deve aumentar a percepção de valor do SaaS.
+
+### IMPORTANTE
+
+Faça uma revisão completa da copy pensando exclusivamente em aumentar conversão.
+
+Se encontrar textos fracos, técnicos demais ou que não ajudam na venda, reescreva.
+
+Priorize clareza, escaneabilidade e conversão.
+
+Não altere nenhuma funcionalidade existente. Apenas reorganize e melhore a comunicação para vender mais.
+```
