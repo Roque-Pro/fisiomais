@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Activity, LayoutDashboard, LogOut, Palette, User, Users, BookText, ChevronLeft, Newspaper, Menu, Sparkles } from 'lucide-react';
+import { Activity, LayoutDashboard, LogOut, Palette, User, Users, BookText, ChevronLeft, Newspaper, Menu, Sparkles, MapPin } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 const items = [
   { href: '/dashboard', label: 'Início', Icon: LayoutDashboard },
   { href: '/pacientes', label: 'Pacientes', Icon: Users },
   { href: '/planos', label: 'Planos', Icon: Sparkles },
+  { href: '/mapa-de-demandas', label: 'Mapa de Demandas', Icon: MapPin },
   { href: '/fisio-news', label: 'Fisio News', Icon: Newspaper },
   { href: '/perfil', label: 'Meu perfil', Icon: User },
   { href: '/personalizar', label: 'Personalizar', Icon: Palette },
