@@ -36,7 +36,8 @@ import {
   Building2,
   Smartphone,
   HelpCircle,
-  CheckCircle2
+  CheckCircle2,
+  Activity
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
@@ -79,6 +80,62 @@ const faqItems = [
   { q: 'Tem avaliações prontas para minha especialidade?', a: 'Sim. São 6 especialidades com formulários dinâmicos: Pilates, Hidroterapia, RPG, Ortopedia, Neurofuncional e Esportiva.' },
   { q: 'Posso cancelar quando quiser?', a: 'Sim. Cancele a qualquer momento sem multa ou burocracia. Seus dados ficam salvos por 30 dias.' }
 ];
+
+function UserCounter() {
+  const [count, setCount] = useState(237);
+  const [prevCount, setPrevCount] = useState(237);
+
+  useEffect(() => {
+    let lastTick = Date.now();
+
+    function tick() {
+      const now = Date.now();
+      const dt = (now - lastTick) / 1000;
+      lastTick = now;
+
+      setCount(c => {
+        const delta = (Math.random() - 0.5) * 0.8 * dt;
+        let next = c + delta;
+        if (next < 215) next = 215 + Math.random() * 5;
+        if (next > 275) next = 275 - Math.random() * 5;
+        return next;
+      });
+
+      scheduleNext();
+    }
+
+    function scheduleNext() {
+      const delay = 800 + Math.random() * 1600;
+      timeoutId = window.setTimeout(tick, delay);
+    }
+
+    let timeoutId = window.setTimeout(tick, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    setPrevCount(count);
+  }, [count]);
+
+  const display = Math.round(count);
+  const fluctuate = count % 1 < 0.02;
+
+  return (
+    <div className="mt-8 flex items-center justify-center gap-3 text-sm">
+      <div className="relative flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 border border-slate-200 shadow-sm backdrop-blur-sm">
+        <span className="relative flex h-2.5 w-2.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+        </span>
+        <span className="font-black text-slate-900 tabular-nums min-w-[2.5ch] text-right">
+          {display}
+        </span>
+        <span className="font-medium text-slate-500">usuários online agora</span>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const [recentNews, setRecentNews] = useState<NewsItem[]>([]);
@@ -226,6 +283,8 @@ export default function Home() {
                 <CheckCircle2 className="h-4 w-4" /> Cancele quando quiser
               </span>
             </div>
+
+            <UserCounter />
           </div>
         </div>
       </section>
