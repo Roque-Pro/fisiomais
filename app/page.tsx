@@ -244,6 +244,8 @@ export default function Home() {
         </div>
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center">
+            <UserCounter />
+
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold uppercase tracking-wider mb-6 md:mb-8">
               <Sparkles className="h-3.5 w-3.5" /> Software para fisioterapia
             </div>
@@ -284,7 +286,6 @@ export default function Home() {
               </span>
             </div>
 
-            <UserCounter />
           </div>
         </div>
       </section>
