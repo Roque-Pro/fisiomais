@@ -446,7 +446,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* MAPA DE DEMANDAS - BÔNUS */}
+      {/* MAPA DE DEMANDAS */}
       <section className="mx-auto max-w-7xl px-4 md:px-6 py-20 md:py-28">
         <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-sky-600 via-indigo-600 to-rose-600 p-0.5 shadow-2xl">
           <div className="relative rounded-[calc(2.5rem-1px)] bg-gradient-to-br from-sky-600 via-indigo-600 to-rose-600 p-8 md:p-14">
@@ -484,8 +484,8 @@ export default function Home() {
                   ))}
                 </ul>
 
-                <Link href="/cadastro" className="group inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-base font-black text-slate-900 transition-all hover:bg-slate-50 hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]">
-                  Começar grátis e acessar
+                <Link href="/mapa-de-demandas" className="group inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-base font-black text-slate-900 transition-all hover:bg-slate-50 hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]">
+                  Acessar mapa completo
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
