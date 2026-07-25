@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import { ThemeApplier } from '@/components/theme-applier';
+import { ClientLayout } from '@/components/client-layout';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -44,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body>
-        {children}
+        <ClientLayout>{children}</ClientLayout>
         <script
           dangerouslySetInnerHTML={{
             __html: `
