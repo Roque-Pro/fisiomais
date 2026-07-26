@@ -73,12 +73,12 @@ const scales = [
 ];
 
 const faqItems = [
-  { q: 'Preciso de cartão de crédito para começar?', a: 'Não. São 30 dias grátis sem qualquer pagamento. Você só decide pagar depois de testar tudo.' },
+  { q: 'Preciso de cartão de crédito para começar?', a: 'Não. São 14 dias grátis sem qualquer pagamento. Você só decide pagar depois de testar tudo.' },
   { q: 'O Fisio+ funciona no celular?', a: 'Sim. O sistema é 100% responsivo e pode ser instalado como aplicativo no seu celular ou tablet.' },
   { q: 'Posso emitir relatórios e laudos em PDF?', a: 'Sim. Todas as avaliações, evoluções e fichas geram PDF profissional com um clique.' },
   { q: 'O sistema é seguro e protege os dados dos meus pacientes?', a: 'Sim. Seguimos a LGPD com criptografia e controle de acesso. Você é o controlador dos dados.' },
   { q: 'Tem avaliações prontas para minha especialidade?', a: 'Sim. São 6 especialidades com formulários dinâmicos: Pilates, Hidroterapia, RPG, Ortopedia, Neurofuncional e Esportiva.' },
-  { q: 'Posso cancelar quando quiser?', a: 'Sim. Cancele a qualquer momento sem multa ou burocracia. Seus dados ficam salvos por 30 dias.' }
+  { q: 'Posso cancelar quando quiser?', a: 'Sim. Cancele a qualquer momento sem multa ou burocracia. Seus dados ficam salvos por 14 dias.' }
 ];
 
 function UserCounter() {
@@ -273,7 +273,7 @@ export default function Home() {
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-bold">
               <span className="inline-flex items-center gap-1.5 text-emerald-600">
-                <CheckCircle2 className="h-4 w-4" /> 30 dias grátis
+                <CheckCircle2 className="h-4 w-4" /> 14 dias grátis
               </span>
               <span className="inline-flex items-center gap-1.5 text-emerald-600">
                 <CheckCircle2 className="h-4 w-4" /> Sem cartão de crédito
@@ -386,7 +386,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-black text-slate-900">Crie sua conta</h3>
             <p className="mt-3 text-base font-medium text-slate-500 leading-relaxed max-w-xs mx-auto">
-              Cadastre-se grátis. Não pedimos cartão de crédito. Seus 30 dias começam agora.
+              Cadastre-se grátis. Não pedimos cartão de crédito. Seus 14 dias começam agora.
             </p>
           </div>
 
@@ -645,7 +645,7 @@ export default function Home() {
             <span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">cabem no seu bolso</span>
           </h2>
           <p className="mt-4 text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-            Comece com 30 dias grátis, sem compromisso. Depois, apenas R$ 39,90/mês.
+            Comece com 14 dias grátis, sem compromisso. Depois, apenas R$ 39,90/mês.
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 max-w-3xl mx-auto">
@@ -656,11 +656,11 @@ export default function Home() {
             <div className="space-y-6">
               <div>
                 <h3 className="text-2xl font-black text-slate-900">Trial</h3>
-                <p className="text-sm text-slate-500 font-medium">30 dias de avaliação gratuita</p>
+                <p className="text-sm text-slate-500 font-medium">14 dias de avaliação gratuita</p>
               </div>
               <div>
                 <span className="text-4xl font-black text-slate-900">R$ 0</span>
-                <span className="text-sm text-slate-500"> / 30 dias</span>
+                <span className="text-sm text-slate-500"> / 14 dias</span>
               </div>
               <ul className="space-y-3">
                 {['Até 10 pacientes', 'Avaliações ilimitadas', 'Evoluções ilimitadas', 'Cartão digital em PDF', 'Personalização de tema', 'Fisio News Hub'].map((item) => (
@@ -823,7 +823,7 @@ export default function Home() {
             </Link>
           </div>
           <p className="mt-6 text-sm text-white/60 font-medium flex items-center justify-center gap-2">
-            <Sparkles className="h-4 w-4" /> 30 dias grátis · Sem cartão de crédito · Cancele quando quiser
+            <Sparkles className="h-4 w-4" /> 14 dias grátis · Sem cartão de crédito · Cancele quando quiser
           </p>
         </div>
       </section>

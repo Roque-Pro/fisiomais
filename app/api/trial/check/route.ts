@@ -24,13 +24,13 @@ export async function GET() {
 
     if (profile.plan_status === 'trial' && profile.trial_started_at) {
       const trialEnd = new Date(profile.trial_started_at);
-      trialEnd.setDate(trialEnd.getDate() + 30);
+      trialEnd.setDate(trialEnd.getDate() + 14);
       const now = new Date();
 
       if (now >= trialEnd) {
         await supabase
           .from('profiles')
-          .update({ plan_status: 'expired', updated_at: now.toISOString() })
+          .update({ plan_status: 'expired', blocked: true, updated_at: now.toISOString() })
           .eq('id', user.id);
 
         return NextResponse.json({

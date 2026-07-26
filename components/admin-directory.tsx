@@ -29,7 +29,7 @@ type Profile = {
 function getDaysLeft(trialStartedAt: string): number {
   const start = new Date(trialStartedAt);
   const end = new Date(start);
-  end.setDate(end.getDate() + 30);
+  end.setDate(end.getDate() + 14);
   const now = new Date();
   return Math.max(0, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
 }
@@ -41,7 +41,7 @@ function getDaysSince(date: string): number {
 function getDaysOverdue(paymentDate: string): number {
   const paid = new Date(paymentDate);
   const nextDue = new Date(paid);
-  nextDue.setDate(nextDue.getDate() + 30);
+  nextDue.setDate(nextDue.getDate() + 14);
   const now = new Date();
   return Math.ceil((now.getTime() - nextDue.getTime()) / (1000 * 60 * 60 * 24));
 }
@@ -49,7 +49,7 @@ function getDaysOverdue(paymentDate: string): number {
 function getDaysUntilDue(paymentDate: string): number {
   const paid = new Date(paymentDate);
   const nextDue = new Date(paid);
-  nextDue.setDate(nextDue.getDate() + 30);
+  nextDue.setDate(nextDue.getDate() + 14);
   const now = new Date();
   return Math.ceil((nextDue.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 }
@@ -110,6 +110,7 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
     await supabase.from('profiles').update({
       payment_date: now,
       plan_status: 'active',
+      blocked: false,
     }).eq('id', profileId);
     router.refresh();
     setPayingId(null);
@@ -382,13 +383,13 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
                           <div>
                             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Trial expira em</span>
                             <p className="font-medium text-brand-900 mt-0.5">
-                              {p.trial_started_at ? new Date(new Date(p.trial_started_at).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR') : '—'}
+                              {p.trial_started_at ? new Date(new Date(p.trial_started_at).getTime() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR') : '—'}
                             </p>
                           </div>
                           <div>
                             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Último pagamento</span>
                             <p className="font-medium text-brand-900 mt-0.5">
-                              {p.payment_date ? `${new Date(p.payment_date).toLocaleDateString('pt-BR')} · vence ${new Date(new Date(p.payment_date).getTime() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')}` : '—'}
+                              {p.payment_date ? `${new Date(p.payment_date).toLocaleDateString('pt-BR')} · vence ${new Date(new Date(p.payment_date).getTime() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')}` : '—'}
                             </p>
                           </div>
                         </div>

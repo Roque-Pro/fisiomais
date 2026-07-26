@@ -20,7 +20,7 @@ export function TrialBanner() {
           setPlanStatus(data.plan_status);
           if (data.trial_started_at) {
             const end = new Date(data.trial_started_at);
-            end.setDate(end.getDate() + 30);
+            end.setDate(end.getDate() + 14);
             setTrialEndDate(end);
 
             const now = new Date();
@@ -44,7 +44,7 @@ export function TrialBanner() {
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-bold text-rose-900">Acesso Expirado</h3>
             <p className="mt-1 text-sm text-rose-700">
-              Seu período de teste gratuito encerrou. Assine agora por apenas <strong>R$ 39,90/mês</strong> e continue usando todos os recursos.
+              Seu período de teste gratuito de 14 dias encerrou. Assine agora por apenas <strong>R$ 39,90/mês</strong> e continue usando todos os recursos.
             </p>
             <Link
               href="/planos"
@@ -73,8 +73,8 @@ export function TrialBanner() {
             Período de Teste Gratuito
           </h3>
           <p className={`mt-1 text-sm ${isUrgent ? 'text-amber-700' : 'text-brand-700'}`}>
-            Você tem <strong className="text-lg">{daysLeft}</strong> {daysLeft === 1 ? 'dia' : 'dias'} restantes do seu trial de 30 dias.
-            {isUrgent && ' Após o término, assine por apenas R$ 39,90/mês para continuar.'}
+            Você tem <strong className="text-lg">{daysLeft}</strong>             {daysLeft === 1 ? 'dia' : 'dias'} restantes do seu trial de 14 dias.
+            {isUrgent && ' Após o término, assine por apenas R$ 39,90/mês ou solicite o religamento com o administrador.'}
           </p>
           {trialEndDate && (
             <p className={`mt-0.5 text-xs ${isUrgent ? 'text-amber-500' : 'text-brand-500'}`}>
@@ -84,7 +84,7 @@ export function TrialBanner() {
           <div className="mt-3 h-2 w-full max-w-xs overflow-hidden rounded-full bg-white">
             <div
               className={`h-full rounded-full transition-all ${isUrgent ? 'bg-amber-500' : 'bg-brand-500'}`}
-              style={{ width: `${Math.max(0, (daysLeft / 30) * 100)}%` }}
+              style={{ width: `${Math.max(0, (daysLeft / 14) * 100)}%` }}
             />
           </div>
         </div>

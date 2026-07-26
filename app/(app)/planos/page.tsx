@@ -23,7 +23,7 @@ export default function PlanosPage() {
           setPlanStatus(data.plan_status);
           if (data.trial_started_at) {
             const end = new Date(data.trial_started_at);
-            end.setDate(end.getDate() + 30);
+            end.setDate(end.getDate() + 14);
             setTrialEndDate(end);
             const now = new Date();
             const diff = end.getTime() - now.getTime();
@@ -106,7 +106,7 @@ export default function PlanosPage() {
             </div>
             <div>
               <span className="text-4xl font-black text-brand-900">R$ 0</span>
-              <span className="text-sm text-slate-500"> / 30 dias</span>
+              <span className="text-sm text-slate-500"> / 14 dias</span>
             </div>
             <ul className="space-y-3">
               {[

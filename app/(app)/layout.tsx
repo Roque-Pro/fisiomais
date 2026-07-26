@@ -49,16 +49,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
         <h1 className="text-2xl font-bold text-brand-900">Acesso Bloqueado</h1>
         <p className="mt-2 max-w-sm text-slate-600">
-          Sua conta foi bloqueada pelo administrador. Entre em contato para mais informações.
+          Seu período de teste gratuito de 14 dias encerrou. Clique no botão abaixo para solicitar o religamento via WhatsApp.
         </p>
         <div className="mt-8 flex flex-col items-center gap-3">
           <a
-            href="https://wa.me/5532991075164"
+            href="https://wa.me/5532991075164?text=Olá! Meu período de teste expirou e gostaria de solicitar o religamento da minha conta. Meu nome: "
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-brand-700 hover:shadow-lg"
           >
-            <Mail className="h-4 w-4" /> Falar com Suporte
+            <Mail className="h-4 w-4" /> Solicitar Religamento via WhatsApp
           </a>
           <button
             onClick={() => supabase.auth.signOut().then(() => window.location.href = '/login')}
@@ -79,7 +79,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
         <h1 className="text-2xl font-bold text-brand-900">Acesso Expirado</h1>
         <p className="mt-2 max-w-sm text-slate-600">
-          Seu período de teste gratuito de 30 dias encerrou. Assine agora por apenas <strong>R$ 39,90/mês</strong> para continuar usando todos os recursos.
+          Seu período de teste gratuito de 14 dias encerrou. Assine agora por apenas <strong>R$ 39,90/mês</strong> para continuar usando todos os recursos.
         </p>
         <div className="mt-8 flex flex-col items-center gap-3">
           <Link
@@ -88,6 +88,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           >
             <Sparkles className="h-4 w-4" /> Assinar Agora
           </Link>
+          <a
+            href="https://wa.me/5532991075164?text=Olá! Meu período de teste expirou e gostaria de solicitar o religamento da minha conta. Meu nome: "
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-slate-900 hover:shadow-lg"
+          >
+            <Mail className="h-4 w-4" /> Solicitar Religamento via WhatsApp
+          </a>
           <button
             onClick={() => supabase.auth.signOut().then(() => window.location.href = '/login')}
             className="text-sm font-bold text-rose-600 hover:underline"
