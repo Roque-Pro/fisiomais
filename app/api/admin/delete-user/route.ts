@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,12 +23,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Acesso restrito' }, { status: 403 });
     }
 
+    // Primeiro deleta pacientes (cascade para assessments e evolutions)
     const { error: patientsError } = await supabase
       .from('patients')
       .delete()
       .eq('profile_id', userId);
-    if (patientsError) console.error('Erro ao deletar pacientes:', patientsError);
 
+    // Deleta o perfil
     const { error: profileError } = await supabase
       .from('profiles')
       .delete()
@@ -36,9 +38,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Erro ao deletar perfil: ' + profileError.message }, { status: 500 });
     }
 
-    const { error: authError } = await supabase.auth.admin.deleteUser(userId);
+    // Deleta o auth user com o client admin (service_role)
+    const adminSupabase = createAdminClient();
+    const { error: authError } = await adminSupabase.auth.admin.deleteUser(userId);
     if (authError) {
-      console.error('Erro ao deletar auth user (pode ser que o trigger já tenha removido):', authError);
+      console.error('Erro ao deletar auth user:', authError);
     }
 
     return NextResponse.json({ success: true });
