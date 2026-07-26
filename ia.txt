@@ -1,3 +1,37 @@
-Insight da Análise
-gerado por IA
-“Parintins tem demanda para fisioterapia na área de respiratoria. Analise os dados apresentados, avalie a concorrência local e trace uma estratégia de atuação baseada no perfil demográfico da cidade.”
+00:53:09.271 Running build in Washington, D.C., USA (East) – iad1
+00:53:09.271 Build machine configuration: 2 cores, 8 GB
+00:53:09.754 Cloning github.com/Roque-Pro/fisiomais (Branch: main, Commit: be9d9cf)
+00:53:10.118 Cloning completed: 363.000ms
+00:53:11.058 Restored build cache from previous deployment (FTdxxDdwTvYpjQPYM2tXrVTWuS8E)
+00:53:11.247 Running "vercel build"
+00:53:11.309 Vercel CLI 56.5.0
+00:53:11.510 Installing dependencies...
+00:53:12.684 
+00:53:12.684 up to date in 1s
+00:53:12.684 
+00:53:12.685 157 packages are looking for funding
+00:53:12.686   run `npm fund` for details
+00:53:12.714 Detected Next.js version: 14.2.15
+00:53:12.719 Running "npm run build"
+00:53:12.819 
+00:53:12.820 > fisioflow@0.1.0 build
+00:53:12.820 > next build
+00:53:12.820 
+00:53:13.538   ▲ Next.js 14.2.15
+00:53:13.539 
+00:53:13.560    Creating an optimized production build ...
+00:53:25.297  ✓ Compiled successfully
+00:53:25.299    Linting and checking validity of types ...
+00:53:32.197 Failed to compile.
+00:53:32.197 
+00:53:32.197 ./lib/i18n/translations/en.ts:292:5
+00:53:32.197 Type error: An object literal cannot have multiple properties with the same name.
+00:53:32.198 
+00:53:32.198   290 |     whatsapp: 'WhatsApp',
+00:53:32.198   291 |     email: 'Email',
+00:53:32.198 > 292 |     address: 'Address',
+00:53:32.198       |     ^
+00:53:32.198   293 |     profession: 'Profession',
+00:53:32.199   294 |     chiefComplaint: 'Chief complaint',
+00:53:32.199   295 |     functionalGoal: 'Functional goal',
+00:53:32.283 Error: Command "npm run build" exited with 1

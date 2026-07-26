@@ -270,7 +270,7 @@ const en = {
     yearsOld: 'years old',
     medicalHistory: 'Medical history',
     medications: 'Medications',
-    address: 'Address',
+    patientAddress: 'Address',
     assessmentsBySpecialty: 'Assessments by specialty',
     startAssessment: 'Start Assessment',
     noAssessments: 'No assessments registered yet.',

@@ -271,7 +271,7 @@ const ptBR = {
     yearsOld: 'anos',
     medicalHistory: 'Histórico médico',
     medications: 'Medicações',
-    address: 'Endereço',
+    patientAddress: 'Endereço',
     assessmentsBySpecialty: 'Avaliações por especialidade',
     startAssessment: 'Iniciar Avaliação',
     noAssessments: 'Nenhuma avaliação registrada ainda.',
