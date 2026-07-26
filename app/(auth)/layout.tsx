@@ -6,7 +6,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="mx-auto flex max-w-7xl items-center px-4 py-4 md:px-6 md:py-8">
         <Link href="/" className="flex items-center gap-3 md:gap-4 group">
           <div className="overflow-hidden rounded-xl md:rounded-2xl shadow-lg ring-2 md:ring-4 ring-white transition-transform group-hover:scale-105 active:scale-95">
-            <img src="/logo.jpg" alt="Fisio Saúde" className="h-10 w-10 md:h-12 md:w-12 object-cover" />
+            <img src="/icon.svg" alt="Fisio Saúde" className="h-10 w-10 md:h-12 md:w-12" />
           </div>
           <div className="flex flex-col">
             <span className="text-lg md:text-2xl font-black tracking-tight text-slate-900 leading-none group-hover:text-sky-600 transition-colors">Fisio Saúde</span>

@@ -51,7 +51,12 @@ function header(doc: jsPDF, title: string, subtitle?: string) {
   
   // Add Logo
   try {
-    doc.addImage('/logo.jpg', 'JPEG', M, 4, 16, 16);
+    doc.setFillColor(14, 165, 233);
+    doc.roundedRect(M, 4, 16, 16, 3, 3, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('F+', M + 8, 14.5, { align: 'center' });
   } catch (e) {
     console.error('Error adding logo to PDF:', e);
   }
@@ -363,13 +368,14 @@ async function getRoundedImageData(url: string, bgColor: string = '#ffffff'): Pr
 
 async function getLogoImageData(bgColor: string = '#ffffff'): Promise<string | null> {
   try {
-    const res = await fetch('/fisio.png');
+    const res = await fetch('/icon.svg');
     if (!res.ok) return null;
-    const blob = await res.blob();
+    const svgText = await res.text();
+    const svgBlob = new Blob([svgText], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(svgBlob);
     
     return await new Promise((resolve) => {
       const img = new Image();
-      const objectUrl = URL.createObjectURL(blob);
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const size = Math.max(img.width, img.height);
@@ -390,18 +396,18 @@ async function getLogoImageData(bgColor: string = '#ffffff'): Promise<string | n
           ctx.restore();
 
           const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-          URL.revokeObjectURL(objectUrl);
+          URL.revokeObjectURL(url);
           resolve(dataUrl);
         } else {
-          URL.revokeObjectURL(objectUrl);
+          URL.revokeObjectURL(url);
           resolve(null);
         }
       };
       img.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
+        URL.revokeObjectURL(url);
         resolve(null);
       };
-      img.src = objectUrl;
+      img.src = url;
     });
   } catch {
     return null;

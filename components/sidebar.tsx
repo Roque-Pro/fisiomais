@@ -56,12 +56,12 @@ export function Sidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () =>
       <div className="flex items-center justify-between px-4 py-6">
         {(!collapsed || isOpen) ? (
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.jpg" alt="Logo" className="h-9 w-9 rounded-xl object-cover shadow-soft" />
+            <img src="/icon.svg" alt="Logo" className="h-9 w-9 rounded-xl shadow-soft" />
             <span className="font-bold text-brand-900">Fisio+</span>
           </Link>
         ) : (
           <Link href="/" className="mx-auto">
-            <img src="/logo.jpg" alt="Logo" className="h-9 w-9 rounded-xl object-cover shadow-soft" />
+            <img src="/icon.svg" alt="Logo" className="h-9 w-9 rounded-xl shadow-soft" />
           </Link>
         )}
         
@@ -166,7 +166,7 @@ export function MobileTopbar({ onOpenMenu }: { onOpenMenu?: () => void }) {
           <Menu className="h-6 w-6" />
         </button>
         <Link href="/" className="flex items-center gap-2">
-          <img src="/logo.jpg" alt="Logo" className="h-8 w-8 rounded-lg object-cover" />
+            <img src="/icon.svg" alt="Logo" className="h-8 w-8 rounded-lg" />
           <div className="flex flex-col">
             <span className="text-xs font-bold leading-none text-brand-900">Fisio+</span>
             <span className="mt-0.5 text-[10px] font-medium text-slate-500">

@@ -193,7 +193,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-slate-100">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
           <Link href="/" className="flex items-center gap-3 group">
-            <img src="/logo.jpg" alt="Logo" className="h-9 w-9 md:h-10 md:w-10 rounded-lg object-cover shadow-sm transition-transform group-hover:scale-105" />
+            <img src="/icon.svg" alt="Logo" className="h-9 w-9 md:h-10 md:w-10 rounded-lg shadow-sm transition-transform group-hover:scale-105" />
             <span className="text-xl font-bold tracking-tight text-slate-900">Fisio+</span>
           </Link>
 
@@ -832,7 +832,7 @@ export default function Home() {
       <footer className="border-t-4 border-white bg-white/30 py-8 md:py-12 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div className="flex flex-col md:flex-row items-center gap-3">
-            <img src="/logo.jpg" alt="Logo" className="h-8 w-8 md:h-10 md:w-10 rounded-xl object-cover" />
+            <img src="/icon.svg" alt="Logo" className="h-8 w-8 md:h-10 md:w-10 rounded-xl" />
             <div className="text-[10px] md:text-sm font-bold text-slate-400 uppercase tracking-widest">
               Fisio+ <span className="mx-1">·</span> Software para Fisioterapia
             </div>
