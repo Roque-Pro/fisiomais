@@ -91,7 +91,19 @@ export function AdminDirectory({ statsList, total }: { statsList: Profile[]; tot
 
   async function handleDelete(profileId: string) {
     setDeletingId(profileId);
-    await supabase.from('profiles').delete().eq('id', profileId);
+    try {
+      const res = await fetch('/api/admin/delete-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: profileId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert('Erro ao excluir: ' + (data.error || 'Erro desconhecido'));
+      }
+    } catch (e) {
+      alert('Erro ao excluir: ' + (e instanceof Error ? e.message : 'Erro desconhecido'));
+    }
     router.refresh();
     setConfirmDelete(null);
     setDeletingId(null);
